@@ -1,0 +1,37 @@
+{
+  "name": "wofbot-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/loader.js",
+  "scripts": {
+    "dev": "nodemon",
+    "production":"pm2 start src/loader.js --name wolfbot-backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tcc-bot/wofbot-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tcc-bot/wofbot-backend/issues"
+  },
+  "homepage": "https://github.com/tcc-bot/wofbot-backend#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-query-int": "^1.0.1",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.7.0",
+    "mongoose-paginate": "^5.0.3",
+    "node-restful": "^0.2.5",
+    "pm2": "^2.1.5",
+    "koa-joi-router": "^5.0.0",
+    "koa": "^2.3.0",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
