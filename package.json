@@ -2,10 +2,10 @@
   "name": "wofbot-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/loader.js",
+  "main": "src/app.js",
   "scripts": {
     "dev": "nodemon",
-    "production": "pm2 start src/config/server.js --name wolfbot-backend"
+    "production": "pm2 start src/app.js --name wolfbot-backend"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "consign": "^0.1.6",
     "express-query-int": "^1.0.1",
     "lodash": "^4.17.4",
     "mongoose": "^4.7.0",

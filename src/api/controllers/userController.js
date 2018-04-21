@@ -1,4 +1,4 @@
-const user = require('../models/usuario.model')
+const user = require('../models/user')
 
 //cria api rest para o schema do mongo
 user.methods(['get', 'post', 'put', 'delete'])

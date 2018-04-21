@@ -6,7 +6,7 @@ module.exports = function(server){
     const router = express.Router()
     server.use('/api', router)
 
-    const accountController = require('../controllers/account.controller')
-    
-    accountController.register(router, '/account')
+    //Usuarios Routes
+    const userController = require('../controllers/userController')
+    userController.register(router, '/users')
 }
