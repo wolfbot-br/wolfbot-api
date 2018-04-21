@@ -4,7 +4,6 @@ const auth = require('../../config/auth')
 module.exports = function(server){
 
     const account_controller = require('../controllers/account-controller');
-    const teste_controller = require('../controllers/teste-controller')
 
     // definindo as rotas protegidas e rotas abertas atraves de um Router
     const rotas_protegidas = express.Router()
@@ -14,9 +13,8 @@ module.exports = function(server){
     rotas_protegidas.use(auth)
 
     
-    // todas as requisições que vierem de /auth vão cair dentro de rotas_protegidas
+    // todas as requisições que vierem de /api vão cair dentro de rotas_protegidas
     server.use('/api', rotas_protegidas)
-    rotas_protegidas.get('/teste', teste_controller.getTeste)
     
 
     // todas as rotas que vierem de /account são rotas abertas para requição
