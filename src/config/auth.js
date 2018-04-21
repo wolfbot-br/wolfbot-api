@@ -11,8 +11,8 @@ module.exports = (req, res, next) => {
     else{
     
        // busca o token somente se ele foi enviado no header da requisição
-       const token = req.headers['Authorization'] 
-       
+       const token = req.headers['authorization']
+
        // caso o token não seja passado
        if(!token){
            return res.status(403).send({ errors: ['Token não enviado']})

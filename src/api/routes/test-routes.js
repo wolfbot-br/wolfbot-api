@@ -15,7 +15,7 @@ module.exports = function(server){
     
     // todas as requisições que vierem de /auth vão cair dentro de rotas_protegidas
     server.use('/api', rotas_protegidas)
-
+    rotas_protegidas.get('/usuariosTeste', teste_controller.getTeste)
 
     // todas as rotas que vierem de /teste/ são rotas abertas para requição
     server.use('/teste', rotas_abertas)

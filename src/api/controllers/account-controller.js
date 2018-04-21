@@ -5,7 +5,7 @@ const Usuario = require('../models/usuario')
 const env = require('../../../.env')
 
 // Expressões regulares para validar email e senha
-const emailRegex = /\S+@\S+\.\S+/
+//const emailRegex = /\S+@\S+\.\S+/
 //const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/
 
 // Método generico que irá tratar erros de banco de dados
@@ -22,19 +22,19 @@ const login = (req, res, next) => {
     const password = req.body.password || ''
 
     // Buscando o usuário pelo email
-    Usuario.findOne({email}, (err, usuario) => {
+    Usuario.findOne({email}, (err, model) => {
         if(err){
             return sendErrorsFromDB(res, err)
         } 
         // verifica se o usuário existe e o método compareSync verifica se a senha esta correta 
-        else if(usuario && bcrypt.compareSync(password, usuario.password)){
+        else if(model && bcrypt.compareSync(password, model.password)){
             
-            // gera um token definindo o tempo de expiração
-            const token = jwt.sign(usuario, env.authSecret, { 
-                expiresIn: "1 day" 
-            })
-            
-            res.status(200).send({ nome:`"${usuario.nome}"`, email:`"${usuario.email}"`, token:`"${token}"`,"message":"Ok" })
+            //gera um token definindo o tempo de expiração
+            const token = jwt.sign(model, env.authSecret, { 
+                 expiresIn: "1 day" 
+             })
+
+            res.status(200).send({ nome:`${model.nome}`, email:`${model.email}`, token:`${token}`, message: "Ok" })
         }
         
         else{
@@ -45,11 +45,11 @@ const login = (req, res, next) => {
 
 const validateToken = (req, res, next) => {
 
-    const token = req.body.token || ''
+    const token = req.headers['authorization'] || ''
     
     // Verifica o token passado no body da requisição e retorna uma resposta se o token está válido ou não
     jwt.verify(token, env.authSecret, function(err, decoded){
-        return res.status(200).send({nome:`"${usuario.nome}"`, email:`"${usuario.email}"`, token:`"${token}"`, valid:`"${!err}"`})
+        return res.status(200).send({token:`${token}`, valid:`${!err}`})
     })
 }
 
@@ -62,9 +62,9 @@ const signup = (req, res, next) => {
     const confirmPassword = req.body.confirm_password || ''
     
     // realiza a validação do e-mail
-    if(!email.math(emailRegex)){
-          return res.status(400).send({ errors: [ "O e-mail informado está inválido" ] })
-    }
+    // if(!email.math(emailRegex)){
+    //       return res.status(400).send({ errors: [ "O e-mail informado está inválido" ] })
+    // }
 
     const salt = bcrypt.genSaltSync()
     
