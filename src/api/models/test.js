@@ -1,5 +1,4 @@
-const restful = require('node-restful')
-const mongoose = restful.mongoose
+const mongoose = require('mongoose');
 
 const testSchema = new mongoose.Schema({
     msg: {type: String, require: true},
@@ -7,4 +6,4 @@ const testSchema = new mongoose.Schema({
     text: {type: String, require: true}
 })
 
-module.exports = restful.model('test',testSchema)
+module.exports = mongoose.model('Test', testSchema)
