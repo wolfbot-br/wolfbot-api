@@ -18,13 +18,15 @@ const saveTeste = (req, res, next) => {
         nome: req.body.nome
     })
 
-    Teste.save((err) => {
+    data.save((err) => {
         if(err){
-            return res.send({error});
+            return res.send({erro});
         }
         else{
             return res.send({msg: ['Ok']})
         }
     })
 }
+
+module.exports = {saveTeste, getTeste}
 

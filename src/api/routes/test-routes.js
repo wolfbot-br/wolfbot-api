@@ -20,5 +20,5 @@ module.exports = function(server){
     // todas as rotas que vierem de /teste/ são rotas abertas para requição
     server.use('/teste', rotas_abertas)
     rotas_abertas.get('/test', teste_controller.getTeste)
-    rotas_abertas.post('/teste',teste_controller.saveTeste)
+    rotas_abertas.post('/teste', teste_controller.saveTeste)
 }
