@@ -15,7 +15,8 @@ app.get('/', (req, res) => {
     res.json({"message": "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."});
 });
 
-require('../api/routes/test-routes')(app);
+require('../api/routes/test.routes')(app);
+require('../api/routes/account.routes')(app);
 
 app.listen(port, function(){
     console.log(`Application is running on port ${port}`)
