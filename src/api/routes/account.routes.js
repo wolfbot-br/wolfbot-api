@@ -1,7 +1,10 @@
 module.exports = function(app){
 
-    const teste_controller = require('../controllers/account.controller');
+    const usuario = require('../controllers/account.controller');
 
-    app.post('/usuario', teste_controller.salvarUsuario);
+    app.post('/usuario', usuario.salvar);
+    app.post('/authenticate', usuario.autenticar)
+    app.get('/dashboard')
+    app.get('/usuarios', usuario.listar);
 
 }

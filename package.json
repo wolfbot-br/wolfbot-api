@@ -5,7 +5,7 @@
   "main": "src/loader.js",
   "scripts": {
     "dev": "nodemon",
-    "production":"pm2 start src/config/server.js --name wolfbot-backend"
+    "production": "pm2 start src/config/server.js --name wolfbot-backend"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,9 @@
     "pm2": "^2.1.5",
     "koa-joi-router": "^5.0.0",
     "koa": "^2.3.0",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "jsonwebtoken": "^5.7.0",
+    "morgan": "^1.7.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
