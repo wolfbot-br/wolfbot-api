@@ -1,7 +1,11 @@
-const mongoose = require('mongoose')
-const config = require('../../config/development')
+const mongoose = require('mongoose');
+const env = require('../../../.env');
 
-mongoose.Promise = global.Promise
+mongoose.Promise = global.Promise;
 
-module.exports = mongoose.connect(`mongodb://${config.mongo.username}:${config.mongo.password}@${config.mongo.connection}/${config.mongo.database}`,
-{auth:{authdb:"admin"}})
+module.exports = mongoose.connect(
+  `mongodb://${env.mongo_development.username}:${env.mongo_development.password}@${
+    env.mongo_development.connection
+  }/${env.mongo_development.database}`,
+  { auth: { authdb: 'admin' } }
+);

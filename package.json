@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "scripts": {
     "dev": "nodemon",
-    "production": "pm2 start src/app.js --name wolfbot-backend"
+    "production": "pm2 start src/app.js --name wolfbot-backend",
+    "format": "prettier --write '**/*.{js,jsx}'"
   },
   "repository": {
     "type": "git",
@@ -19,23 +20,26 @@
   },
   "homepage": "https://github.com/tcc-bot/wofbot-backend#readme",
   "dependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "consign": "^0.1.6",
-    "express-query-int": "^1.0.1",
-    "lodash": "^4.17.4",
-    "mongoose": "^4.7.0",
-    "mongoose-paginate": "^5.0.3",
-    "node-restful": "^0.2.5",
-    "pm2": "^2.1.5",
-    "koa-joi-router": "^5.0.0",
-    "koa": "^2.3.0",
-    "redis": "^2.8.0",
-    "jsonwebtoken": "^7.3.0",
     "bcrypt": "1.0.2",
-    "morgan": "^1.7.0"
+    "body-parser": "^1.18.2",
+    "consign": "^0.1.6",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "express": "^4.16.3",
+    "express-query-int": "^1.0.1",
+    "jsonwebtoken": "^7.3.0",
+    "lodash": "^4.17.5",
+    "mongoose": "^4.13.12",
+    "mongoose-paginate": "^5.0.3",
+    "node-restful": "^0.2.6",
+    "pm2": "^2.10.2",
+    "redis": "^2.8.0"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.17.3",
+    "prettier": "^1.12.1"
   }
 }
