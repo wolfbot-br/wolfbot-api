@@ -1,7 +1,7 @@
 const express = require('express');
 const auth = require('../../config/auth');
 
-module.exports = function(server) {
+module.exports = function (server) {
   const account_controller = require('../controllers/account-controller');
 
   // definindo as rotas protegidas e rotas abertas atraves de um Router

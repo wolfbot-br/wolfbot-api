@@ -32,9 +32,13 @@ const login = (req, res, next) => {
         expiresIn: '1 day'
       });
 
-      res
-        .status(200)
-        .send({ nome: `${model.nome}`, email: `${model.email}`, token: `${token}`, message: 'Ok' });
+      res.status(200).json({
+        nome: `${model.nome}`,
+        email: `${model.email}`,
+        token: `${token}`,
+        message: 'Ok',
+        success: 'true'
+      });
     } else {
       return res.status(400).send({ success: false, message: 'Usuário/Senha Inválidos' });
     }
