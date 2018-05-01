@@ -24,4 +24,8 @@ const saveTeste = (req, res, next) => {
   });
 };
 
-module.exports = { saveTeste, getTeste };
+const index = (req, res, next) => {
+  res.send('<h1>Woofbot backend</h1>')
+}
+
+module.exports = { saveTeste, getTeste, index };

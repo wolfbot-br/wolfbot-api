@@ -1,7 +1,7 @@
 const express = require('express');
 const auth = require('../../config/auth');
 
-module.exports = function(server) {
+module.exports = function (server) {
   const teste_controller = require('../controllers/teste-controller');
 
   // definindo as rotas protegidas e rotas abertas atraves de um Router
@@ -19,4 +19,5 @@ module.exports = function(server) {
   server.use('/teste', rotas_abertas);
   rotas_abertas.get('/test', teste_controller.getTeste);
   rotas_abertas.post('/teste', teste_controller.saveTeste);
+  rotas_abertas.get('/index', teste_controller.index);
 };
