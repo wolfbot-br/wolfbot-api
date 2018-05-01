@@ -29,7 +29,7 @@ const login = (req, res, next) => {
     else if (model && bcrypt.compareSync(password, model.password)) {
       //gera um token definindo o tempo de expiração
       const token = jwt.sign(model, env.authSecret, {
-        expiresIn: '1 day'
+        expiresIn: '1 hour'
       });
 
       res.status(200).json({
@@ -49,7 +49,7 @@ const validateToken = (req, res, next) => {
   const token = req.headers['authorization'] || '';
 
   // Verifica o token passado no body da requisição e retorna uma resposta se o token está válido ou não
-  jwt.verify(token, env.authSecret, function(err, decoded) {
+  jwt.verify(token, env.authSecret, function (err, decoded) {
     return res.status(200).send({ token: `${token}`, valid: `${!err}` });
   });
 };
@@ -63,7 +63,7 @@ const signup = (req, res, next) => {
 
   //realiza a validação do e-mail
   if (!email.match(emailRegex)) {
-    return res.status(400).send({ errors: ['O e-mail informado está inválido'] });
+    return res.status(400).send({ message: 'O e-mail informado está inválido' });
   }
 
   const salt = bcrypt.genSaltSync();
@@ -73,7 +73,7 @@ const signup = (req, res, next) => {
 
   // criptografa a senha de confirmação e já realiza a comparação com a passwordHash
   if (!bcrypt.compareSync(confirmPassword, passwordHash)) {
-    return res.status(400).send({ errors: ['Senhas não conferem'] });
+    return res.status(400).send({ message: 'Senhas não conferem' });
   }
 
   // verifica se o usuário já existe na base antes de cadastrar
@@ -83,7 +83,7 @@ const signup = (req, res, next) => {
     }
     // se existe usuário já devolve a resposta
     else if (usuario) {
-      return res.status(400).send({ errors: ['Usuário já cadastrado'] });
+      return res.status(400).send({ message: 'Usuário já cadastrado' });
     }
     // não existe, realiza o processo de cadastro
     else {
@@ -94,7 +94,7 @@ const signup = (req, res, next) => {
         }
         // Realizou o cadastro com sucesso
         else {
-          return res.status(200).send({ message: ['Usuário cadastrado com sucesso'] });
+          return res.status(200).send({ message: 'Usuário cadastrado com sucesso' });
         }
       });
     }
