@@ -94,7 +94,18 @@ const signup = (req, res, next) => {
         }
         // Realizou o cadastro com sucesso
         else {
-          return res.status(200).send({ message: 'Usuário cadastrado com sucesso' });
+
+          const token = jwt.sign(novo_usuario, env.authSecret, {
+            expiresIn: '1 hour'
+          });
+
+          return res.status(200).json({
+            nome: `${novo_usuario.nome}`,
+            email: `${novo_usuario.email}`,
+            token: `${token}`,
+            message: 'Usuário Cadastrado',
+            success: 'true'
+          });
         }
       });
     }
