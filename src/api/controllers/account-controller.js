@@ -1,12 +1,10 @@
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const Usuario = require('../models/usuario');
 const env = require('../../../.env');
+const account_validations = require('../validations/account-validations');
+const bcrypt = require('bcrypt');
 
-// Expressões regulares para validar email e senha
-const emailRegex = /\S+@\S+\.\S+/;
-//const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/
+const Usuario = require('../models/usuario');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -40,7 +38,7 @@ const login = (req, res, next) => {
         success: 'true'
       });
     } else {
-      return res.status(400).send({ success: false, message: 'Usuário/Senha Inválidos' });
+      return res.status(400).send({ message: 'Email ou senha inválidos', success: false });
     }
   });
 };
@@ -49,67 +47,66 @@ const validateToken = (req, res, next) => {
   const token = req.headers['authorization'] || '';
 
   // Verifica o token passado no body da requisição e retorna uma resposta se o token está válido ou não
-  jwt.verify(token, env.authSecret, function (err, decoded) {
+  jwt.verify(token, env.authSecret, function(err, decoded) {
     return res.status(200).send({ token: `${token}`, valid: `${!err}` });
   });
 };
 
 const signup = (req, res, next) => {
-  // dados relacionados ao cadastro
-  const nome = req.body.nome || '';
-  const email = req.body.email || '';
-  const password = req.body.password || '';
-  const confirmPassword = req.body.confirm_password || '';
-
-  //realiza a validação do e-mail
-  if (!email.match(emailRegex)) {
-    return res.status(400).send({ message: 'O e-mail informado está inválido' });
-  }
+  let user = {
+    nome: req.body.nome || '',
+    email: req.body.email || '',
+    password: req.body.password || '',
+    confirm_password: req.body.confirm_password || '',
+    password_encripted: ''
+  };
 
   const salt = bcrypt.genSaltSync();
+  user.password_encripted = bcrypt.hashSync(user.password, salt);
+  const errors = account_validations.validade_signup(user);
 
-  // irá criptografar a senha que o usuário informou no cadastro
-  const passwordHash = bcrypt.hashSync(password, salt);
+  if (errors.length < 1) {
+    // verifica se o usuário já existe na base antes de cadastrar
+    Usuario.findOne({ email: user.email }, (err, usuario) => {
+      if (err) {
+        return sendErrorsFromDB(res, err);
+      }
+      // se existe o usuário já devolve a resposta
+      else if (usuario) {
+        errors.push(Object.assign({}, {}));
+        return res.status(400).json({
+          errors: [{ message: 'Já existe um usuário cadastrado com esse endereço de email' }]
+        });
+      }
+      // se não existe, então realiza o cadastro
+      else {
+        const novo_usuario = new Usuario({
+          nome: user.nome,
+          email: user.email,
+          password: user.password_encripted
+        });
+        novo_usuario.save(err => {
+          if (err) {
+            return sendErrorsFromDB(res, req);
+          } else {
+            const token = jwt.sign(novo_usuario, env.authSecret, {
+              expiresIn: '1 hour'
+            });
 
-  // criptografa a senha de confirmação e já realiza a comparação com a passwordHash
-  if (!bcrypt.compareSync(confirmPassword, passwordHash)) {
-    return res.status(400).send({ message: 'Senhas não conferem' });
+            return res.status(200).json({
+              nome: `${novo_usuario.nome}`,
+              email: `${novo_usuario.email}`,
+              token: `${token}`,
+              message: 'Usuário Cadastrado',
+              success: 'true'
+            });
+          }
+        });
+      }
+    });
+  } else {
+    res.status(400).json({ errors });
   }
-
-  // verifica se o usuário já existe na base antes de cadastrar
-  Usuario.findOne({ email }, (err, usuario) => {
-    if (err) {
-      return sendErrorsFromDB(res, err);
-    }
-    // se existe usuário já devolve a resposta
-    else if (usuario) {
-      return res.status(400).send({ message: 'Usuário já cadastrado' });
-    }
-    // não existe, realiza o processo de cadastro
-    else {
-      const novo_usuario = new Usuario({ nome, email, password: passwordHash });
-      novo_usuario.save(err => {
-        if (err) {
-          return sendErrorsFromDB(res, req);
-        }
-        // Realizou o cadastro com sucesso
-        else {
-
-          const token = jwt.sign(novo_usuario, env.authSecret, {
-            expiresIn: '1 hour'
-          });
-
-          return res.status(200).json({
-            nome: `${novo_usuario.nome}`,
-            email: `${novo_usuario.email}`,
-            token: `${token}`,
-            message: 'Usuário Cadastrado',
-            success: 'true'
-          });
-        }
-      });
-    }
-  });
 };
 
 // Exportando todos os métodos criados referente ao processo de autenticação

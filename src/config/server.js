@@ -13,6 +13,7 @@ consign()
   .include('/src/api/routes')
   .then('/src/infrastructure')
   .then('/src/api/controllers')
+  .then('/src/api/validations')
   .into(app);
 
 module.exports = app;

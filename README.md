@@ -1,1 +1,1 @@
-# WolfBot - Backend
+# WolfBot - API
