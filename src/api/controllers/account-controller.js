@@ -38,7 +38,9 @@ const login = (req, res, next) => {
         success: 'true'
       });
     } else {
-      return res.status(400).send({ message: 'Email ou senha inválidos', success: false });
+      return res
+        .status(400)
+        .json({ errors: [{ message: 'Email ou senha inválidos' }], success: false });
     }
   });
 };
