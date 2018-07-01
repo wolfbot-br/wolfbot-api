@@ -10,9 +10,11 @@ app.use(bodyParser.json());
 app.use(allowCors);
 
 consign()
-  .include('/src/infraestrutura/index.js')
+  .include('/src/infraestrutura/mongo/index.js')
   .then('/src/api/account')
   .then('/src/api/index')
+  .then('/src/api/util')
+  .then('/src/api/bittrex')
   .into(app);
 
 module.exports = app;
