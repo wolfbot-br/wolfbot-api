@@ -10,10 +10,9 @@ app.use(bodyParser.json());
 app.use(allowCors);
 
 consign()
-  .include('/src/api/routes')
-  .then('/src/infrastructure')
-  .then('/src/api/controllers')
-  .then('/src/api/validations')
+  .include('/src/infraestrutura/index.js')
+  .then('/src/api/account')
+  .then('/src/api/index')
   .into(app);
 
 module.exports = app;

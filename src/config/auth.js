@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     }
 
     // realiza a verificação do Token
-    jwt.verify(token, env.authSecret, function(err, decoded) {
+    jwt.verify(token, env.authSecret, function (err, decoded) {
       if (err) {
         return res.status(403).send({ errors: ['Falha ao autenticar o token'] });
       } else {

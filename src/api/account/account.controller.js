@@ -1,10 +1,9 @@
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const env = require('../../../.env');
-const account_validations = require('../validations/account-validations');
+const accountValidation = require('../account/account.validation');
 const bcrypt = require('bcrypt');
-
-const Usuario = require('../models/usuario');
+const usuario = require('../../infraestrutura/mongo/models/usuario.model');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -49,7 +48,7 @@ const validateToken = (req, res, next) => {
   const token = req.headers['authorization'] || '';
 
   // Verifica o token passado no body da requisição e retorna uma resposta se o token está válido ou não
-  jwt.verify(token, env.authSecret, function(err, decoded) {
+  jwt.verify(token, env.authSecret, function (err, decoded) {
     return res.status(200).send({ token: `${token}`, valid: `${!err}` });
   });
 };
@@ -65,7 +64,7 @@ const signup = (req, res, next) => {
 
   const salt = bcrypt.genSaltSync();
   user.password_encripted = bcrypt.hashSync(user.password, salt);
-  const errors = account_validations.validade_signup(user);
+  const errors = accountValidation.validade_signup(user);
 
   if (errors.length < 1) {
     // verifica se o usuário já existe na base antes de cadastrar
