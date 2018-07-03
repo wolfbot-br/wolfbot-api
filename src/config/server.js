@@ -14,7 +14,7 @@ consign()
   .then('/src/api/account')
   .then('/src/api/index')
   .then('/src/api/util')
-  .then('/src/api/bittrex')
+  .then('/src/api/exchanges')
   .into(app);
 
 module.exports = app;

@@ -1,5 +1,5 @@
 const express = require('express');
-const auth = require('../../config/auth');
+const auth = require('../../../config/auth');
 
 module.exports = function (server) {
     const bittrexController = require('../bittrex/bittrex.controller');
