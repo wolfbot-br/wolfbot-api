@@ -10,7 +10,6 @@ module.exports = function (server) {
     protectedRoutes.use(auth);
 
     server.use('/api', protectedRoutes);
-
     server.use('/bittrex', openRoutes);
 
     openRoutes.get('/structure', bittrexController.structure);

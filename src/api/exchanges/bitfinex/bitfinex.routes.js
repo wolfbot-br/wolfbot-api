@@ -10,7 +10,6 @@ module.exports = function (server) {
     protectedRoutes.use(auth);
 
     server.use('/api', protectedRoutes);
-
     server.use('/bitfinex', openRoutes);
 
     openRoutes.get('/structure', bittrexController.structure);
@@ -20,5 +19,6 @@ module.exports = function (server) {
     openRoutes.get('/getMarketStructureBySimbol', bittrexController.getMarketStructureBySimbol);
     openRoutes.get('/getMarketIdBySimbol', bittrexController.getMarketIdBySimbol);
     openRoutes.get('/fetchOrderBookBySymbol', bittrexController.fetchOrderBookBySymbol)
-
+    openRoutes.get('/fetchTicker', bittrexController.fetchTicker)
+    openRoutes.get('/fetchTickers', bittrexController.fetchTickers)
 };
