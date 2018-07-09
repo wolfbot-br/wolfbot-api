@@ -19,4 +19,5 @@ module.exports = function (server) {
   openRoutes.post('/login', accountController.login);
   openRoutes.post('/signup', accountController.signup);
   openRoutes.post('/validateToken', accountController.validateToken);
+  openRoutes.post('/passwordRecovery', accountController.passwordRecovery);
 };

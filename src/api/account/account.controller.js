@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../../../.env');
 const accountValidation = require('../account/account.validation');
 const bcrypt = require('bcrypt');
-const usuario = require('../../infraestrutura/mongo/models/usuario.model');
+const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -110,5 +110,26 @@ const signup = (req, res, next) => {
   }
 };
 
+const passwordRecovery = (req, res, next) => {
+  const email = req.body.email;
+  Usuario.findOne({ email: email }, (err, usuario) => {
+    if (err) {
+      return sendErrorsFromDB(res, err);
+    }
+    else if (usuario) {
+      return res.status(200).json({
+        valid: true
+      });
+    }
+    else {
+      return res.status(406).json({
+        valid: false,
+        errors: { message: 'Não existe usuário cadastrado com esse email' }
+      });
+    }
+  });
+};
+
+
 // Exportando todos os métodos criados referente ao processo de autenticação
-module.exports = { login, signup, validateToken };
+module.exports = { login, signup, validateToken, passwordRecovery };

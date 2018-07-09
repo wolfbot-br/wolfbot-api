@@ -2,7 +2,7 @@
   "name": "wofbot-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "./src/app.js",
   "scripts": {
     "dev": "nodemon",
     "start": "pm2 start src/app.js --name wolfbot-backend",
