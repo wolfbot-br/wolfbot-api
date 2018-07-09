@@ -1,9 +1,11 @@
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const env = require('../../../.env');
-const accountValidation = require('../account/account.validation');
 const bcrypt = require('bcrypt');
+
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
+const accountValidation = require('../account/account.validation');
+const accountService = require('../account/account.service');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -112,22 +114,31 @@ const signup = (req, res, next) => {
 
 const passwordRecovery = (req, res, next) => {
   const email = req.body.email;
-  Usuario.findOne({ email: email }, (err, usuario) => {
-    if (err) {
-      return sendErrorsFromDB(res, err);
-    }
-    else if (usuario) {
-      return res.status(200).json({
-        valid: true
-      });
-    }
-    else {
-      return res.status(406).json({
-        valid: false,
-        errors: { message: 'Não existe usuário cadastrado com esse email' }
-      });
-    }
-  });
+  if (email) {
+    Usuario.findOne({ email: email }, (err, usuario) => {
+      if (err) {
+        return sendErrorsFromDB(res, err);
+      }
+      else if (usuario) {
+        let emailSend = accountService.sendEmailPasswordRecovery(usuario);
+        return res.status(200).json({
+          valid: true
+        });
+      }
+      else {
+        return res.status(406).json({
+          valid: false,
+          errors: { message: 'Não existe usuário cadastrado com esse email' }
+        });
+      }
+    });
+  }
+  else {
+    return res.status(406).json({
+      valid: false,
+      errors: { message: 'Insira um email válido' }
+    });
+  }
 };
 
 

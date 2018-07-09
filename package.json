@@ -33,10 +33,14 @@
     "express-query-int": "^1.0.1",
     "jsonwebtoken": "^7.3.0",
     "lodash": "^4.17.5",
+    "moment": "^2.22.2",
     "mongoose": "^4.13.12",
     "mongoose-paginate": "^5.0.3",
     "node-restful": "^0.2.6",
+    "nodemailer": "^4.6.7",
+    "nodemailer-smtp-transport": "^2.7.4",
     "pm2": "^2.10.2",
+    "randomstring": "^1.1.5",
     "redis": "^2.8.0"
   },
   "devDependencies": {
