@@ -15,6 +15,7 @@ const sendErrorsFromDB = (res, dbErrors) => {
 };
 
 const login = (req, res, next) => {
+
   // dados relacionados ao login
   const email = req.body.email || '';
   const password = req.body.password || '';
@@ -69,11 +70,13 @@ const signup = (req, res, next) => {
   const errors = accountValidation.validade_signup(user);
 
   if (errors.length < 1) {
+
     // verifica se o usuário já existe na base antes de cadastrar
     Usuario.findOne({ email: user.email }, (err, usuario) => {
       if (err) {
         return sendErrorsFromDB(res, err);
       }
+
       // se existe o usuário já devolve a resposta
       else if (usuario) {
         errors.push(Object.assign({}, {}));
@@ -81,6 +84,7 @@ const signup = (req, res, next) => {
           errors: [{ message: 'Já existe um usuário cadastrado com esse endereço de email' }]
         });
       }
+
       // se não existe, então realiza o cadastro
       else {
         const novo_usuario = new Usuario({
@@ -114,33 +118,30 @@ const signup = (req, res, next) => {
 
 const passwordRecovery = (req, res, next) => {
   const email = req.body.email;
+
   if (email) {
     Usuario.findOne({ email: email }, (err, usuario) => {
       if (err) {
         return sendErrorsFromDB(res, err);
       }
       else if (usuario) {
-        let emailSend = accountService.sendEmailPasswordRecovery(usuario);
-        return res.status(200).json({
-          valid: true
-        });
+        accountService.sendEmailPasswordRecovery(usuario, res);
       }
       else {
         return res.status(406).json({
-          valid: false,
-          errors: { message: 'Não existe usuário cadastrado com esse email' }
+          success: false,
+          errors: { message: 'Não existe usuário cadastrado com esse email!' }
         });
       }
     });
   }
   else {
     return res.status(406).json({
-      valid: false,
-      errors: { message: 'Insira um email válido' }
+      success: false,
+      errors: { message: 'É necessário informar o email!' }
     });
   }
 };
-
 
 // Exportando todos os métodos criados referente ao processo de autenticação
 module.exports = { login, signup, validateToken, passwordRecovery };

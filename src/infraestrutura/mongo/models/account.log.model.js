@@ -6,7 +6,8 @@ const accountLogSchema = new mongoose.Schema({
     emailConfirmado: { type: Boolean, require: true },
     dtCriacao: { type: Date, require: true },
     dtConfirmacao: { type: Date, default: null },
-    logTipo: { type: String, default: true }
+    logTipo: { type: String, default: true },
+    pendente: { type: Boolean, default: true }
 });
 
 module.exports = mongoose.model('account-logs', accountLogSchema);

@@ -7,20 +7,28 @@ const env = require('../../../.env');
 
 const AccountLog = require('../../infraestrutura/mongo/models/account.log.model');
 
-const sendEmailPasswordRecovery = (usuario) => {
+const sendEmailPasswordRecovery = (usuario, res) => {
 
+    const hash = randStr.generate(32);
     const log = new AccountLog({
         usuario: usuario.email,
-        hash: randStr.generate(32),
+        hash: hash,
         emailConfirmado: false,
         dtCriacao: moment().format(),
         dtConfirmacao: null,
-        logTipo: 'Password Recovery'
+        logTipo: 'Recuperação de Senha',
+        pendente: true
     });
 
     log.save(err => {
         if (err) {
-            console.log('Error');
+            return ({
+                errors:
+                {
+                    message: 'Erro ao estabelecer conexão com o mongo'
+                },
+                sucess: false
+            });
         }
         else {
             const $from = env.gmail_account.email;
@@ -47,17 +55,28 @@ const sendEmailPasswordRecovery = (usuario) => {
                 to: destinatario,
                 subject: 'Wolfbot - Recuperação de Senha',
                 html:
-                    `<h1>Olá, ${usuario.nome}</h1>.<br />` +
-                    `<h4>Link para recuperação da senha,` +
-                    `<a href="http://localhost:3000/account/login"> Clique aqui para redefinir a senha</a></h4>`
+                    `<h2 style='text-align:center'>Wolfbot</h2><br />` +
+                    `<h3>Olá, ${usuario.nome}, esqueceu sua senha?</h3>.<br />` +
+                    `<h3>Se você gostaria de redefinir sua senha, clique no link abaixo ou copie e cole o link no seu navegador:<br />` +
+                    `<a href = "http://localhost:3000/#/changepassword?parameter=${hash}"Clique aqui para redefinir a senha</a><br/>` +
+                    `Note que este link só pode ser usado uma vez><br />` +
+                    `Se você não deseja redefinir sua senha, ignore esta mensagem e sua senha não será alterada</h3 >`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log(error);
+                    return ({
+                        errors:
+                        {
+                            message: 'Erro ao enviar o email para redefinição de senha'
+                        },
+                        sucess: false
+                    });
                 }
                 else {
-                    console.log('Email enviado' + info.response);
+                    return res.status(200).json({
+                        valid: true
+                    });
                 }
             });
         }
