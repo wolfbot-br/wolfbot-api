@@ -101,6 +101,8 @@ const fetchBalance = async (req, res, next) => {
 
     try {
 
+        let bittrex = new ccxt.bittrex();
+
         params = {
             id_usuario: req.query.id_usuario,
             id_exchange: req.query.id_exchange
@@ -113,6 +115,8 @@ const fetchBalance = async (req, res, next) => {
             .find({ "usuario.id_usuario": params.id_usuario })
             .where({ "exchange.id_exchange": params.id_exchange });
 
+        console.log(credenciais);
+
         totalCredencial = Object.keys(credenciais).length;
         bittrexValidation.validarRequisitosExchange(totalCredencial);
 
@@ -121,7 +125,6 @@ const fetchBalance = async (req, res, next) => {
             bittrex.secret = credenciais[i].secret;
         }
 
-        let bittrex = new ccxt.bittrex();
         let saldo = await bittrex.fetchBalance();
         res.status(200).json({
             data: saldo
