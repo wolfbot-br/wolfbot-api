@@ -1,4 +1,5 @@
 const ccxt = require('ccxt');
+const exchangeToken = require('../../../infraestrutura/mongo/models/exchangesTokens.model');
 
 // # PUBLIC METHODS /
 
