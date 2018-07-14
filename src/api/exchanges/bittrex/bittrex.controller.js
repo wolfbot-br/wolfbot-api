@@ -1,6 +1,6 @@
 const ccxt = require('ccxt');
 const exchangeToken = require('../../../infraestrutura/mongo/models/exchangesTokens.model');
-const bittrexService = require('../bittrex/bittrex.validation');
+const bittrexValidation = require('../bittrex/bittrex.validation');
 
 // # PUBLIC METHODS /
 
@@ -106,7 +106,7 @@ const fetchBalance = async (req, res, next) => {
             id_exchange: req.query.id_exchange
         }
 
-        bittrexService.validarDados(params);
+        bittrexValidation.validarDados(params);
 
         //Um dos melhores jeitos de fazer um select
         const credenciais = await exchangeToken
@@ -114,7 +114,7 @@ const fetchBalance = async (req, res, next) => {
             .where({ "exchange.id_exchange": params.id_exchange });
 
         totalCredencial = Object.keys(credenciais).length;
-        bittrexService.validarRequisitosExchange(totalCredencial);
+        bittrexValidation.validarRequisitosExchange(totalCredencial);
 
         for (i = 0; i < totalCredencial; i++) {
             bittrex.apiKey = credenciais[i].api_key;

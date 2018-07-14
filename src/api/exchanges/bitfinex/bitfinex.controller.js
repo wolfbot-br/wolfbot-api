@@ -1,6 +1,6 @@
 const ccxt = require('ccxt');
 const exchangeToken = require('../../../infraestrutura/mongo/models/exchangesTokens.model');
-const bitfinexService = require('../bitfinex/bitfinex.validation');
+const bitfinexValidation = require('../bitfinex/bitfinex.validation');
 
 // # PUBLIC METHODS /
 
@@ -106,7 +106,7 @@ const fetchBalance = async (req, res, next) => {
             id_exchange: req.query.id_exchange
         }
 
-        bitfinexService.validarDados(params);
+        bitfinexValidation.validarDados(params);
 
         //Um dos melhores jeitos de fazer um select
         const credenciais = await exchangeToken
@@ -114,7 +114,7 @@ const fetchBalance = async (req, res, next) => {
             .where({ "exchange.id_exchange": params.id_exchange });
 
         totalCredencial = Object.keys(credenciais).length;
-        bitfinexService.validarRequisitosExchange(totalCredencial);
+        bitfinexValidation.validarRequisitosExchange(totalCredencial);
 
         for (i = 0; i < totalCredencial; i++) {
             bitfinex.apiKey = credenciais[i].api_key;
