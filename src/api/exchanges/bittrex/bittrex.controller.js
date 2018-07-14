@@ -115,8 +115,6 @@ const fetchBalance = async (req, res, next) => {
             .find({ "usuario.id_usuario": params.id_usuario })
             .where({ "exchange.id_exchange": params.id_exchange });
 
-        console.log(credenciais);
-
         totalCredencial = Object.keys(credenciais).length;
         bittrexValidation.validarRequisitosExchange(totalCredencial);
 
