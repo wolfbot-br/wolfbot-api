@@ -46,7 +46,6 @@ const post = (req, res, next) => {
         }
     }
 
-
     const nova_exchange = new exchange({
         nome: ex.nome
     });

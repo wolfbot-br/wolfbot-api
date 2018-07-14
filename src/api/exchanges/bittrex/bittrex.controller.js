@@ -1,5 +1,6 @@
 const ccxt = require('ccxt');
 const exchangeToken = require('../../../infraestrutura/mongo/models/exchangesTokens.model');
+const bittrexService = require('../bittrex/bittrex.validation');
 
 // # PUBLIC METHODS /
 
@@ -81,7 +82,7 @@ const fetchTickers = async (req, res, next) => {
 
 // Busca um ticker específico
 const fetchTicker = async (req, res, next) => {
-    let bitfinex = new ccxt.bitfinex();
+
     var symbol = req.query.symbol;
 
     if (!symbol) {
@@ -91,35 +92,47 @@ const fetchTicker = async (req, res, next) => {
         });
     }
 
+    let bitfinex = new ccxt.bitfinex();
     let ticker = await bitfinex.fetchTicker(symbol);
-
     res.status(200).json({ data: ticker });
 }
 
 const fetchBalance = async (req, res, next) => {
 
-    params = {
-        id_usuario: req.query.id_usuario,
-        id_exchange: req.query.id_exchange
+    try {
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange
+        }
+
+        bittrexService.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .find({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        totalCredencial = Object.keys(credenciais).length;
+        bittrexService.validarRequisitosExchange(totalCredencial);
+
+        for (i = 0; i < totalCredencial; i++) {
+            bittrex.apiKey = credenciais[i].api_key;
+            bittrex.secret = credenciais[i].secret;
+        }
+
+        let bittrex = new ccxt.bittrex();
+        let saldo = await bittrex.fetchBalance();
+        res.status(200).json({
+            data: saldo
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
     }
-
-    //Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
-        .find({ "usuario.id_usuario": params.id_usuario })
-        .where({ "exchange.id_exchange": params.id_exchange });
-
-    let bittrex = new ccxt.bittrex();
-
-    totalCredencial = Object.keys(credenciais).length;
-    for (i = 0; i < totalCredencial; i++) {
-        bittrex.apiKey = credenciais[i].api_key;
-        bittrex.secret = credenciais[i].secret;
-    }
-
-    let saldo = await bittrex.fetchBalance();
-    res.status(200).json({
-        data: saldo
-    });
 }
 
 module.exports = {
