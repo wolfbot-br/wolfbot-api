@@ -1,5 +1,6 @@
 const ccxt = require('ccxt');
 const exchangeToken = require('../../../infraestrutura/mongo/models/exchangesTokens.model');
+const bitfinexService = require('../bitfinex/bitfinex.validation');
 
 // # PUBLIC METHODS /
 
@@ -81,8 +82,6 @@ const fetchTickers = async (req, res, next) => {
 
 // Busca um ticker específico
 const fetchTicker = async (req, res, next) => {
-    let bitfinex = new ccxt.bitfinex();
-    res.status(200).json(bitfinex);
     var symbol = req.query.symbol;
 
     if (!symbol) {
@@ -92,6 +91,7 @@ const fetchTicker = async (req, res, next) => {
         });
     }
 
+    let bitfinex = new ccxt.bitfinex();
     let ticker = await bitfinex.fetchTicker(symbol);
     res.status(200).json({ data: ticker });
 }
@@ -99,28 +99,40 @@ const fetchTicker = async (req, res, next) => {
 // Retorna o saldo da conta da bitfinex
 const fetchBalance = async (req, res, next) => {
 
-    params = {
-        id_usuario: req.query.id_usuario,
-        id_exchange: req.query.id_exchange
+    try {
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange
+        }
+
+        bitfinexService.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .find({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        totalCredencial = Object.keys(credenciais).length;
+        bitfinexService.validarRequisitosExchange(totalCredencial);
+
+        for (i = 0; i < totalCredencial; i++) {
+            bitfinex.apiKey = credenciais[i].api_key;
+            bitfinex.secret = credenciais[i].secret;
+        }
+
+        let bitfinex = new ccxt.bitfinex();
+        let saldo = await bitfinex.fetchBalance();
+        res.status(200).json({
+            data: saldo
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
     }
-
-    //Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
-        .find({ "usuario.id_usuario": params.id_usuario })
-        .where({ "exchange.id_exchange": params.id_exchange });
-
-    let bitfinex = new ccxt.bitfinex();
-
-    totalCredencial = Object.keys(credenciais).length;
-    for (i = 0; i < totalCredencial; i++) {
-        bitfinex.apiKey = credenciais[i].api_key;
-        bitfinex.secret = credenciais[i].secret;
-    }
-
-    let saldo = await bitfinex.fetchBalance();
-    res.status(200).json({
-        data: saldo
-    });
 }
 
 module.exports = {
