@@ -101,6 +101,8 @@ const fetchBalance = async (req, res, next) => {
 
     try {
 
+        let bitfinex = new ccxt.bitfinex();
+
         params = {
             id_usuario: req.query.id_usuario,
             id_exchange: req.query.id_exchange
@@ -121,7 +123,6 @@ const fetchBalance = async (req, res, next) => {
             bitfinex.secret = credenciais[i].secret;
         }
 
-        let bitfinex = new ccxt.bitfinex();
         let saldo = await bitfinex.fetchBalance();
         res.status(200).json({
             data: saldo
