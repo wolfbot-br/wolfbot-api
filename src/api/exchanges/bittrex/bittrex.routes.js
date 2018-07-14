@@ -21,4 +21,5 @@ module.exports = function (server) {
     openRoutes.get('/fetchOrderBookBySymbol', bittrexController.fetchOrderBookBySymbol);
     openRoutes.get('/ticker', bittrexController.fetchTicker);
     openRoutes.get('/tickers', bittrexController.fetchTickers);
+    openRoutes.get('/saldo', bittrexController.fetchBalance);
 };

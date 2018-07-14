@@ -5,21 +5,21 @@ const ccxt = require('ccxt');
 const structure = async (req, res, next) => {
 
     let bittrex = new ccxt.bittrex();
-    res.status(200).json({ Bittrex: bittrex });
+    res.status(200).json({ data: bittrex });
 }
 
 const currencies = async (req, res, next) => {
 
     let bittrex = new ccxt.bittrex();
     let currencies = await bittrex.fetchCurrencies();
-    res.status(200).json({ currencies: currencies });
+    res.status(200).json({ data: currencies });
 }
 
 const loadMarkets = async (req, res, next) => {
 
     let bittrex = new ccxt.bittrex();
     let markets = await bittrex.loadMarkets(true);
-    res.status(200).json({ bittrex: markets });
+    res.status(200).json({ data: markets });
 }
 
 // Retorna todos aos tipos de cryptomoedas que a exchange trabalha
@@ -28,7 +28,7 @@ const symbols = async (req, res, next) => {
     let bittrex = new ccxt.bittrex();
     let markets = await bittrex.loadMarkets(true);
     let symbols = bittrex.symbols;
-    res.status(200).json({ symbols: symbols });
+    res.status(200).json({ data: symbols });
 }
 
 const getMarketStructureBySimbol = async (req, res, next) => {
@@ -42,7 +42,7 @@ const getMarketStructureBySimbol = async (req, res, next) => {
 
     let marketsStructure = bittrex.market(symbol);
 
-    res.status(200).json({ market: marketsStructure });
+    res.status(200).json({ data: marketsStructure });
 }
 
 const getMarketIdBySimbol = async (req, res, next) => {
@@ -56,7 +56,7 @@ const getMarketIdBySimbol = async (req, res, next) => {
 
     let marketsId = bittrex.marketId(marketSymbol);
 
-    res.status(200).json({ Id: marketsId });
+    res.status(200).json({ data: marketsId });
 }
 
 const fetchOrderBookBySymbol = async (req, res, next) => {
@@ -68,14 +68,14 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
 
     let orderBook = await bittrex.fetchOrderBook(marketSymbol);
 
-    res.status(200).json({ orderBook: orderBook });
+    res.status(200).json({ data: orderBook });
 }
 
 // Busca todos os tickes
 const fetchTickers = async (req, res, next) => {
     let bitfinex = new ccxt.bitfinex();
     let tickers = await bitfinex.fetchTickers();
-    res.status(200).json({ tick: tickers });
+    res.status(200).json({ data: tickers });
 }
 
 // Busca um ticker específico
@@ -92,10 +92,34 @@ const fetchTicker = async (req, res, next) => {
 
     let ticker = await bitfinex.fetchTicker(symbol);
 
-    res.status(200).json({ tick: ticker });
-
+    res.status(200).json({ data: ticker });
 }
 
+const fetchBalance = async (req, res, next) => {
+
+    params = {
+        id_usuario: req.query.id_usuario,
+        id_exchange: req.query.id_exchange
+    }
+
+    //Um dos melhores jeitos de fazer um select
+    const credenciais = await exchangeToken
+        .find({ "usuario.id_usuario": params.id_usuario })
+        .where({ "exchange.id_exchange": params.id_exchange });
+
+    let bittrex = new ccxt.bittrex();
+
+    totalCredencial = Object.keys(credenciais).length;
+    for (i = 0; i < totalCredencial; i++) {
+        bittrex.apiKey = credenciais[i].api_key;
+        bittrex.secret = credenciais[i].secret;
+    }
+
+    let saldo = await bittrex.fetchBalance();
+    res.status(200).json({
+        data: saldo
+    });
+}
 
 module.exports = {
     loadMarkets,
@@ -106,5 +130,6 @@ module.exports = {
     structure,
     fetchOrderBookBySymbol,
     fetchTickers,
-    fetchTicker
+    fetchTicker,
+    fetchBalance
 };
