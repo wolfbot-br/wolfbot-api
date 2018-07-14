@@ -1,5 +1,4 @@
 const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model');
-const bcrypt = require('bcrypt');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -38,9 +37,6 @@ const index = (req, res, next) => {
             "nome_exchange": ""
 */
 const post = (req, res, next) => {
-
-    // criptografando as credenciais
-    // const salt = bcrypt.genSaltSync();
 
     let ex = {
         apiKey: req.body.key,

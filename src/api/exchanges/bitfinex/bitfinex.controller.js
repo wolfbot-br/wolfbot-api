@@ -100,11 +100,14 @@ const fetchTicker = async (req, res, next) => {
 const fetchBalance = async (req, res, next) => {
 
     params = {
-        id_usuario: req.query.id_usuario
+        id_usuario: req.query.id_usuario,
+        id_exchange: req.query.id_exchange
     }
 
     //Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken.find({ "usuario.id_usuario": params.id_usuario });
+    const credenciais = await exchangeToken
+        .find({ "usuario.id_usuario": params.id_usuario })
+        .where({ "exchange.id_exchange": params.id_exchange });
 
     let bitfinex = new ccxt.bitfinex();
 
