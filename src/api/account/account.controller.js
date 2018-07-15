@@ -143,5 +143,27 @@ const passwordRecovery = (req, res, next) => {
   }
 };
 
-// Exportando todos os métodos criados referente ao processo de autenticação
-module.exports = { login, signup, validateToken, passwordRecovery };
+const changePasswordPermition = (req, res, next) => {
+
+  const changePasswordHash = req.headers.changepasswordhash || '';
+  if (changePasswordHash) {
+
+    accountService.findLogChangePassword(changePasswordHash, res);
+
+  }
+  else {
+    return res.status(406).json({
+      success: false,
+      errors: { message: 'Solicitação Inválida' }
+    });
+  }
+};
+
+module.exports =
+  {
+    login,
+    signup,
+    validateToken,
+    passwordRecovery,
+    changePasswordPermition
+  };

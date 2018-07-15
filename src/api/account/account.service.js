@@ -7,6 +7,7 @@ const env = require('../../../.env');
 
 const AccountLog = require('../../infraestrutura/mongo/models/account.log.model');
 
+// Realiza o envio do email em cada solicitação de recuperação de senha
 const sendEmailPasswordRecovery = (usuario, res) => {
 
     const hash = randStr.generate(32);
@@ -81,6 +82,21 @@ const sendEmailPasswordRecovery = (usuario, res) => {
             });
         }
     })
-}
+};
 
-module.exports = { sendEmailPasswordRecovery };
+const findLogChangePassword = (ChangePasswordHash, res) => {
+
+    AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
+        if (error) {
+            return res.status(406).json({
+                sucess: false,
+                errors: { message: 'ChangePasswordHash não se encontra no mongo' }
+            });
+        }
+        else {
+            return res.status(200).json(model);
+        }
+    });
+};
+
+module.exports = { sendEmailPasswordRecovery, findLogChangePassword };
