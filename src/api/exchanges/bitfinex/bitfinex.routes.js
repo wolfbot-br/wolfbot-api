@@ -18,7 +18,8 @@ module.exports = function (server) {
     openRoutes.get('/loadmarkets', bittrexController.loadMarkets);
     openRoutes.get('/getMarketStructureBySimbol', bittrexController.getMarketStructureBySimbol);
     openRoutes.get('/getMarketIdBySimbol', bittrexController.getMarketIdBySimbol);
-    openRoutes.get('/fetchOrderBookBySymbol', bittrexController.fetchOrderBookBySymbol)
-    openRoutes.get('/fetchTicker', bittrexController.fetchTicker)
-    openRoutes.get('/fetchTickers', bittrexController.fetchTickers)
+    openRoutes.get('/fetchOrderBookBySymbol', bittrexController.fetchOrderBookBySymbol);
+    openRoutes.get('/ticker', bittrexController.fetchTicker);
+    openRoutes.get('/tickers', bittrexController.fetchTickers);
+    openRoutes.get('/saldo', bittrexController.fetchBalance);
 };
