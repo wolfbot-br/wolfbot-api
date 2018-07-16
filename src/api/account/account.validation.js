@@ -22,4 +22,18 @@ const validade_signup = usuario => {
   return errors;
 };
 
-module.exports = { validade_signup };
+const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
+  const errors = [];
+  if (password != passwordConfirm)
+    errors.push(Object.assign({}, { message: 'A senha e a senha de confirmação não conferem' }));
+  if (changePasswordHash == '' || changePasswordHash == null || changePasswordHash == undefined)
+    errors.push(Object.assign({}, { message: 'Solicitação Inválida' }));
+  if (password == '' || password == undefined)
+    errors.push(Object.assign({}, { message: 'A senha é obrigatória' }))
+  if (passwordConfirm == '' || passwordConfirm == undefined)
+    errors.push(Object.assign({}, { message: 'A senha de confirmação é obrigatória' }))
+
+  return errors;
+}
+
+module.exports = { validade_signup, changePasswordValidation };

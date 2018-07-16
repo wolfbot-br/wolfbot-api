@@ -15,7 +15,7 @@ const sendEmailPasswordRecovery = (usuario, res) => {
         usuario: usuario.email,
         hash: hash,
         emailConfirmado: false,
-        dtCriacao: moment().format(),
+        dtCriacao: moment().subtract(3, 'hours').format(),
         dtConfirmacao: null,
         logTipo: 'Recuperação de Senha',
         pendente: true
@@ -59,8 +59,8 @@ const sendEmailPasswordRecovery = (usuario, res) => {
                     `<h2 style='text-align:center'>Wolfbot</h2><br />` +
                     `<h3>Olá, ${usuario.nome}, esqueceu sua senha?</h3>.<br />` +
                     `<h3>Se você gostaria de redefinir sua senha, clique no link abaixo ou copie e cole o link no seu navegador:<br />` +
-                    `<a href = "http://localhost:3000/#/changepassword?parameter=${hash}"Clique aqui para redefinir a senha</a><br/>` +
-                    `Note que este link só pode ser usado uma vez><br />` +
+                    `<a href = "http://localhost:3000/#/changepassword?parameter=${hash}">Clique aqui para redefinir a senha</a><br/>` +
+                    `Note que este link só pode ser usado uma vez<br />` +
                     `Se você não deseja redefinir sua senha, ignore esta mensagem e sua senha não será alterada</h3 >`
             };
 
@@ -85,16 +85,37 @@ const sendEmailPasswordRecovery = (usuario, res) => {
 };
 
 const findLogChangePassword = (ChangePasswordHash, res) => {
-
     AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
         if (error) {
-            return res.status(406).json({
+            return res.status(404).json({
                 sucess: false,
-                errors: { message: 'ChangePasswordHash não se encontra no mongo' }
+                errors: [{ message: 'ChangePasswordHash não se encontra no mongo' }]
             });
         }
         else {
-            return res.status(200).json(model);
+            AccountLog.update({ usuario: model.usuario, hash: { $ne: model.hash } }, { pendente: false }, { multi: true },
+                (error, response) => {
+                    if (error) {
+                        return res.status(400).json({
+                            sucess: false,
+                            errors: [{ message: 'Ops! Ocorreu um erro' }]
+                        });
+                    }
+                    else {
+                        let dataAtual = moment().format('l');
+                        let dataLog = model.dtCriacao.getMonth() + 1 +
+                            "/" + model.dtCriacao.getDate() +
+                            "/" + model.dtCriacao.getFullYear();
+                        if (dataAtual == dataLog) {
+                            return res.status(200).json({
+                                success: true,
+                                message: 'Pode Alterar a Senha!',
+                                hash: model.hash
+                            });
+                        }
+                    }
+                }
+            )
         }
     });
 };
