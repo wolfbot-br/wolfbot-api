@@ -2,10 +2,12 @@ const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const env = require('../../../.env');
 const bcrypt = require('bcrypt');
+const moment = require('moment');
 
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
 const accountValidation = require('../account/account.validation');
 const accountService = require('../account/account.service');
+const AccountLog = require('../../infraestrutura/mongo/models/account.log.model');
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -97,7 +99,7 @@ const signup = (req, res, next) => {
             return sendErrorsFromDB(res, req);
           } else {
             const token = jwt.sign(novo_usuario, env.authSecret, {
-              expiresIn: '1 hour'
+              expiresIn: '1h'
             });
 
             return res.status(200).json({
@@ -118,7 +120,6 @@ const signup = (req, res, next) => {
 
 const passwordRecovery = (req, res, next) => {
   const email = req.body.email;
-
   if (email) {
     Usuario.findOne({ email: email }, (err, usuario) => {
       if (err) {
@@ -143,5 +144,69 @@ const passwordRecovery = (req, res, next) => {
   }
 };
 
-// Exportando todos os métodos criados referente ao processo de autenticação
-module.exports = { login, signup, validateToken, passwordRecovery };
+const changePasswordPermition = (req, res, next) => {
+  const hash = req.body.changepasswordhash;
+  console.log(hash)
+  if (hash != undefined && hash != null) {
+    accountService.findLogChangePassword(hash, res);
+  }
+  else {
+    return res.status(400).json({
+      success: false,
+      errors: [{ message: 'Solicitação Inválida' }]
+    });
+  }
+};
+
+const changePassword = (req, res, next) => {
+  const password = req.body.password;
+  const passwordConfirm = req.body.passwordConfirm;
+  const changePasswordHash = req.body.changePasswordHash;
+  let errors = accountValidation.changePasswordValidation(password, passwordConfirm, changePasswordHash);
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      errors: errors
+    });
+  }
+  else {
+    AccountLog.findOne({ hash: changePasswordHash, pendente: true }, (err, log) => {
+      if (err) {
+        return sendErrorsFromDB(res, err);
+      }
+      else {
+        if (log != null || log != undefined) {
+          AccountLog.update({ usuario: log.usuario, hash: { $ne: changePasswordHash } }, { pendente: false }, { multi: true },
+            (error, response) => {
+              if (err) {
+                return sendErrorsFromDB(response, err);
+              }
+              else {
+                let dataAtual = moment().format('l');
+                let dataLog = log.dtCriacao.getMonth() + 1 +
+                  "/" + log.dtCriacao.getDate() +
+                  "/" + log.dtCriacao.getFullYear();
+                if (dataAtual == dataLog) {
+                  return res.status(200).json({
+                    success: true,
+                    message: 'Sua senha foi alterada!'
+                  });
+                }
+              }
+            }
+          )
+        }
+      }
+    })
+  }
+};
+
+module.exports =
+  {
+    login,
+    signup,
+    validateToken,
+    passwordRecovery,
+    changePasswordPermition,
+    changePassword
+  };
