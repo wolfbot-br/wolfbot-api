@@ -19,9 +19,12 @@ const index = (req, res, next) => {
         } else {
             var exchanges = {}
             exchanges = query;
+            const dataExchanges = exchanges.map(function (e) {
+                return { value: e.nome, label: e.nome }
+            })
 
             res.status(200).json({
-                data: exchanges,
+                data: dataExchanges,
                 status: "200"
             });
         }
