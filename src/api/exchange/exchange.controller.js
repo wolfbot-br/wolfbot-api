@@ -20,7 +20,7 @@ const index = (req, res, next) => {
             var exchanges = {}
             exchanges = query;
             const dataExchanges = exchanges.map(function (e) {
-                return { value: e.nome, label: e.nome }
+                return { id_exchange: e.id, value: e.nome, label: e.nome }
             })
 
             res.status(200).json({

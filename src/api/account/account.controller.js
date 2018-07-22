@@ -35,6 +35,7 @@ const login = (req, res, next) => {
       });
 
       res.status(200).json({
+        id: `${model.id}`,
         nome: `${model.nome}`,
         email: `${model.email}`,
         token: `${token}`,
