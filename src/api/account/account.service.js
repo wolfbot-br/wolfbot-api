@@ -155,7 +155,7 @@ const findLogChangePassword = (ChangePasswordHash, res) => {
 const updatePassword = (log, password, res) => {
     const salt = bcrypt.genSaltSync();
     const password_encripted = bcrypt.hashSync(password, salt);
-    Usuario.update({ usuario: log.usuario }, { password: password_encripted }, { multi: true },
+    Usuario.update({ email: log.usuario }, { password: password_encripted }, { multi: true },
         (error, response) => {
             if (error) {
                 return sendErrorsFromDB(response, err);
