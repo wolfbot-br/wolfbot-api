@@ -4,18 +4,24 @@ const _ = require('lodash');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const env = require('../../../.env');
+const bcrypt = require('bcrypt');
 
 const AccountLog = require('../../infraestrutura/mongo/models/account.log.model');
+const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
 
 // Realiza o envio do email em cada solicitação de recuperação de senha
 const sendEmailPasswordRecovery = (usuario, res) => {
 
     const hash = randStr.generate(32);
+
+    // Armazena no log a solicitação de alteração de senha
     const log = new AccountLog({
         usuario: usuario.email,
         hash: hash,
         emailConfirmado: false,
         dtCriacao: moment().subtract(3, 'hours').format(),
+        dtExpiracao: moment().subtract(2, 'hours').format(),
+        dtVerificacao: moment().subtract(3, 'hours').format(),
         dtConfirmacao: null,
         logTipo: 'Recuperação de Senha',
         pendente: true
@@ -85,39 +91,83 @@ const sendEmailPasswordRecovery = (usuario, res) => {
 };
 
 const findLogChangePassword = (ChangePasswordHash, res) => {
+
     AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
         if (error) {
             return res.status(404).json({
-                sucess: false,
+                success: false,
                 errors: [{ message: 'ChangePasswordHash não se encontra no mongo' }]
             });
+
+        }
+        if (!model) {
+            return res.status(404).json({
+                success: false,
+                errors: [{ message: 'Solicitação Inválida' }]
+            })
         }
         else {
             AccountLog.update({ usuario: model.usuario, hash: { $ne: model.hash } }, { pendente: false }, { multi: true },
-                (error, response) => {
+                (error) => {
                     if (error) {
                         return res.status(400).json({
-                            sucess: false,
-                            errors: [{ message: 'Ops! Ocorreu um erro' }]
+                            success: false,
+                            errors: [{ message: 'Erro ao conectar com o mongo!' }]
                         });
                     }
-                    else {
-                        let dataAtual = moment().format('l');
-                        let dataLog = model.dtCriacao.getMonth() + 1 +
-                            "/" + model.dtCriacao.getDate() +
-                            "/" + model.dtCriacao.getFullYear();
-                        if (dataAtual == dataLog) {
-                            return res.status(200).json({
-                                success: true,
-                                message: 'Pode Alterar a Senha!',
-                                hash: model.hash
-                            });
+                    AccountLog.update({ hash: model.hash }, { dtVerificacao: moment().subtract(3, 'hours').format() }, { multi: true },
+                        (error) => {
+                            if (error) {
+                                return res.status(400).json({
+                                    success: false,
+                                    errors: [{ message: 'Erro ao conectar com o mongo!' }]
+                                });
+                            }
+                            AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
+                                if (error) {
+                                    return res.status(404).json({
+                                        success: false,
+                                        errors: [{ message: 'Erro ao conectar com o mongo!' }]
+                                    });
+                                }
+                                if (model.dtVerificacao > model.dtExpiracao) {
+                                    return res.status(404).json({
+                                        success: false,
+                                        errors: [{ message: 'Não é mais possivel realizar a alteração da senha!' }]
+                                    })
+                                }
+                                else {
+                                    return res.status(200).json({
+                                        success: true,
+                                        errors: [],
+                                        hash: model.hash
+                                    })
+                                }
+                            })
                         }
-                    }
+                    )
                 }
             )
         }
-    });
-};
+    })
+}
 
-module.exports = { sendEmailPasswordRecovery, findLogChangePassword };
+const updatePassword = (log, password, res) => {
+    const salt = bcrypt.genSaltSync();
+    const password_encripted = bcrypt.hashSync(password, salt);
+    Usuario.update({ usuario: log.usuario }, { password: password_encripted }, { multi: true },
+        (error, response) => {
+            if (error) {
+                return sendErrorsFromDB(response, err);
+            }
+            else {
+                return res.status(200).json({
+                    success: true,
+                    message: 'Sua senha foi alterada!'
+                })
+            }
+        }
+    )
+}
+
+module.exports = { sendEmailPasswordRecovery, findLogChangePassword, updatePassword };

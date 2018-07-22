@@ -5,6 +5,8 @@ const accountLogSchema = new mongoose.Schema({
     hash: { type: String, require: true },
     emailConfirmado: { type: Boolean, require: true },
     dtCriacao: { type: Date, require: true },
+    dtExpiracao: { type: Date, required: true },
+    dtVerificacao: { type: Date, required: true },
     dtConfirmacao: { type: Date, default: null },
     logTipo: { type: String, default: true },
     pendente: { type: Boolean, default: true }

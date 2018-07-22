@@ -146,7 +146,6 @@ const passwordRecovery = (req, res, next) => {
 
 const changePasswordPermition = (req, res, next) => {
   const hash = req.body.changepasswordhash;
-  console.log(hash)
   if (hash != undefined && hash != null) {
     accountService.findLogChangePassword(hash, res);
   }
@@ -174,28 +173,23 @@ const changePassword = (req, res, next) => {
       if (err) {
         return sendErrorsFromDB(res, err);
       }
+      if (!log) {
+        return res.status(400).json({
+          success: false,
+          errors: [{ message: 'Solicitação Inválida! Envie o email novamente!' }]
+        })
+      }
       else {
-        if (log != null || log != undefined) {
-          AccountLog.update({ usuario: log.usuario, hash: { $ne: changePasswordHash } }, { pendente: false }, { multi: true },
-            (error, response) => {
-              if (err) {
-                return sendErrorsFromDB(response, err);
-              }
-              else {
-                let dataAtual = moment().format('l');
-                let dataLog = log.dtCriacao.getMonth() + 1 +
-                  "/" + log.dtCriacao.getDate() +
-                  "/" + log.dtCriacao.getFullYear();
-                if (dataAtual == dataLog) {
-                  return res.status(200).json({
-                    success: true,
-                    message: 'Sua senha foi alterada!'
-                  });
-                }
-              }
+        AccountLog.update({ usuario: log.usuario, hash: changePasswordHash }, { pendente: false }, { multi: true },
+          (error, response) => {
+            if (err) {
+              return sendErrorsFromDB(response, err);
             }
-          )
-        }
+            else {
+              accountService.updatePassword(log, password, res);
+            }
+          }
+        )
       }
     })
   }
