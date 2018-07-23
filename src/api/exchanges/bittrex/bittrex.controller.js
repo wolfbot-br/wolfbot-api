@@ -112,16 +112,13 @@ const fetchBalance = async (req, res, next) => {
 
         //Um dos melhores jeitos de fazer um select
         const credenciais = await exchangeToken
-            .find({ "usuario.id_usuario": params.id_usuario })
+            .findOne({ "usuario.id_usuario": params.id_usuario })
             .where({ "exchange.id_exchange": params.id_exchange });
 
-        totalCredencial = Object.keys(credenciais).length;
-        bittrexValidation.validarRequisitosExchange(totalCredencial);
+        bittrexValidation.validarRequisitosExchange(credenciais);
 
-        for (i = 0; i < totalCredencial; i++) {
-            bittrex.apiKey = credenciais[i].api_key;
-            bittrex.secret = credenciais[i].secret;
-        }
+        bittrex.apiKey = credenciais.api_key;
+        bittrex.secret = credenciais.secret;
 
         let saldo = await bittrex.fetchBalance();
         res.status(200).json({

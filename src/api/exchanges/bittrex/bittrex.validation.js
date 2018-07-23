@@ -13,7 +13,7 @@ const validarDados = (dados) => {
 
 const validarRequisitosExchange = (dados) => {
 
-    if (dados == 0) {
+    if (!dados) {
         throw new Error("usuário não encontrado");
     }
 
