@@ -2,7 +2,7 @@ const express = require('express');
 const auth = require('../../../config/auth');
 
 module.exports = function (server) {
-    const bittrexController = require('../bitfinex/bitfinex.controller');
+    const bitfinexController = require('../bitfinex/bitfinex.controller');
 
     const protectedRoutes = express.Router();
     const openRoutes = express.Router();
@@ -12,14 +12,19 @@ module.exports = function (server) {
     server.use('/api', protectedRoutes);
     server.use('/bitfinex', openRoutes);
 
-    openRoutes.get('/structure', bittrexController.structure);
-    openRoutes.get('/symbols', bittrexController.symbols);
-    openRoutes.get('/currencies', bittrexController.currencies);
-    openRoutes.get('/loadmarkets', bittrexController.loadMarkets);
-    openRoutes.get('/getMarketStructureBySimbol', bittrexController.getMarketStructureBySimbol);
-    openRoutes.get('/getMarketIdBySimbol', bittrexController.getMarketIdBySimbol);
-    openRoutes.get('/fetchOrderBookBySymbol', bittrexController.fetchOrderBookBySymbol);
-    openRoutes.get('/ticker', bittrexController.fetchTicker);
-    openRoutes.get('/tickers', bittrexController.fetchTickers);
-    openRoutes.get('/saldo', bittrexController.fetchBalance);
+    // PUBLIC METHODS
+    openRoutes.get('/structure', bitfinexController.structure);
+    openRoutes.get('/symbols', bitfinexController.symbols);
+    openRoutes.get('/currencies', bitfinexController.currencies);
+    openRoutes.get('/loadmarkets', bitfinexController.loadMarkets);
+    openRoutes.get('/getMarketStructureBySimbol', bitfinexController.getMarketStructureBySimbol);
+    openRoutes.get('/getMarketIdBySimbol', bitfinexController.getMarketIdBySimbol);
+    openRoutes.get('/fetchOrderBookBySymbol', bitfinexController.fetchOrderBookBySymbol);
+    openRoutes.get('/ticker', bitfinexController.fetchTicker);
+    openRoutes.get('/tickers', bitfinexController.fetchTickers);
+
+    // PRIVATE METHODS
+    openRoutes.get('/saldo', bitfinexController.fetchBalance);
+    openRoutes.post('/buy', bitfinexController.orderBuy);
+    openRoutes.post('/sell', bitfinexController.orderSell);
 };

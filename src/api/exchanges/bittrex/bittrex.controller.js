@@ -142,8 +142,9 @@ const orderBuy = async (req, res, next) => {
             id_usuario: req.query.id_usuario,
             id_exchange: req.query.id_exchange,
             tipo: req.body.tipo,
-            simbolo: req.body.simbolo,
-            amount: req.body.amount
+            simbolo: req.body.simbolo.toUpperCase(),
+            montante: req.body.montante,
+            preco: req.body.preco
         }
 
         bittrexValidation.validarDados(params);
@@ -158,13 +159,12 @@ const orderBuy = async (req, res, next) => {
         bittrex.apiKey = credenciais.api_key;
         bittrex.secret = credenciais.secret;
 
-        if (params.tipo === 'limit') {
-            // order = await bittrex.createLimitBuyOrder ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
-        }
-
-        if (params.tipo === 'mercado') {
-            // order = await bittrex.createLimitBuyOrder ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
-        }
+        order = await bittrex.createLimitBuyOrder(
+            params.simbolo, // Simbolo da cryptomoeda BTC/USDT
+            params.montante, // Montante
+            params.preco, // Preço de venda
+            { ' tipo ': params.tipo } // tipo: limite ou mercado
+        )
 
         res.status(200).json({
             "data": order,
@@ -183,14 +183,16 @@ const orderBuy = async (req, res, next) => {
 const orderSell = async (req, res, next) => {
 
     try {
-        let bittrex = new ccxt.bittrex();
+
+        let bittrex = new ccxt.bitfinex();
 
         params = {
-            id_usuario: req.query.id_usuario,
-            id_exchange: req.query.id_exchange,
+            id_usuario: req.body.id_usuario,
+            id_exchange: req.body.id_exchange,
             tipo: req.body.tipo,
-            simbolo: req.body.simbolo,
-            amount: req.body.amount
+            simbolo: req.body.simbolo.toUpperCase(),
+            montante: req.body.montante,
+            preco: req.body.preco
         }
 
         bittrexValidation.validarDados(params);
@@ -205,17 +207,16 @@ const orderSell = async (req, res, next) => {
         bittrex.apiKey = credenciais.api_key;
         bittrex.secret = credenciais.secret;
 
-        if (params.tipo === 'limit') {
-            // order = await bittrex.createLimitSellOrder  ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
-        }
-
-        if (params.tipo === 'mercado') {
-            // order = await bittrex.createLimitSellOrder  ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
-        }
+        order = await bittrex.createLimitSellOrder(
+            params.simbolo, // Simbolo da cryptomoeda BTC/USDT
+            params.montante, // Montante
+            params.preco, // Preço de venda
+            { ' tipo ': params.tipo } // tipo: limite ou mercado
+        )
 
         res.status(200).json({
             "data": order,
-            "message": "Método em manutenção",
+            "message": "Ordem de compra realizada com sucesso.",
             "status": 200
         });
 

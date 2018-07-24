@@ -135,6 +135,101 @@ const fetchBalance = async (req, res, next) => {
     }
 }
 
+const orderBuy = async (req, res, next) => {
+
+    try {
+        let bitfinex = new ccxt.bitfinex();
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange,
+            tipo: req.body.tipo,
+            simbolo: req.body.simbolo.toUpperCase(),
+            montante: req.body.montante,
+            preco: req.body.preco
+        }
+
+        bitfinexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bitfinexValidation.validarRequisitosExchange(credenciais);
+
+        bitfinex.apiKey = credenciais.api_key;
+        bitfinex.secret = credenciais.secret;
+
+        order = await bitfinex.createLimitBuyOrder(
+            params.simbolo, // Simbolo da cryptomoeda BTC/USDT
+            params.montante, // Montante
+            params.preco, // Preço de venda
+            { ' tipo ': params.tipo } // tipo: limite ou mercado
+        )
+
+        res.status(200).json({
+            "data": order,
+            "message": "Método em manutenção",
+            "status": 200
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
+const orderSell = async (req, res, next) => {
+
+    try {
+
+        let bitfinex = new ccxt.bitfinex();
+
+        params = {
+            id_usuario: req.body.id_usuario,
+            id_exchange: req.body.id_exchange,
+            tipo: req.body.tipo,
+            simbolo: req.body.simbolo.toUpperCase(),
+            montante: req.body.montante,
+            preco: req.body.preco
+        }
+
+        bitfinexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bitfinexValidation.validarRequisitosExchange(credenciais);
+
+        bitfinex.apiKey = credenciais.api_key;
+        bitfinex.secret = credenciais.secret;
+
+        order = await bitfinex.createLimitSellOrder(
+            params.simbolo, // Simbolo da cryptomoeda BTC/USDT
+            params.montante, // Montante
+            params.preco, // Preço de venda
+            { ' tipo ': params.tipo } // tipo: limite ou mercado
+        )
+
+        res.status(200).json({
+            "data": order,
+            "message": "Ordem de compra realizada com sucesso.",
+            "status": 200
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
 module.exports = {
     loadMarkets,
     getMarketStructureBySimbol,
@@ -145,5 +240,7 @@ module.exports = {
     fetchOrderBookBySymbol,
     fetchTickers,
     fetchTicker,
-    fetchBalance
+    fetchBalance,
+    orderBuy,
+    orderSell
 };
