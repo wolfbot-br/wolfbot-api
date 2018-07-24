@@ -97,6 +97,8 @@ const fetchTicker = async (req, res, next) => {
     res.status(200).json({ data: ticker });
 }
 
+// # PRIVATE METHODS /
+
 const fetchBalance = async (req, res, next) => {
 
     try {
