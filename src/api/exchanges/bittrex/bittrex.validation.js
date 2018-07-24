@@ -1,5 +1,5 @@
 const validarDados = (dados) => {
-    console.log(dados);
+
     if (!dados.id_usuario) {
         throw new Error("id_usuario inválido");
     }
