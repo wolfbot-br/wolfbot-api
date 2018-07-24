@@ -96,6 +96,8 @@ const fetchTicker = async (req, res, next) => {
     res.status(200).json({ data: ticker });
 }
 
+// # PRIVATE METHODS /
+
 // Retorna o saldo da conta da bitfinex
 const fetchBalance = async (req, res, next) => {
 

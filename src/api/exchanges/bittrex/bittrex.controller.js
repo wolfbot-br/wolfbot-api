@@ -133,6 +133,100 @@ const fetchBalance = async (req, res, next) => {
     }
 }
 
+const orderBuy = async (req, res, next) => {
+
+    try {
+        let bittrex = new ccxt.bittrex();
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange,
+            tipo: req.body.tipo,
+            simbolo: req.body.simbolo,
+            amount: req.body.amount
+        }
+
+        bittrexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bittrexValidation.validarRequisitosExchange(credenciais);
+
+        bittrex.apiKey = credenciais.api_key;
+        bittrex.secret = credenciais.secret;
+
+        if (params.tipo === 'limit') {
+            // order = await bittrex.createLimitBuyOrder ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
+        }
+
+        if (params.tipo === 'mercado') {
+            // order = await bittrex.createLimitBuyOrder ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
+        }
+
+        res.status(200).json({
+            "data": order,
+            "message": "Método em manutenção",
+            "status": 200
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
+const orderSell = async (req, res, next) => {
+
+    try {
+        let bittrex = new ccxt.bittrex();
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange,
+            tipo: req.body.tipo,
+            simbolo: req.body.simbolo,
+            amount: req.body.amount
+        }
+
+        bittrexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bittrexValidation.validarRequisitosExchange(credenciais);
+
+        bittrex.apiKey = credenciais.api_key;
+        bittrex.secret = credenciais.secret;
+
+        if (params.tipo === 'limit') {
+            // order = await bittrex.createLimitSellOrder  ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
+        }
+
+        if (params.tipo === 'mercado') {
+            // order = await bittrex.createLimitSellOrder  ('IOTA/USDT', 15, 2, { ' tipo ': 'limit' })
+        }
+
+        res.status(200).json({
+            "data": order,
+            "message": "Método em manutenção",
+            "status": 200
+        });
+
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
 module.exports = {
     loadMarkets,
     getMarketStructureBySimbol,
@@ -143,5 +237,7 @@ module.exports = {
     fetchOrderBookBySymbol,
     fetchTickers,
     fetchTicker,
-    fetchBalance
+    fetchBalance,
+    orderBuy,
+    orderSell
 };
