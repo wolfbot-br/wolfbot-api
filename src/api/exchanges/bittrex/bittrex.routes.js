@@ -27,5 +27,6 @@ module.exports = function (server) {
     openRoutes.get('/saldo', bittrexController.fetchBalance);
     openRoutes.post('/buy', bittrexController.orderBuy);
     openRoutes.post('/sell', bittrexController.orderSell);
+    openRoutes.get('/openOrdens', bittrexController.openOrders)
 
 };

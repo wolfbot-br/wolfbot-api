@@ -140,6 +140,10 @@ const orderBuy = async (req, res, next) => {
     try {
         let bitfinex = new ccxt.bitfinex();
 
+        if (!req.body.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
+
         params = {
             id_usuario: req.query.id_usuario,
             id_exchange: req.query.id_exchange,
@@ -188,6 +192,10 @@ const orderSell = async (req, res, next) => {
 
         let bitfinex = new ccxt.bitfinex();
 
+        if (!req.body.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
+
         params = {
             id_usuario: req.body.id_usuario,
             id_exchange: req.body.id_exchange,
@@ -230,6 +238,55 @@ const orderSell = async (req, res, next) => {
     }
 }
 
+const openOrders = async (req, res, next) => {
+
+    try {
+
+        let bitfinex = new ccxt.bitfinex();
+
+        if (!req.query.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange,
+            simbolo: req.query.simbolo.toUpperCase(),
+            tempo: req.query.tempo,
+            limite: req.params.limite
+        }
+
+        bitfinexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bitfinexValidation.validarRequisitosExchange(credenciais);
+
+        bitfinex.apiKey = credenciais.api_key;
+        bitfinex.secret = credenciais.secret;
+
+        ordens = await bitfinex.fetchOpenOrders(
+            symbol = params.simbolo,
+            since = params.tempo,
+            limit = params.limite,
+            params = {}
+        )
+
+        res.status(200).json({
+            "data": ordens,
+            "status": 200
+        });
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
 module.exports = {
     loadMarkets,
     getMarketStructureBySimbol,
@@ -242,5 +299,6 @@ module.exports = {
     fetchTicker,
     fetchBalance,
     orderBuy,
-    orderSell
+    orderSell,
+    openOrders
 };

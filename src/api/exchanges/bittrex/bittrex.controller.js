@@ -75,8 +75,8 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
 
 // Busca todos os tickes
 const fetchTickers = async (req, res, next) => {
-    let bitfinex = new ccxt.bitfinex();
-    let tickers = await bitfinex.fetchTickers();
+    let bittrex = new ccxt.bittrex();
+    let tickers = await bittrex.fetchTickers();
     res.status(200).json({ data: tickers });
 }
 
@@ -92,8 +92,8 @@ const fetchTicker = async (req, res, next) => {
         });
     }
 
-    let bitfinex = new ccxt.bitfinex();
-    let ticker = await bitfinex.fetchTicker(symbol);
+    let bittrex = new ccxt.bittrex();
+    let ticker = await bittrex.fetchTicker(symbol);
     res.status(200).json({ data: ticker });
 }
 
@@ -139,6 +139,10 @@ const orderBuy = async (req, res, next) => {
 
     try {
         let bittrex = new ccxt.bittrex();
+
+        if (!req.body.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
 
         params = {
             id_usuario: req.query.id_usuario,
@@ -186,7 +190,11 @@ const orderSell = async (req, res, next) => {
 
     try {
 
-        let bittrex = new ccxt.bitfinex();
+        let bittrex = new ccxt.bittrex();
+
+        if (!req.body.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
 
         params = {
             id_usuario: req.body.id_usuario,
@@ -230,6 +238,55 @@ const orderSell = async (req, res, next) => {
     }
 }
 
+const openOrders = async (req, res, next) => {
+
+    try {
+
+        let bittrex = new ccxt.bittrex();
+
+        if (!req.query.simbolo) {
+            throw new Error("Informe o simbolo")
+        }
+
+        params = {
+            id_usuario: req.query.id_usuario,
+            id_exchange: req.query.id_exchange,
+            simbolo: req.query.simbolo.toUpperCase(),
+            tempo: req.query.tempo,
+            limite: req.query.limite
+        }
+
+        bittrexValidation.validarDados(params);
+
+        //Um dos melhores jeitos de fazer um select
+        const credenciais = await exchangeToken
+            .findOne({ "usuario.id_usuario": params.id_usuario })
+            .where({ "exchange.id_exchange": params.id_exchange });
+
+        bittrexValidation.validarRequisitosExchange(credenciais);
+
+        bittrex.apiKey = credenciais.api_key;
+        bittrex.secret = credenciais.secret;
+
+        ordens = await bittrex.fetchOpenOrders(
+            symbol = params.simbolo,
+            since = params.tempo,
+            limit = params.limite,
+            params = {}
+        )
+
+        res.status(200).json({
+            "data": ordens,
+            "status": 200
+        });
+    } catch (e) {
+        res.status(400).json({
+            "message": e.message,
+            "status": "400"
+        });
+    }
+}
+
 module.exports = {
     loadMarkets,
     getMarketStructureBySimbol,
@@ -242,5 +299,6 @@ module.exports = {
     fetchTicker,
     fetchBalance,
     orderBuy,
-    orderSell
+    orderSell,
+    openOrders
 };
