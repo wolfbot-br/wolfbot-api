@@ -24,6 +24,7 @@
     "body-parser": "^1.18.2",
     "ccxt": "^1.14.301",
     "consign": "^0.1.6",
+    "dotenv-safe": "^6.0.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",
@@ -41,7 +42,8 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "pm2": "^2.10.2",
     "randomstring": "^1.1.5",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "tulind": "^0.8.10"
   },
   "devDependencies": {
     "nodemon": "^1.17.3",
