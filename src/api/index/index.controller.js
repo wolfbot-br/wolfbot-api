@@ -1,4 +1,3 @@
-const dotenv = require("dotenv-safe").load()
 const ccxt = require('ccxt');
 const tulind = require('tulind');
 
@@ -26,7 +25,7 @@ const index = async (req, res, next) => {
     console.log(result)
     promise = promise.then(function () {
       return new Promise(function (resolve) {
-        teste(result.info, resolve)
+        teste(result, resolve)
       });
     });
   },
