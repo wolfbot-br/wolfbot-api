@@ -31,11 +31,12 @@ const login = (req, res, next) => {
     else if (model && bcrypt.compareSync(password, model.password)) {
       //gera um token definindo o tempo de expiração
       const token = jwt.sign(model, env.authSecret, {
-        expiresIn: '1 hour'
+        expiresIn: '1h'
       });
 
       res.status(200).json({
         id: `${model.id}`,
+        //id_exchange: `${exchange.exchange.id_exchange}`,
         nome: `${model.nome}`,
         email: `${model.email}`,
         token: `${token}`,

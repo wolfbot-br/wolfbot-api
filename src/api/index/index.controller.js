@@ -10,7 +10,7 @@ const index = async (req, res, next) => {
   // var close = [4, 5, 6, 6, 6, 5, 5, 5, 6, 4];
   // var volume = [123, 232, 212, 232, 111, 232, 212, 321, 232, 321];
 
-  // console.log(tulind.indicators);
+  console.log(tulind.indicators);
 
   // tulind.indicators.sma.indicator([close], [3], function (error, results) {
   //   console.log("Result of sma is:");

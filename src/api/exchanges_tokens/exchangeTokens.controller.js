@@ -7,20 +7,19 @@ const sendErrorsFromDB = (res, dbErrors) => {
     return res.status(400).json({ errors });
 };
 
-// Método que retorna todas as credencias
+// Método que retorna uma credencial
 const index = (req, res, next) => {
 
-    // const nome_exchange = req.query.nome;
-    exchangeToken.find({}, function (err, query) {
+    const usuario = req.query.id_usuario
 
+    exchangeToken.findOne({ 'usuario.id_usuario': usuario }, { api_key: 0, secret: 0 }, (err, query) => {
         if (err) {
             return sendErrorsFromDB(res, err);
         } else {
-            var exchanges = {}
-            exchanges = query;
 
             res.status(200).json({
-                data: exchanges,
+                id_exchange: query.exchange.id_exchange,
+                nome_exchange: query.exchange.nome_exchange,
                 status: "200"
             });
         }
