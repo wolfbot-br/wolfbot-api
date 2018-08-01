@@ -17,11 +17,19 @@ const index = (req, res, next) => {
             return sendErrorsFromDB(res, err);
         } else {
 
-            res.status(200).json({
-                id_exchange: query.exchange.id_exchange,
-                nome_exchange: query.exchange.nome_exchange,
-                status: "200"
-            });
+            if (query == null) {
+                res.status(200).json({
+                    id_exchange: '',
+                    nome_exchange: '',
+                    status: "406"
+                });
+            } else {
+                res.status(200).json({
+                    id_exchange: query.exchange.id_exchange,
+                    nome_exchange: query.exchange.nome_exchange,
+                    status: "200"
+                });
+            }
         }
     });
 }

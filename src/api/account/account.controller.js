@@ -36,7 +36,6 @@ const login = (req, res, next) => {
 
       res.status(200).json({
         id: `${model.id}`,
-        //id_exchange: `${exchange.exchange.id_exchange}`,
         nome: `${model.nome}`,
         email: `${model.email}`,
         token: `${token}`,
@@ -105,6 +104,7 @@ const signup = (req, res, next) => {
             });
 
             return res.status(200).json({
+              id: `${novo_usuario.id}`,
               nome: `${novo_usuario.nome}`,
               email: `${novo_usuario.email}`,
               token: `${token}`,
