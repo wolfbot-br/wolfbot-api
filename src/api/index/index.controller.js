@@ -4,39 +4,55 @@ const tulind = require('tulind');
 
 const index = async (req, res, next) => {
 
-  // var open = [4, 5, 5, 5, 4, 4, 4, 6, 6, 6];
-  // var high = [9, 7, 8, 7, 8, 8, 7, 7, 8, 7];
-  // var low = [1, 2, 3, 3, 2, 1, 2, 2, 2, 3];
-  // var close = [4, 5, 6, 6, 6, 5, 5, 5, 6, 4];
-  // var volume = [123, 232, 212, 232, 111, 232, 212, 321, 232, 321];
-
-  console.log(tulind.indicators);
-
-  // tulind.indicators.sma.indicator([close], [3], function (error, results) {
-  //   console.log("Result of sma is:");
-  //   console.log(results[0]);
-  // });
-
   let bitfinex = new ccxt.bitfinex();
   var promise = Promise.resolve(true);
 
   setInterval(async function () {
-    result = await bitfinex.fetchTicker('IOTA/USDT');
-    console.log(result)
+
+    let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    var high = []
+    var low = []
+    var close = []
+
+    if (bitfinex.has.fetchOHLCV) {
+
+      var hoje = new Date()
+      hoje.setMinutes(hoje.getMinutes() - 30);
+      var tempo = new Date(hoje).getTime();
+
+      await sleep(bitfinex.rateLimit) // milliseconds
+      result = await bitfinex.fetchOHLCV('IOTA/USDT', '1m', since = tempo, limit = 100)
+      totalResult = Object.keys(result).length
+
+      for (i = 0; i < totalResult; i++) {
+        high.push(result[i][2])
+        low.push(result[i][3])
+        close.push(result[i][4])
+      }
+    }
+
+    tulind.indicators.macd.indicator([close], [2, 5, 9], function (error, results) {
+      console.log("Result of macd is:");
+      console.log(results);
+    });
+
+    // console.log(tulind.indicators);
+
     promise = promise.then(function () {
       return new Promise(function (resolve) {
-        teste(result, resolve)
+        msg = 'Bot iniciado, consulte o terminal para ver o resultado.';
+        teste(msg, resolve)
       });
     });
   },
     10000
   );
 
-  function teste(result, resolve) {
-    res.json({
-      result
-    })
+  function teste(msg, resolve) {
+    res.json(
+      msg
+    )
   }
-};
+}
 
 module.exports = { index };
