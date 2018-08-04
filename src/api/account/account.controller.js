@@ -8,6 +8,7 @@ const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
 const accountValidation = require('../account/account.validation');
 const accountService = require('../account/account.service');
 const AccountLog = require('../../infraestrutura/mongo/models/account.log.model');
+const utilService = require('../util/util.service');
 
 const sendErrorsFromDB = (res, dbErrors) => {
   const errors = [];
@@ -18,7 +19,17 @@ const sendErrorsFromDB = (res, dbErrors) => {
 const validateToken = (req, res, next) => {
   const token = req.headers['authorization'] || '';
   jwt.verify(token, env.authSecret, function (err, decoded) {
-    return res.status(200).send({ token: `${token}`, valid: `${!err}` });
+    const created = utilService.convertTimeStampToHours(decoded.iat);
+    const exp = utilService.convertTimeStampToHours(decoded.exp);
+    return res.status(200).send(
+      {
+        token: `${token}`,
+        dateCreated: new Date(decoded.iat * 1000),
+        valid: `${!err}`,
+        usuario: decoded._doc,
+        hourCreated: created,
+        hourExpiration: exp
+      });
   });
 };
 
