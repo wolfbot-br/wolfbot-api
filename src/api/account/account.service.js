@@ -13,8 +13,6 @@ const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
 const sendEmailPasswordRecovery = (usuario, res) => {
 
     const hash = randStr.generate(32);
-
-    // Armazena no log a solicitação de alteração de senha
     const log = new AccountLog({
         usuario: usuario.email,
         hash: hash,
@@ -26,7 +24,6 @@ const sendEmailPasswordRecovery = (usuario, res) => {
         logTipo: 'Recuperação de Senha',
         pendente: true
     });
-
     log.save(err => {
         if (err) {
             return ({
@@ -54,20 +51,18 @@ const sendEmailPasswordRecovery = (usuario, res) => {
                     },
                     tls: { rejectUnauthorized: false }
                 }));
-
             const destinatario = usuario.email;
-
             var mailOptions = {
                 from: $from,
                 to: destinatario,
                 subject: 'Wolfbot - Recuperação de Senha',
                 html:
-                    `<h2 style='text-align:center'>Wolfbot</h2><br />` +
-                    `<h3>Olá, ${usuario.nome}, esqueceu sua senha?</h3>.<br />` +
-                    `<h3>Se você gostaria de redefinir sua senha, clique no link abaixo ou copie e cole o link no seu navegador:<br />` +
+                    `<p style='text-align:center'>Wolfbot</p><br />` +
+                    `<p>Olá, ${usuario.nome}, esqueceu sua senha?</h3>.<br />` +
+                    `<p>Se você gostaria de redefinir sua senha, clique no link abaixo ou copie e cole o link no seu navegador:<br />` +
                     `<a href = "http://localhost:3000/#/changepassword?parameter=${hash}">Clique aqui para redefinir a senha</a><br/>` +
                     `Note que este link só pode ser usado uma vez<br />` +
-                    `Se você não deseja redefinir sua senha, ignore esta mensagem e sua senha não será alterada</h3 >`
+                    `Se você não deseja redefinir sua senha, ignore esta mensagem e sua senha não será alterada</p >`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
