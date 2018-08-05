@@ -12,6 +12,7 @@ app.use(allowCors);
 consign()
   .include('/src/infraestrutura/mongo/index.js')
   .then('/src/api/account')
+  .then('/src/api/historico')
   .then('/src/api/index')
   .then('/src/api/util')
   .then('/src/api/exchanges')

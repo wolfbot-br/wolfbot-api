@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
     // realiza a verificação do Token
     jwt.verify(token, env.authSecret, function (err, decoded) {
       if (err) {
-        return res.status(403).send({ errors: ['Falha ao autenticar o token'] });
+        return res.status(401).send({ errors: ['Não Autorizado'] });
       } else {
         // envia o token decodificado na request e segue o fluxo normal da requisição
         //req.decoded = decoded

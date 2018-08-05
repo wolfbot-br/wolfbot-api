@@ -15,7 +15,7 @@ module.exports = function (server) {
 
   openRoutes.post('/login', accountController.login);
   openRoutes.post('/signup', accountController.signup);
-  openRoutes.post('/validateToken', accountController.validateToken);
+  openRoutes.get('/validateToken', accountController.validateToken);
   openRoutes.post('/passwordRecovery', accountController.passwordRecovery);
   openRoutes.post('/changepasswordpermition', accountController.changePasswordPermition);
   openRoutes.post('/changepassword', accountController.changePassword);

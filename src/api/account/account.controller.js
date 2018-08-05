@@ -19,6 +19,11 @@ const sendErrorsFromDB = (res, dbErrors) => {
 const validateToken = (req, res, next) => {
   const token = req.headers['authorization'] || '';
   jwt.verify(token, env.authSecret, function (err, decoded) {
+    if (err) {
+      return res.status(401).send({
+        errors: 'Não Autorizado'
+      });
+    }
     const created = utilService.convertTimeStampToHours(decoded.iat);
     const exp = utilService.convertTimeStampToHours(decoded.exp);
     return res.status(200).send(

@@ -12,5 +12,5 @@ module.exports = function (server) {
 
     server.use('/api', protectedRoutes);
 
-    openRoutes.post('/historicos', historicoController.historicos);
+    protectedRoutes.get('/historicos', historicoController.historicos);
 };
