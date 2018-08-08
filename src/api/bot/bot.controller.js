@@ -1,7 +1,7 @@
 const ccxt = require('ccxt');
 const tulind = require('tulind');
 const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
-const serviceExchange = require('../exchanges/exchanges.service');
+const utilService = require('../util/util.service');
 const serviceBot = require('../bot/bot.service')
 const exchangeValidation = require('../exchanges/exchanges.validation')
 
@@ -32,7 +32,7 @@ const monitoramento = async (req, res, next) => {
         exchangeValidation.validarRequisitosExchange(credenciais);
 
         const nome_exchange = credenciais.exchange.nome_exchange.toLowerCase()
-        exchange = serviceExchange.selecionarExchange(nome_exchange)
+        exchange = utilService.selecionarExchange(nome_exchange)
 
         if (params.status == "online" || params.status == "offline") {
             var promise = Promise.resolve(true);

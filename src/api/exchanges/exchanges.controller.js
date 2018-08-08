@@ -1,7 +1,7 @@
 const ccxt = require('ccxt');
 const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model');
 const exchangeValidation = require('../exchanges/exchanges.validation');
-const utilService = require('../exchanges/exchanges.service');
+const utilService = require('../util/util.service');
 
 // # PUBLIC METHODS /
 
