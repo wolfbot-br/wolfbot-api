@@ -49,14 +49,16 @@ const post = (req, res, next) => {
         apiKey: req.body.key,
         secret: req.body.secret,
         usuario: { id_usuario: req.body.id_usuario, nome_usuario: req.body.nome_usuario },
-        exchange: { id_exchange: req.body.id_exchange, nome_exchange: req.body.nome_exchange }
+        exchange: { id_exchange: req.body.id_exchange, nome_exchange: req.body.nome_exchange },
+        status: req.body.status
     };
 
     const nova_exchange = new exchangeToken({
         api_key: ex.apiKey,
         secret: ex.secret,
         usuario: ex.usuario,
-        exchange: ex.exchange
+        exchange: ex.exchange,
+        status: ex.status
     });
 
     nova_exchange.save(err => {
