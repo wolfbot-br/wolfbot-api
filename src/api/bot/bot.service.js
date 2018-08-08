@@ -1,12 +1,5 @@
 const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
 
-// Método generico que irá tratar erros de banco de dados
-const sendErrorsFromDB = (res, dbErrors) => {
-    const errors = [];
-    _.forIn(dbErrors.errors, error => errors.push(error.message));
-    return res.status(400).json({ errors });
-};
-
 const stop = (play, params) => {
 
     clearInterval(play);
@@ -15,7 +8,10 @@ const stop = (play, params) => {
         { $set: { status: "offline" } },
         function (err, query) {
             if (err) {
-                return sendErrorsFromDB(res, err);
+                res.status(400).json({
+                    "message": err,
+                    "status": 400
+                });
             } else {
                 console.log('Configuração alterado com sucesso1.')
             }
@@ -31,7 +27,10 @@ const play = (params) => {
         { $set: { status: "online" } },
         function (err, query) {
             if (err) {
-                return sendErrorsFromDB(res, err);
+                res.status(400).json({
+                    "message": err,
+                    "status": 400
+                });
             } else {
                 console.log('Configuração alterado com sucesso2.')
             }
