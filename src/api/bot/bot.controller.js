@@ -3,6 +3,7 @@ const tulind = require('tulind');
 const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
 const serviceExchange = require('../exchanges/exchanges.service');
 const serviceBot = require('../bot/bot.service')
+const exchangeValidation = require('../exchanges/exchanges.validation')
 
 const index = async (req, res, next) => {
     res.send('<h1 style="text-align:center;">Monitoramento - WOLFBOT</h1>');
@@ -23,9 +24,12 @@ const monitoramento = async (req, res, next) => {
         para seguir a regra de negocio do robo, e também ja aproveito e vejo qual exchange eu tenho que
         instanciar pelo o "id_exchange" */
 
+        exchangeValidation.validarDados(params);
         const credenciais = await configuracao
             .findOne({ "usuario.id_usuario": params.id_usuario })
             .where({ "exchange.id_exchange": params.id_exchange });
+
+        exchangeValidation.validarRequisitosExchange(credenciais);
 
         const nome_exchange = credenciais.exchange.nome_exchange.toLowerCase()
         exchange = serviceExchange.selecionarExchange(nome_exchange)
