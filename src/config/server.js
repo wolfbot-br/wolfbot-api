@@ -18,6 +18,7 @@ consign()
   .then('/src/api/exchanges')
   .then('/src/api/exchange')
   .then('/src/api/exchanges_tokens')
+  .then('/src/api/bot')
   .into(app);
 
 module.exports = app;
