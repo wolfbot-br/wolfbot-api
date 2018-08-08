@@ -2,6 +2,7 @@ const ccxt = require('ccxt');
 const tulind = require('tulind');
 const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
 const serviceExchange = require('../exchanges/exchanges.service');
+const serviceBot = require('../bot/bot.service')
 
 const index = async (req, res, next) => {
     res.send('<h1 style="text-align:center;">Monitoramento - WOLFBOT</h1>');
@@ -33,7 +34,7 @@ const monitoramento = async (req, res, next) => {
             var promise = Promise.resolve(true);
 
             if (params.status == "online") {
-                play(params)
+                serviceBot.play(params)
             }
 
             // Inicia o bot
@@ -42,7 +43,7 @@ const monitoramento = async (req, res, next) => {
                 if (params.status == "offline") {
 
                     //Pausa o bot
-                    stop(playbot, params)
+                    serviceBot.stop(playbot, params)
                     promise = promise.then(function () {
                         return new Promise(function (resolve) {
                             msg = 'Bot pausado.';
@@ -107,37 +108,4 @@ const monitoramento = async (req, res, next) => {
     }
 }
 
-function stop(play, params) {
-
-    clearInterval(play);
-    configuracao.update(
-        { "usuario.id_usuario": params.id_usuario, "exchange.id_exchange": params.id_exchange },
-        { $set: { status: "offline" } },
-        function (err, query) {
-            if (err) {
-                return sendErrorsFromDB(res, err);
-            } else {
-                console.log('Configuração alterado com sucesso.')
-            }
-        });
-
-    return
-}
-
-function play(params) {
-
-    configuracao.update(
-        { "usuario.id_usuario": params.id_usuario, "exchange.id_exchange": params.id_exchange },
-        { $set: { status: "online" } },
-        function (err, query) {
-            if (err) {
-                return sendErrorsFromDB(res, err);
-            } else {
-                console.log('Configuração alterado com sucesso.')
-            }
-        });
-
-    return
-}
-
-module.exports = { index, monitoramento, stop, play };
+module.exports = { index, monitoramento };
