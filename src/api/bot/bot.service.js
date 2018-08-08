@@ -13,7 +13,7 @@ const stop = (play, params) => {
                     "status": 400
                 });
             } else {
-                console.log('Configuração alterado com sucesso1.')
+                console.log('Configuração alterado com sucesso.')
             }
         });
 
@@ -32,7 +32,7 @@ const play = (params) => {
                     "status": 400
                 });
             } else {
-                console.log('Configuração alterado com sucesso2.')
+                console.log('Configuração alterado com sucesso.')
             }
         });
 
