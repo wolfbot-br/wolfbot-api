@@ -63,7 +63,6 @@ const monitoramento = async (req, res, next) => {
                         var hoje = new Date()
                         hoje.setMinutes(hoje.getMinutes() - 30);
                         var tempo = new Date(hoje).getTime();
-                        console.log(tempo)
 
                         await sleep(exchange.rateLimit) // milliseconds
                         result = await exchange.fetchOHLCV('IOTA/USDT', '1m', since = tempo, limit = 100)
