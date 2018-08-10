@@ -1,8 +1,7 @@
-const ccxt = require('ccxt');
+const ccxt = require('ccxt')
 
 const listAllExchanges = (req, res, next) => {
-
-    res.status(200).json({ exchanges: ccxt.exchanges });
+  res.status(200).json({ exchanges: ccxt.exchanges })
 }
 
-module.exports = { listAllExchanges };
+module.exports = { listAllExchanges }

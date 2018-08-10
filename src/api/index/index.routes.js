@@ -1,13 +1,13 @@
-const express = require('express');
-const auth = require('../../config/auth');
+const express = require('express')
+const auth = require('../../config/auth')
 
 module.exports = function (server) {
-  const indexController = require('../index/index.controller');
+  const indexController = require('../index/index.controller')
 
-  const protectedRoutes = express.Router();
-  const openRoutes = express.Router();
+  const protectedRoutes = express.Router()
+  const openRoutes = express.Router()
 
-  server.use('/', openRoutes);
+  server.use('/', openRoutes)
 
-  openRoutes.get('/', indexController.index);
-};
+  openRoutes.get('/', indexController.index)
+}

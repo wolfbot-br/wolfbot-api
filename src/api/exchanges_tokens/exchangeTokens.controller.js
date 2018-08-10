@@ -1,41 +1,39 @@
-const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model');
+const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model')
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
-    const errors = [];
-    _.forIn(dbErrors.errors, error => errors.push(error.message));
-    return res.status(400).json({ errors });
-};
+  const errors = []
+  _.forIn(dbErrors.errors, error => errors.push(error.message))
+  return res.status(400).json({ errors })
+}
 
 // Método que retorna uma credencial
 const index = (req, res, next) => {
+  const usuario = req.query.id_usuario
 
-    const usuario = req.query.id_usuario
-
-    exchangeToken.findOne({ 'usuario.id_usuario': usuario }, { api_key: 0, secret: 0 }, (err, query) => {
-        if (err) {
-            return sendErrorsFromDB(res, err);
-        } else {
-
-            if (query == null) {
-                res.status(200).json({
-                    id_exchange: '',
-                    nome_exchange: '',
-                    status: "406"
-                });
-            } else {
-                res.status(200).json({
-                    id_exchange: query.exchange.id_exchange,
-                    nome_exchange: query.exchange.nome_exchange,
-                    status: "200"
-                });
-            }
-        }
-    });
+  exchangeToken.findOne({ 'usuario.id_usuario': usuario }, { api_key: 0, secret: 0 }, (err, query) => {
+    if (err) {
+      return sendErrorsFromDB(res, err)
+    } else {
+      if (query == null) {
+        res.status(200).json({
+          id_exchange: '',
+          nome_exchange: '',
+          status: '406'
+        })
+      } else {
+        res.status(200).json({
+          id_exchange: query.exchange.id_exchange,
+          nome_exchange: query.exchange.nome_exchange,
+          status: '200'
+        })
+      }
+    }
+  })
 }
 
 /* Método que cria as credenciais no banco de dados
-    @params : 	
+    @params :
             "key": "",
             "secret": "",
             "id_usuario": "",
@@ -44,54 +42,53 @@ const index = (req, res, next) => {
             "nome_exchange": ""
 */
 const post = (req, res, next) => {
+  let ex = {
+    apiKey: req.body.key,
+    secret: req.body.secret,
+    usuario: { id_usuario: req.body.id_usuario, nome_usuario: req.body.nome_usuario },
+    exchange: { id_exchange: req.body.id_exchange, nome_exchange: req.body.nome_exchange },
+    status: req.body.status
+  }
 
-    let ex = {
-        apiKey: req.body.key,
-        secret: req.body.secret,
-        usuario: { id_usuario: req.body.id_usuario, nome_usuario: req.body.nome_usuario },
-        exchange: { id_exchange: req.body.id_exchange, nome_exchange: req.body.nome_exchange },
-        status: req.body.status
-    };
+  const nova_exchange = new exchangeToken({
+    api_key: ex.apiKey,
+    secret: ex.secret,
+    usuario: ex.usuario,
+    exchange: ex.exchange,
+    status: ex.status
+  })
 
-    const nova_exchange = new exchangeToken({
-        api_key: ex.apiKey,
-        secret: ex.secret,
-        usuario: ex.usuario,
-        exchange: ex.exchange,
-        status: ex.status
-    });
-
-    nova_exchange.save(err => {
-        if (err) {
-            res.status(500).json({
-                message: "Não foi possível cadastrar uma nova exchange",
-                status: "500"
-            });
-        } else {
-            res.status(201).json({
-                data: ex,
-                message: "Credenciais cadastradas com sucesso",
-                status: "201"
-            });
-        }
-    });
+  nova_exchange.save(err => {
+    if (err) {
+      res.status(500).json({
+        message: 'Não foi possível cadastrar uma nova exchange',
+        status: '500'
+      })
+    } else {
+      res.status(201).json({
+        data: ex,
+        message: 'Credenciais cadastradas com sucesso',
+        status: '201'
+      })
+    }
+  })
 }
 
 /* Método que retorna altera uma informação da exchange
     @params : nome, id
 */
 const put = (req, res, next) => {
-    res.send({ message: "Não implementado ainda" });
+  res.send({ message: 'Não implementado ainda' })
 }
 
 /* Método que exclui uma exchange */
 const exclusao = (req, res, next) => {
-    res.send({ message: 'Não implementado ainda' });
+  res.send({ message: 'Não implementado ainda' })
 }
 
 module.exports = {
-    index,
-    post,
-    put,
-    exclusao
-};
+  index,
+  post,
+  put,
+  exclusao
+}

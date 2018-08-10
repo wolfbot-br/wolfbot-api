@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon",
     "start": "pm2 start src/app.js --name wolfbot-backend",
-    "format": "prettier --write '**/*.{js,jsx}'"
+    "format": "prettier --write '**/*.{js,jsx}'",
+    "postinstall": "npm prune"
   },
   "repository": {
     "type": "git",
@@ -25,11 +26,6 @@
     "ccxt": "^1.14.301",
     "consign": "^0.1.6",
     "dotenv-safe": "^6.0.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
     "express": "^4.16.3",
     "express-query-int": "^1.0.1",
     "jsonwebtoken": "^7.3.0",
@@ -47,6 +43,7 @@
   },
   "devDependencies": {
     "nodemon": "^1.17.3",
-    "prettier": "^1.12.1"
+    "prettier": "^1.12.1",
+    "standard": "^11.0.1"
   }
 }

@@ -1,14 +1,14 @@
 const validade_exchange = exchange => {
-    const errors = [];
+  const errors = []
 
-    if (!exchange) {
-        errors.push(Object.assign({}, {
-            message: 'Informe o nome da exchange',
-            status: "400"
-        }));
-    }
+  if (!exchange) {
+    errors.push(Object.assign({}, {
+      message: 'Informe o nome da exchange',
+      status: '400'
+    }))
+  }
 
-    return errors;
-};
+  return errors
+}
 
-module.exports = { validade_exchange };
+module.exports = { validade_exchange }

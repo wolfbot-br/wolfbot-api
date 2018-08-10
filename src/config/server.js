@@ -1,13 +1,13 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const allowCors = require('./cors');
-const consign = require('consign');
+const bodyParser = require('body-parser')
+const express = require('express')
+const allowCors = require('./cors')
+const consign = require('consign')
 
-const app = express();
+const app = express()
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(allowCors);
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(allowCors)
 
 consign()
   .include('/src/infraestrutura/mongo/index.js')
@@ -19,6 +19,6 @@ consign()
   .then('/src/api/exchange')
   .then('/src/api/exchanges_tokens')
   .then('/src/api/bot')
-  .into(app);
+  .into(app)
 
-module.exports = app;
+module.exports = app

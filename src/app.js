@@ -1,10 +1,10 @@
 /* importar as configurações do servidor */
-var app = require('../src/config/server');
+var app = require('../src/config/server')
 
-//porta de conexão
-const port = 8080;
+// porta de conexão
+const port = 8080
 
-//ouvindo o servidor
+// ouvindo o servidor
 app.listen(port, function () {
-  console.log(`Wofboot API - Executando na porta ${port}`);
-});
+  console.log(`Wofboot API - Executando na porta ${port}`)
+})
