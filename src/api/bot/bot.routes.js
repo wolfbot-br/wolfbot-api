@@ -10,6 +10,6 @@ module.exports = function (server) {
   // protectedRoutes.use(auth);
 
   server.use('/bot', openRoutes)
-  openRoutes.get('/', botController.index)
+  openRoutes.get('/', botController.teste)
   openRoutes.put('/', botController.monitoramento)
 }

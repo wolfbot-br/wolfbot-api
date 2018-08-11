@@ -4,9 +4,22 @@ const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.
 const utilService = require('../util/util.service')
 const serviceBot = require('../bot/bot.service')
 const exchangeValidation = require('../exchanges/exchanges.validation')
+const candle = require('./load.candles')
 
 const index = async (req, res, next) => {
   res.send('<h1 style="text-align:center;">Monitoramento - WOLFBOT</h1>')
+}
+
+const teste = async (req, res, next) => {
+
+  try {
+    candle.loadCandles('bittrex', 'BTC/USDT', 10, '5m', 5000)
+  } catch (e) {
+    res.status(400).json({
+      'message': e.message,
+      'status': '400'
+    })
+  }
 }
 
 const monitoramento = async (req, res, next) => {
@@ -86,11 +99,11 @@ const monitoramento = async (req, res, next) => {
           })
         }
       },
-      10000
+        10000
       )
     }
 
-    function response (msg, resolve) {
+    function response(msg, resolve) {
       res.status(200).json({
         'message': msg,
         'status': '200'
@@ -104,4 +117,4 @@ const monitoramento = async (req, res, next) => {
   }
 }
 
-module.exports = { index, monitoramento }
+module.exports = { index, monitoramento, teste }
