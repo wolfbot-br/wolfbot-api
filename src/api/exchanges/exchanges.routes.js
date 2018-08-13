@@ -13,6 +13,7 @@ module.exports = function (server) {
   server.use('/exchanges', openRoutes)
 
   // PUBLIC METHODS
+  openRoutes.get('/loadExchanges', exchangeController.loadExchanges)
   openRoutes.get('/structure', exchangeController.structure)
   openRoutes.get('/symbols', exchangeController.symbols)
   openRoutes.get('/currencies', exchangeController.currencies)

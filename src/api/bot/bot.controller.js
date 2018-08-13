@@ -1,19 +1,21 @@
 const ccxt = require('ccxt')
 const tulind = require('tulind')
-const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 const utilService = require('../util/util.service')
 const serviceBot = require('../bot/bot.service')
 const exchangeValidation = require('../exchanges/exchanges.validation')
-const candle = require('./load.candles')
+const bot = require('./bot.heart')
 
 const index = async (req, res, next) => {
   res.send('<h1 style="text-align:center;">Monitoramento - WOLFBOT</h1>')
 }
 
-const teste = async (req, res, next) => {
+//requisição que aciona ou desliga o robo
+const acionarRobo = async (req, res, next) => {
 
+  let botaoAcionar = true
   try {
-    candle.loadCandles('bittrex', 'BTC/USDT', 10, '5m', 5000)
+    bot.roboLigado(botaoAcionar)
   } catch (e) {
     res.status(400).json({
       'message': e.message,
@@ -117,4 +119,4 @@ const monitoramento = async (req, res, next) => {
   }
 }
 
-module.exports = { index, monitoramento, teste }
+module.exports = { acionarRobo, monitoramento }

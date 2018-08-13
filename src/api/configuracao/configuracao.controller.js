@@ -1,4 +1,4 @@
-const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -11,7 +11,7 @@ const sendErrorsFromDB = (res, dbErrors) => {
 const index = (req, res, next) => {
   const usuario = req.query.id_usuario
 
-  exchangeToken.findOne({ 'usuario.id_usuario': usuario }, { api_key: 0, secret: 0 }, (err, query) => {
+  configuracao.findOne({ 'usuario.id_usuario': usuario }, { api_key: 0, secret: 0 }, (err, query) => {
     if (err) {
       return sendErrorsFromDB(res, err)
     } else {
@@ -50,7 +50,7 @@ const post = (req, res, next) => {
     status: req.body.status
   }
 
-  const nova_exchange = new exchangeToken({
+  const nova_exchange = new configuracao({
     api_key: ex.apiKey,
     secret: ex.secret,
     usuario: ex.usuario,
