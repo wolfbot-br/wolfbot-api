@@ -1,4 +1,4 @@
-const configuracao = require('../../infraestrutura/mongo/models/exchangesTokens.model')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 
 const stop = (play, params) => {
   clearInterval(play)

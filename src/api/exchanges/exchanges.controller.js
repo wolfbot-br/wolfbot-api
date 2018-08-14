@@ -1,9 +1,23 @@
 const ccxt = require('ccxt')
-const exchangeToken = require('../../infraestrutura/mongo/models/exchangesTokens.model')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 const exchangeValidation = require('../exchanges/exchanges.validation')
 const utilService = require('../util/util.service')
 
+
 // # PUBLIC METHODS /
+
+// Método que retorna todas as exchanges que bot trabalha
+const loadExchanges = (req, res, next) => {
+  const exchanges = ccxt.exchanges
+  const dataExchanges = exchanges.map(function (e) {
+    return { value: e, label: e }
+  })
+
+  res.status(200).json({
+    data: dataExchanges,
+    status: '200'
+  })
+}
 
 const structure = async (req, res, next) => {
   try {
@@ -223,7 +237,7 @@ const fetchBalance = async (req, res, next) => {
     exchangeValidation.validarDados(params)
 
     // Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
+    const credenciais = await configuracao
       .findOne({ 'usuario.id_usuario': params.id_usuario })
       .where({ 'exchange.id_exchange': params.id_exchange })
 
@@ -264,7 +278,7 @@ const orderBuy = async (req, res, next) => {
     exchangeValidation.validarDados(params)
 
     // Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
+    const credenciais = await configuracao
       .findOne({ 'usuario.id_usuario': params.id_usuario })
       .where({ 'exchange.id_exchange': params.id_exchange })
 
@@ -313,7 +327,7 @@ const orderSell = async (req, res, next) => {
     exchangeValidation.validarDados(params)
 
     // Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
+    const credenciais = await configuracao
       .findOne({ 'usuario.id_usuario': params.id_usuario })
       .where({ 'exchange.id_exchange': params.id_exchange })
 
@@ -361,7 +375,7 @@ const openOrders = async (req, res, next) => {
     exchangeValidation.validarDados(params)
 
     // Um dos melhores jeitos de fazer um select
-    const credenciais = await exchangeToken
+    const credenciais = await configuracao
       .findOne({ 'usuario.id_usuario': params.id_usuario })
       .where({ 'exchange.id_exchange': params.id_exchange })
 
@@ -390,6 +404,7 @@ const openOrders = async (req, res, next) => {
 }
 
 module.exports = {
+  loadExchanges,
   loadMarkets,
   getMarketStructureBySimbol,
   getMarketIdBySimbol,
