@@ -1,5 +1,5 @@
 steps:
-- name: 'us.gcr.io/wolfbot-backend-dev2/appengine/default.20180815t025302:latest'
-  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/appengine/default.20180815t025302:latest', '.' ]
+- name: 'us.gcr.io/wolfbot-backend-dev2/appengine/default'
+  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/appengine/default', '.' ]
 images:
-- 'us.gcr.io/$PROJECT_ID/appengine/default.20180815t025302:latest'
+- 'us.gcr.io/$PROJECT_ID/appengine/default'
