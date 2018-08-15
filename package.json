@@ -46,5 +46,8 @@
     "nodemon": "^1.17.3",
     "prettier": "^1.12.1",
     "standard": "^11.0.1"
+  },
+  "engines": {
+    "node": "8.9.4"
   }
 }
