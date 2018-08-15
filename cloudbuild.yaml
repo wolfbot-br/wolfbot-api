@@ -1,5 +1,5 @@
 steps:
 - name: 'us.gcr.io/$PROJECT_ID/appengine/default.20180815t025302:latest'
-  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA, '$REPO_NAME' ]
+  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA', '$REPO_NAME' ]
 images:
 - 'us.gcr.io/$PROJECT_ID/wolfbot-api'
