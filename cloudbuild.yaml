@@ -1,5 +1,5 @@
 steps:
-- name: 'us.gcr.io/wolfbot-backend-dev2/appengine/default'
-  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/appengine/default', '.' ]
+- name: 'us.gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'us.gcr.io/$PROJECT_ID/appengine/wolfbot-api:latest', '.' ]
 images:
-- 'us.gcr.io/$PROJECT_ID/appengine/default'
+- 'us.gcr.io/$PROJECT_ID/appengine/wolfbot-api'
