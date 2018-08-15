@@ -11,6 +11,17 @@ function roboLigado(status) {
             parMoedas: 'BTC/USDT',
             quantidadePeriodos: 10,
             tamanhoCandle: '5m',
+            estrategia: {
+                sinalExterno: {},
+                indicadores: {
+                    sma: {
+                        nome: 'sma'
+                    },
+                    macd: {
+                        nome: 'macd'
+                    }
+                }
+            },
             intervaloMonitoramento: 10000
         }
         acionarMonitoramento(configuracao)

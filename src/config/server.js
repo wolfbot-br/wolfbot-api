@@ -2,12 +2,14 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const allowCors = require('./cors')
 const consign = require('consign')
+const helmet = require('helmet')
 
 const app = express()
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(allowCors)
+app.use(helmet())
 
 consign()
   .include('/src/infraestrutura/mongo/index.js')
