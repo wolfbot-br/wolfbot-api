@@ -1,5 +1,5 @@
 steps:
-- name: 'us.gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
+- name: 'us.gcr.io/$PROJECT_ID/$REPO_NAME'
   args: [ 'build', '-t', '.' ]
 images:
 - 'us.gcr.io/$PROJECT_ID/wolfbot-api'
