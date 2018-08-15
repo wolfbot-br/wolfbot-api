@@ -1,4 +1,4 @@
 steps:
-- name: 'us.gcr.io/$PROJECT_ID/appengine/default.20180815t025302:latest'
-images:
-- 'us.gcr.io/$PROJECT_ID/wolfbot-api'
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'us.gcr.io/$PROJECT_ID/wolfbot-api', '$REPO_NAME/master']
+images: ['gcr.io/$PROJECT_ID/wolfbot-api']
