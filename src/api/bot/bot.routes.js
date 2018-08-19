@@ -11,5 +11,4 @@ module.exports = function (server) {
 
   server.use('/bot', openRoutes)
   openRoutes.post('/acionarRobo', botController.acionarRobo)
-  openRoutes.put('/', botController.monitoramento)
 }

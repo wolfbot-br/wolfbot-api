@@ -1,7 +1,6 @@
 const ccxt = require('ccxt')
 const moment = require('moment')
-const lodash = require('lodash')
-const tulind = require('tulind')
+const strategy = require('./bot.strategies')
 
 function roboLigado(status) {
     this.status = status
@@ -15,10 +14,21 @@ function roboLigado(status) {
                 sinalExterno: {},
                 indicadores: {
                     sma: {
-                        nome: 'sma'
+                        nome: 'sma',
+                        status: true,
+                        period: 3
                     },
                     macd: {
-                        nome: 'macd'
+                        nome: 'macd',
+                        status: true,
+                        shortPeriod: 2,
+                        longPeriod: 5,
+                        signalPeriod: 9
+                    },
+                    rsi: {
+                        nome: 'rsi',
+                        status: true,
+                        period: 5
                     }
                 }
             },
@@ -47,17 +57,8 @@ function acionarMonitoramento(configuracao) {
         async function load() {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(configuracao.parMoedas, configuracao.tamanhoCandle, since = tempo.valueOf(), limit = 1000)
-            const close = lodash.flatten(candle.map(function (value) {
-                return value.filter(function (value2, index2) {
-                    if (index2 === 4) {
-                        return value2
-                    }
-                })
-            }))
 
-            tulind.indicators.sma.indicator([close], [3], function (err, results) {
-                console.log('Resultado é:' + results[0])
-            })
+            strategy.loadStrategy(config = configuracao.estrategia.indicadores, candle)
 
         }, configuracao.intervaloMonitoramento
     )

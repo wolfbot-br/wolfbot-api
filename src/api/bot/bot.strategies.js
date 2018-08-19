@@ -1,64 +1,55 @@
 const lodash = require('lodash')
 const tulind = require('tulind')
 
-// Wrapper that executes a tulip indicator
-let execute = function (callback, params) {
-    let tulindCallback = function (err, result) {
-        if (err) return callback(err);
-        let table = {}
-        for (let i = 0; i < params.results.length; ++i) {
-            table[params.results[i]] = result[i];
-        }
-        callback(null, table);
-    };
+function loadStrategy(config, candle) {
 
-    return params.indicator.indicator(params.inputs, params.options, tulindCallback);
-}
+    const close = lodash.flatten(candle.map(function (value) {
+        return value.filter(function (value2, index2) {
+            if (index2 === 4) {
+                return value2
+            }
+        })
+    }))
 
-// Helper that makes sure all required parameters
-// for a specific talib indicator are present.
-let verifyParams = (methodName, params) => {
-    let requiredParams = methods[methodName].requires;
+    if (config.sma.status) {
+        tulind.indicators.sma.indicator([close], [config.sma.period], function (err, result) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('Resultado SMA')
+                console.log(result[0])
+            }
+        })
+    }
 
-    lodash.each(requiredParams, paramName => {
-        if (!lodash.has(params, paramName))
-            throw tulindError + methodName + ' requires ' + paramName + '.';
+    if (config.macd.status) {
 
-        let val = params[paramName];
+        const short = config.macd.shortPeriod
+        const long = config.macd.longPeriod
+        const signal = config.macd.signalPeriod
 
-        if (!lodash.isNumber(val))
-            throw tulindError + paramName + ' needs to be a number';
-    });
-}
+        tulind.indicators.macd.indicator([close], [short, long, signal], function (err, result) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('Resultado MACD')
+                console.log(result[0])
+                console.log(result[1])
+                console.log(result[2])
+            }
+        })
+    }
 
-var methods = {};
-
-methods.macd = {
-    requires: ['optInFastPeriod', 'optInSlowPeriod', 'optInSignalPeriod'],
-    create: (params) => {
-        verifyParams('macd', params);
-
-        return (data, callback) => execute(callback, {
-            indicator: tulind.indicators.macd,
-            inputs: [data.close],
-            options: [params.optInFastPeriod, params.optInSlowPeriod, params.optInSignalPeriod],
-            results: ['macd', 'macdSignal', 'macdHistogram'],
-        });
+    if (config.rsi.status) {
+        tulind.indicators.rsi.indicator([close], [config.rsi.period], function (err, result) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('Resultado RSI')
+                console.log(result[0])
+            }
+        })
     }
 }
 
-methods.sma = {
-    requires: ['optInTimePeriod'],
-    create: (params) => {
-        verifyParams('sma', params);
-
-        return (data, callback) => execute(callback, {
-            indicator: tulind.indicators.sma,
-            inputs: [data.close],
-            options: [params.optInTimePeriod],
-            results: ['result'],
-        });
-    }
-}
-
-module.exports = methods
+module.exports = { loadStrategy }
