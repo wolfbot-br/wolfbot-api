@@ -7,77 +7,70 @@ const robo = require('set-interval')
 function roboLigado(params) {
 
     const configuracao = {
-        const configuracao = {
-            exchange: 'bittrex',
-            parMoedas: 'BTC/USDT',
-            quantidadePeriodos: 10,
-            tamanhoCandle: '5m',
-            estrategia: {
-                sinalExterno: {},
-                indicadores: {
-                    sma: {
-                        nome: 'sma',
-                        status: true,
-                        period: 3
-                    },
-                    macd: {
-                        nome: 'macd',
-                        status: true,
-                        shortPeriod: 2,
-                        longPeriod: 5,
-                        signalPeriod: 9
-                    },
-                    rsi: {
-                        nome: 'rsi',
-                        status: true,
-                        period: 5
-                    }
+        exchange: 'bittrex',
+        parMoedas: 'BTC/USDT',
+        quantidadePeriodos: 10,
+        tamanhoCandle: '5m',
+        estrategia: {
+            sinalExterno: {},
+            indicadores: {
+                sma: {
+                    nome: 'sma',
+                    status: true,
+                    period: 3
+                },
+                macd: {
+                    nome: 'macd',
+                    status: true,
+                    shortPeriod: 2,
+                    longPeriod: 5,
+                    signalPeriod: 9
+                },
+                rsi: {
+                    nome: 'rsi',
+                    status: true,
+                    period: 5
                 }
-            },
-            intervaloMonitoramento: 10000,
-            chave: params.chave
-        }
-        
+            }
+        },
+        intervaloMonitoramento: 10000,
+        chave: params.chave
     }
-
     acionarMonitoramento(configuracao)
 }
 
 function roboDesligado(params) {
 
     const configuracao = {
-        const configuracao = {
-            exchange: 'bittrex',
-            parMoedas: 'BTC/USDT',
-            quantidadePeriodos: 10,
-            tamanhoCandle: '5m',
-            estrategia: {
-                sinalExterno: {},
-                indicadores: {
-                    sma: {
-                        nome: 'sma',
-                        status: true,
-                        period: 3
-                    },
-                    macd: {
-                        nome: 'macd',
-                        status: true,
-                        shortPeriod: 2,
-                        longPeriod: 5,
-                        signalPeriod: 9
-                    },
-                    rsi: {
-                        nome: 'rsi',
-                        status: true,
-                        period: 5
-                    }
+        exchange: 'bittrex',
+        parMoedas: 'BTC/USDT',
+        quantidadePeriodos: 10,
+        tamanhoCandle: '5m',
+        estrategia: {
+            sinalExterno: {},
+            indicadores: {
+                sma: {
+                    nome: 'sma',
+                    status: true,
+                    period: 3
+                },
+                macd: {
+                    nome: 'macd',
+                    status: true,
+                    shortPeriod: 2,
+                    longPeriod: 5,
+                    signalPeriod: 9
+                },
+                rsi: {
+                    nome: 'rsi',
+                    status: true,
+                    period: 5
                 }
-            },
-            intervaloMonitoramento: 10000,
-            chave: params.chave
-        }
+            }
+        },
+        intervaloMonitoramento: 10000,
+        chave: params.chave
     }
-
     robo.clear(configuracao.chave)
 }
 
