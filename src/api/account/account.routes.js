@@ -18,4 +18,5 @@ module.exports = function (server) {
   openRoutes.post('/passwordRecovery', accountController.passwordRecovery)
   openRoutes.post('/changepasswordpermition', accountController.changePasswordPermition)
   openRoutes.post('/changepassword', accountController.changePassword)
+  openRoutes.post('/active', accountController.activeAccount)
 }
