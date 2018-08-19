@@ -9,5 +9,4 @@ const configuracao = new mongoose.Schema({
   chave: { type: String, require: true }
 })
 
-/* o nome da colection está configuracoe, porque quando cria a collection no banco ele coloca um s, deixando no plural*/
-module.exports = mongoose.model('configuracoe', configuracao)
+module.exports = mongoose.model('configuracoes', configuracao)
