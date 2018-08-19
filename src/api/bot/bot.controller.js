@@ -9,11 +9,19 @@ const acionarRobo = async (req, res, next) => {
       chave: req.body.chave
     }
 
-    if (params.status == 'on')
+    if (params.status == 'on') {
       bot.roboLigado(params)
-    else if (params.status == 'off')
+      res.status(200).json({
+        'message': 'Robo Acionado',
+        'status': '200'
+      })
+    } else if (params.status == 'off') {
       bot.roboDesligado(params)
-    else
+      res.status(200).json({
+        'message': 'Robo Desligado',
+        'status': '200'
+      })
+    } else
       throw new Error('ação inválida')
 
   } catch (e) {

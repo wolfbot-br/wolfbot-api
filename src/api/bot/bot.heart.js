@@ -1,8 +1,7 @@
 const ccxt = require('ccxt')
 const moment = require('moment')
-const lodash = require('lodash')
-const tulind = require('tulind')
 const robo = require('set-interval')
+const strategy = require('./bot.strategies')
 
 function roboLigado(params) {
 
