@@ -13,7 +13,7 @@ const AccountLog = require('../../infraestrutura/mongo/models/account.log.model'
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model')
 
 const sendEmailPasswordRecovery = (usuario, res) => {
-  const hash = randStr.generate(32)
+  const hash = randStr.generate(64)
   const log = new AccountLog({
     usuario: usuario.email,
     hash: hash,
@@ -251,7 +251,7 @@ const changePassword = (res, next, changePasswordHash, password) => {
       })
     } else {
       AccountLog.update({ usuario: log.usuario, hash: changePasswordHash }, { pendente: false }, { multi: true },
-        (error, response) => {
+        (err, response) => {
           if (err) {
             return sendErrorsFromDB(response, err)
           } else {
@@ -262,7 +262,34 @@ const changePassword = (res, next, changePasswordHash, password) => {
     }
   })
 }
-
+const activeAccount = (res, next, activeAccountHash) => {
+  AccountLog.findOne({ hash: activeAccountHash, pendente: true }, (err, log) => {
+    if (err) {
+      return sendErrorsFromDB(res, err)
+    }
+    if (!log) {
+      return res.status(400).json({
+        sucess: false,
+        errors: [{ message: 'Erro ao ativar a conta' }]
+      })
+    }
+    else {
+      AccountLog.update({ usuario: log.usuario, hash: activeAccountHash },
+        { pendente: false, dtExpiracao: moment().subtract(3, 'hours').format(), emailConfirmado: true }
+        , { multi: true }, (err, response) => {
+          if (err) {
+            return sendErrorsFromDB(response, err)
+          }
+          else {
+            return res.status(200).json({
+              sucess: true,
+              errors: []
+            })
+          }
+        })
+    }
+  })
+}
 const signup = (res, errors, user) => {
   Usuario.findOne({ email: user.email }, (err, usuario) => {
     if (err) {
@@ -285,13 +312,13 @@ const signup = (res, errors, user) => {
           return sendErrorsFromDB(res, req)
         }
         else {
-          const hash = randStr.generate(32)
+          const hash = randStr.generate(64)
           const log = new AccountLog({
             usuario: novo_usuario.email,
             hash: hash,
             emailConfirmado: false,
             dtCriacao: moment().subtract(3, 'hours').format(),
-            dtExpiracao: moment().subtract(2, 'hours').format(),
+            dtExpiracao: null,
             dtVerificacao: moment().subtract(3, 'hours').format(),
             dtConfirmacao: null,
             logTipo: 'Cadastro do usuário',
@@ -333,7 +360,7 @@ const signup = (res, errors, user) => {
                   `<p style='text-align:center'>Wolfbot</p><br />` +
                   `<p>Olá, ${novo_usuario.nome}, Bem-vindo ao Wolfbot</h3>.<br />` +
                   `<p>Seja bem-vindo ao Wolfbot. Para Ativar sua conta você deve clicar no link abaixo:<br />` +
-                  `<a href = "http://localhost:3000/#/active?parameter=${hash}">Ativar minha conta</a><br/></p >`
+                  `<a href = "http://localhost:3000/#/login?parameter=${hash}">Ativar minha conta</a><br/></p >`
               }
 
               transporter.sendMail(mailOptions, function (error, info) {
@@ -381,5 +408,6 @@ module.exports =
     signup,
     validateToken,
     login,
-    changePassword
+    changePassword,
+    activeAccount
   }

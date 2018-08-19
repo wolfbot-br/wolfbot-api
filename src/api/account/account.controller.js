@@ -59,6 +59,11 @@ const changePassword = (req, res, next) => {
   }
 }
 
+const activeAccount = (req, res, next) => {
+  const activeAccountHash = req.body.activeAccountHash
+  accountService.activeAccount(res, next, activeAccountHash)
+}
+
 module.exports =
   {
     login,
@@ -66,5 +71,6 @@ module.exports =
     validateToken,
     passwordRecovery,
     changePasswordPermition,
-    changePassword
+    changePassword,
+    activeAccount
   }
