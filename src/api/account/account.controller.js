@@ -60,6 +60,7 @@ const changePassword = (req, res, next) => {
 }
 
 const activeAccount = (req, res, next) => {
+  console.log(req.body)
   const activeAccountHash = req.body.activeAccountHash
   accountService.activeAccount(res, next, activeAccountHash)
 }
