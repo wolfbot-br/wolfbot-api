@@ -144,22 +144,34 @@ const login = (res, next, email, password) => {
   Usuario.findOne({ email }, (err, model) => {
     if (err) {
       return sendErrorsFromDB(res, err)
-    } else if (model && bcrypt.compareSync(password, model.password)) {
-      const token = jwt.sign(model, env.authSecret, {
-        expiresIn: '1h'
-      })
-      res.status(200).json({
-        id: `${model.id}`,
-        nome: `${model.nome}`,
-        email: `${model.email}`,
-        token: `${token}`,
-        message: 'Ok',
-        success: 'true'
-      })
-    } else {
+    } else if (!(model && bcrypt.compareSync(password, model.password))) {
       return res
         .status(401)
         .json({ errors: [{ message: 'Email ou senha inválidos' }], success: false })
+    } else {
+      AccountLog.findOne({ usuario: email, pendente: false, dtConfirmacao: { $ne: null }, logTipo: 'Cadastro do usuário' },
+        (err, model) => {
+          if (err || !model) {
+            return res.status(400).json({
+              success: false,
+              errors: [{ message: 'Sua conta não foi ativada, verifique seu email' }]
+            })
+          }
+          else {
+            const token = jwt.sign(model, env.authSecret, {
+              expiresIn: '1h'
+            })
+            res.status(200).json({
+              id: `${model.id}`,
+              nome: `${model.nome}`,
+              email: `${model.email}`,
+              token: `${token}`,
+              message: 'Ok',
+              success: 'true'
+            })
+          }
+        }
+      )
     }
   })
 }
@@ -270,12 +282,12 @@ const activeAccount = (res, next, activeAccountHash) => {
     if (!log) {
       return res.status(400).json({
         sucess: false,
-        errors: [{ message: 'Erro ao ativar a conta' }]
+        errors: [{ message: 'Sua conta já está ativada ou ocorreu um erro!' }]
       })
     }
     else {
       AccountLog.update({ usuario: log.usuario, hash: activeAccountHash },
-        { pendente: false, dtExpiracao: moment().subtract(3, 'hours').format(), emailConfirmado: true }
+        { pendente: false, dtConfirmacao: moment().subtract(3, 'hours').format(), emailConfirmado: true }
         , { multi: true }, (err, response) => {
           if (err) {
             return sendErrorsFromDB(response, err)
