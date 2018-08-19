@@ -47,7 +47,8 @@ const post = (req, res, next) => {
     secret: req.body.secret,
     usuario: { id_usuario: req.body.id_usuario, nome_usuario: req.body.nome_usuario },
     exchange: { id_exchange: req.body.id_exchange, nome_exchange: req.body.nome_exchange },
-    status: req.body.status
+    status: req.body.status,
+    chave: req.body.chave
   }
 
   const nova_exchange = new configuracao({
@@ -55,7 +56,8 @@ const post = (req, res, next) => {
     secret: ex.secret,
     usuario: ex.usuario,
     exchange: ex.exchange,
-    status: ex.status
+    status: ex.status,
+    chave: ex.chave
   })
 
   nova_exchange.save(err => {

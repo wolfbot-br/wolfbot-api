@@ -1,10 +1,12 @@
 const ccxt = require('ccxt')
 const moment = require('moment')
-const strategy = require('./bot.strategies')
+const lodash = require('lodash')
+const tulind = require('tulind')
+const robo = require('set-interval')
 
-function roboLigado(status) {
-    this.status = status
-    if (this.status) {
+function roboLigado(params) {
+
+    const configuracao = {
         const configuracao = {
             exchange: 'bittrex',
             parMoedas: 'BTC/USDT',
@@ -32,13 +34,55 @@ function roboLigado(status) {
                     }
                 }
             },
-            intervaloMonitoramento: 10000
+            intervaloMonitoramento: 10000,
+            chave: params.chave
         }
-        acionarMonitoramento(configuracao)
+        
     }
+
+    acionarMonitoramento(configuracao)
+}
+
+function roboDesligado(params) {
+
+    const configuracao = {
+        const configuracao = {
+            exchange: 'bittrex',
+            parMoedas: 'BTC/USDT',
+            quantidadePeriodos: 10,
+            tamanhoCandle: '5m',
+            estrategia: {
+                sinalExterno: {},
+                indicadores: {
+                    sma: {
+                        nome: 'sma',
+                        status: true,
+                        period: 3
+                    },
+                    macd: {
+                        nome: 'macd',
+                        status: true,
+                        shortPeriod: 2,
+                        longPeriod: 5,
+                        signalPeriod: 9
+                    },
+                    rsi: {
+                        nome: 'rsi',
+                        status: true,
+                        period: 5
+                    }
+                }
+            },
+            intervaloMonitoramento: 10000,
+            chave: params.chave
+        }
+    }
+
+    robo.clear(configuracao.chave)
 }
 
 function acionarMonitoramento(configuracao) {
+
     exchangeCCXT = new ccxt[configuracao.exchange]()
     let periodo = ''
     const unidadeTempo = configuracao.tamanhoCandle.substr(-1)
@@ -51,18 +95,20 @@ function acionarMonitoramento(configuracao) {
     } else {
         periodo = 'days'
     }
+
     const tempo = moment().subtract(configuracao.quantidadePeriodos * unidadeTamanho, periodo)
     let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-    setInterval(
+
+    robo.start(
         async function load() {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(configuracao.parMoedas, configuracao.tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
             strategy.loadStrategy(config = configuracao.estrategia.indicadores, candle)
 
-        }, configuracao.intervaloMonitoramento
+        }, configuracao.intervaloMonitoramento, configuracao.chave
     )
 }
 
-module.exports = { roboLigado }
+module.exports = { roboLigado, roboDesligado }
 
