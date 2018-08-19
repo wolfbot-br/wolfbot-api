@@ -13,9 +13,20 @@ const index = async (req, res, next) => {
 //requisição que aciona ou desliga o robo
 const acionarRobo = async (req, res, next) => {
 
-  let botaoAcionar = true
   try {
-    bot.roboLigado(botaoAcionar)
+
+    params = {
+      status: req.body.status,
+      chave: req.body.chave
+    }
+
+    if (params.status == 'on')
+      bot.roboLigado(params)
+    else if (params.status == 'off')
+      bot.roboDesligado(params)
+    else
+      throw new Error('ação inválida')
+
   } catch (e) {
     res.status(400).json({
       'message': e.message,

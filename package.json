@@ -38,6 +38,8 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "randomstring": "^1.1.5",
     "redis": "^2.8.0",
+    "set-interval": "^2.0.3",
+    "setinterval": "^0.2.0",
     "tulind": "^0.8.10"
   },
   "devDependencies": {

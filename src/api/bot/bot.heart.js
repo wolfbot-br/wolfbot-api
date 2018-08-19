@@ -2,22 +2,38 @@ const ccxt = require('ccxt')
 const moment = require('moment')
 const lodash = require('lodash')
 const tulind = require('tulind')
+const robo = require('set-interval')
 
-function roboLigado(status) {
-    this.status = status
-    if (this.status) {
-        const configuracao = {
-            exchange: 'bittrex',
-            parMoedas: 'BTC/USDT',
-            quantidadePeriodos: 10,
-            tamanhoCandle: '5m',
-            intervaloMonitoramento: 10000
-        }
-        acionarMonitoramento(configuracao)
+function roboLigado(params) {
+
+    const configuracao = {
+        exchange: 'bittrex',
+        parMoedas: 'BTC/USDT',
+        quantidadePeriodos: 10,
+        tamanhoCandle: '5m',
+        intervaloMonitoramento: 10000,
+        chave: params.chave
     }
+
+    acionarMonitoramento(configuracao)
+}
+
+function roboDesligado(params) {
+
+    const configuracao = {
+        exchange: 'bittrex',
+        parMoedas: 'BTC/USDT',
+        quantidadePeriodos: 10,
+        tamanhoCandle: '5m',
+        intervaloMonitoramento: 10000,
+        chave: params.chave
+    }
+
+    robo.clear(configuracao.chave)
 }
 
 function acionarMonitoramento(configuracao) {
+
     exchangeCCXT = new ccxt[configuracao.exchange]()
     const index = 4 // [ timestamp, open, high, low, close, volume ]
     let periodo = ''
@@ -31,9 +47,11 @@ function acionarMonitoramento(configuracao) {
     } else {
         periodo = 'days'
     }
+
     const tempo = moment().subtract(configuracao.quantidadePeriodos * unidadeTamanho, periodo)
     let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-    setInterval(
+
+    robo.start(
         async function load() {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(configuracao.parMoedas, configuracao.tamanhoCandle, since = tempo.valueOf(), limit = 1000)
@@ -51,9 +69,9 @@ function acionarMonitoramento(configuracao) {
                 console.log('Resultado é:' + results[0])
             })
 
-        }, configuracao.intervaloMonitoramento
+        }, configuracao.intervaloMonitoramento, configuracao.chave
     )
 }
 
-module.exports = { roboLigado }
+module.exports = { roboLigado, roboDesligado }
 
