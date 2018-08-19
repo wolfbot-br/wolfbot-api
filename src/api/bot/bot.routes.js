@@ -10,6 +10,5 @@ module.exports = function (server) {
   // protectedRoutes.use(auth);
 
   server.use('/bot', openRoutes)
-  openRoutes.put('/acionarRobo', botController.acionarRobo)
-  openRoutes.put('/', botController.monitoramento)
+  openRoutes.post('/acionarRobo', botController.acionarRobo)
 }
