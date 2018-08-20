@@ -33,9 +33,10 @@ function loadStrategy(config, candle) {
                 console.log(err)
             } else {
                 console.log('Resultado MACD')
-                console.log(result[0])
-                console.log(result[1])
-                console.log(result[2])
+                console.log('Preço ' + close.slice(-1))
+                console.log('linha MACD ' + result[0].slice(-1))
+                console.log('linha Sinal ' + result[1].slice(-1))
+                console.log('Histograma ' + result[2].slice(-1))
             }
         })
     }

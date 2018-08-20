@@ -8,14 +8,14 @@ function roboLigado(params) {
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 10,
+        quantidadePeriodos: 50,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
             indicadores: {
                 sma: {
                     nome: 'sma',
-                    status: true,
+                    status: false,
                     period: 3
                 },
                 macd: {
@@ -27,12 +27,12 @@ function roboLigado(params) {
                 },
                 rsi: {
                     nome: 'rsi',
-                    status: true,
+                    status: false,
                     period: 5
                 }
             }
         },
-        intervaloMonitoramento: 10000,
+        intervaloMonitoramento: 60000,
         chave: params.chave
     }
     acionarMonitoramento(configuracao)
@@ -43,31 +43,31 @@ function roboDesligado(params) {
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 10,
+        quantidadePeriodos: 50,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
             indicadores: {
                 sma: {
                     nome: 'sma',
-                    status: true,
+                    status: false,
                     period: 3
                 },
                 macd: {
                     nome: 'macd',
                     status: true,
-                    shortPeriod: 2,
-                    longPeriod: 5,
+                    shortPeriod: 12,
+                    longPeriod: 26,
                     signalPeriod: 9
                 },
                 rsi: {
                     nome: 'rsi',
-                    status: true,
+                    status: false,
                     period: 5
                 }
             }
         },
-        intervaloMonitoramento: 10000,
+        intervaloMonitoramento: 60000,
         chave: params.chave
     }
     robo.clear(configuracao.chave)
@@ -79,6 +79,8 @@ function acionarMonitoramento(configuracao) {
     let periodo = ''
     const unidadeTempo = configuracao.tamanhoCandle.substr(-1)
     const unidadeTamanho = Number.parseInt(configuracao.tamanhoCandle.substr(0))
+    const parMoedas = configuracao.parMoedas
+    const tamanhoCandle = configuracao.tamanhoCandle
 
     if (unidadeTempo === 'm') {
         periodo = 'minutes'
@@ -90,13 +92,12 @@ function acionarMonitoramento(configuracao) {
 
     const tempo = moment().subtract(configuracao.quantidadePeriodos * unidadeTamanho, periodo)
     let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
     robo.start(
         async function load() {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
-            const candle = await exchangeCCXT.fetchOHLCV(configuracao.parMoedas, configuracao.tamanhoCandle, since = tempo.valueOf(), limit = 1000)
+            const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
-            strategy.loadStrategy(config = configuracao.estrategia.indicadores, candle)
+            await strategy.loadStrategy(config = configuracao.estrategia.indicadores, candle)
 
         }, configuracao.intervaloMonitoramento, configuracao.chave
     )
