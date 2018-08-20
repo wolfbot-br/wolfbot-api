@@ -21,8 +21,9 @@ const acionarRobo = async (req, res, next) => {
         'message': 'Robo Desligado',
         'status': '200'
       })
-    } else
+    } else {
       throw new Error('ação inválida')
+    }
 
   } catch (e) {
     res.status(400).json({
