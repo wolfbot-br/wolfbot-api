@@ -1,6 +1,7 @@
 const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
+const chalk = require('chalk')
 
 function loadStrategy(config, candle) {
 
@@ -52,26 +53,26 @@ function loadStrategy(config, candle) {
                     down: -1,
                     persistence: 1
                 }
-                console.log('########## Resultado MACD ##########')
-                console.log('Preço = ' + preco.toFixed(8) + ' - ' + time.format())
-                console.log('linha MACD = ' + macd.toFixed(digits))
-                console.log('linha Sinal = ' + sinal.toFixed(digits))
-                console.log('Histograma = ' + histograma.toFixed(digits))
-                console.log('Diferença MACD / Sinal = ' + macdiff.toFixed(digits))
+                console.log(chalk.cyan('########## Resultado MACD ##########'))
+                console.log(chalk.magenta('Preço = ' + preco.toFixed(8) + ' - ' + time.format()))
+                console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
+                console.log(chalk.magenta('linha Sinal = ' + sinal.toFixed(digits)))
+                console.log(chalk.magenta('Histograma = ' + histograma.toFixed(digits)))
+                console.log(chalk.magenta('Diferença MACD / Sinal = ' + macdiff.toFixed(digits)))
 
                 // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
                 // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra
                 if (macd > 0 && macd < sinal) {
                     if (macdiff < tendencia.down) {
-                        console.log('SINAL DE VENDA')
+                        console.log(chalk.green('SINAL DE VENDA'))
                     }
                 } else if (macd < 0 && macd > sinal) {
                     macdiffPositivo = Math.abs(macdiff)
                     if (macdiffPositivo > tendencia.up) {
-                        console.log('SINAL DE COMPRA!')
+                        console.log(chalk.red('SINAL DE COMPRA!'))
                     }
                 } else {
-                    console.log('NEUTRO')
+                    console.log(chalk.yellow('NEUTRO'))
                 }
             }
         })

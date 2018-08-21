@@ -2,7 +2,8 @@ const ccxt = require('ccxt')
 const moment = require('moment')
 const robo = require('set-interval')
 const strategy = require('./bot.strategies')
-const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
+//const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
+const chalk = require('chalk')
 
 async function roboLigado(params) {
     /* Comentando para gravação do video */
@@ -38,7 +39,7 @@ async function roboLigado(params) {
         intervaloMonitoramento: 30000,
         chave: params.chave
     }
-    console.log('########## Robo Ligado ##########')
+    console.log(chalk.green('########## Robo Ligado ##########'))
     acionarMonitoramento(configuracao)
 }
 
@@ -75,7 +76,7 @@ async function roboDesligado(params) {
         intervaloMonitoramento: 10000,
         chave: params.chave
     }
-    console.log('########## Robo Desligado ##########')
+    console.log(chalk.red('########## Robo Desligado ##########'))
     robo.clear(configuracao.chave)
 }
 
