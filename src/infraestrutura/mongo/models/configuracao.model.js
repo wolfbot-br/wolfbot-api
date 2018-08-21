@@ -5,6 +5,7 @@ const configuracao = new mongoose.Schema({
   secret: { type: String, require: true },
   usuario: {},
   exchange: {},
+  estrategia: {},
   status: { type: String, require: true },
   chave: { type: String, require: true }
 })

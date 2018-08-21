@@ -5,8 +5,9 @@ const acionarRobo = async (req, res, next) => {
   try {
 
     params = {
-      status: req.body.status,
-      chave: req.body.chave
+      id_usuario: req.body.id_usuario || '',
+      status: req.body.status || '',
+      chave: req.body.chave || ''
     }
 
     if (params.status == 'on') {
@@ -32,8 +33,5 @@ const acionarRobo = async (req, res, next) => {
     })
   }
 }
-
-
-
 
 module.exports = { acionarRobo }
