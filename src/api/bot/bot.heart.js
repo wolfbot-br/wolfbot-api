@@ -81,7 +81,7 @@ async function roboDesligado(params) {
 
 function acionarMonitoramento(configuracao) {
 
-    let nome_exchange = configuracao.exchange.nome_exchange.toLowerCase()
+    let nome_exchange = configuracao.exchange.toLowerCase()
     exchangeCCXT = new ccxt[nome_exchange]()
 
     let periodo = ''

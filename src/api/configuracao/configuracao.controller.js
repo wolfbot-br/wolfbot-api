@@ -49,10 +49,7 @@ const post = (req, res, next) => {
       id_usuario: req.body.id_usuario || '',
       nome_usuario: req.body.nome_usuario || ''
     },
-    exchange: {
-      id_exchange: req.body.id_exchange || '',
-      nome_exchange: req.body.nome_exchange || ''
-    },
+    exchange: req.body.exchange || '',
     estrategia: {
       sinalExterno: {},
       indicadores: {
