@@ -229,7 +229,7 @@ const fetchBalance = async (req, res, next) => {
   try {
     params = {
       id_usuario: req.query.id_usuario,
-      exchange: 'bittrex'
+      exchange: 'bittrex' //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
     }
 
     let exchange = utilService.selecionarExchange(params.exchange)
