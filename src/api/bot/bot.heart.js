@@ -2,8 +2,11 @@ const ccxt = require('ccxt')
 const moment = require('moment')
 const robo = require('set-interval')
 const strategy = require('./bot.strategies')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 
-function roboLigado(params) {
+async function roboLigado(params) {
+    /* Comentando para gravação do video */
+    // const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
 
     const configuracao = {
         exchange: 'bittrex',
@@ -39,12 +42,13 @@ function roboLigado(params) {
     acionarMonitoramento(configuracao)
 }
 
-function roboDesligado(params) {
-
+async function roboDesligado(params) {
+    /* Comentando para gravação do video */
+    // const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 50,
+        quantidadePeriodos: 26,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
@@ -57,8 +61,8 @@ function roboDesligado(params) {
                 macd: {
                     nome: 'macd',
                     status: true,
-                    shortPeriod: 12,
-                    longPeriod: 26,
+                    shortPeriod: 2,
+                    longPeriod: 5,
                     signalPeriod: 9
                 },
                 rsi: {
@@ -68,7 +72,7 @@ function roboDesligado(params) {
                 }
             }
         },
-        intervaloMonitoramento: 60000,
+        intervaloMonitoramento: 10000,
         chave: params.chave
     }
     console.log('########## Robo Desligado ##########')
@@ -77,7 +81,9 @@ function roboDesligado(params) {
 
 function acionarMonitoramento(configuracao) {
 
-    exchangeCCXT = new ccxt[configuracao.exchange]()
+    let nome_exchange = configuracao.exchange.toLowerCase()
+    exchangeCCXT = new ccxt[nome_exchange]()
+
     let periodo = ''
     const unidadeTempo = configuracao.tamanhoCandle.substr(-1)
     const unidadeTamanho = Number.parseInt(configuracao.tamanhoCandle.substr(0))
