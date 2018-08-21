@@ -8,7 +8,7 @@ function roboLigado(params) {
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 50,
+        quantidadePeriodos: 26,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
@@ -32,9 +32,10 @@ function roboLigado(params) {
                 }
             }
         },
-        intervaloMonitoramento: 60000,
+        intervaloMonitoramento: 30000,
         chave: params.chave
     }
+    console.log('########## Robo Ligado ##########')
     acionarMonitoramento(configuracao)
 }
 
@@ -70,6 +71,7 @@ function roboDesligado(params) {
         intervaloMonitoramento: 60000,
         chave: params.chave
     }
+    console.log('########## Robo Desligado ##########')
     robo.clear(configuracao.chave)
 }
 
