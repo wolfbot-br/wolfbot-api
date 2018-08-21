@@ -11,14 +11,14 @@ async function roboLigado(params) {
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 10,
+        quantidadePeriodos: 26,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
             indicadores: {
                 sma: {
                     nome: 'sma',
-                    status: true,
+                    status: false,
                     period: 3
                 },
                 macd: {
@@ -30,12 +30,12 @@ async function roboLigado(params) {
                 },
                 rsi: {
                     nome: 'rsi',
-                    status: true,
+                    status: false,
                     period: 5
                 }
             }
         },
-        intervaloMonitoramento: 10000,
+        intervaloMonitoramento: 30000,
         chave: params.chave
     }
     console.log('########## Robo Ligado ##########')
@@ -48,14 +48,14 @@ async function roboDesligado(params) {
     const configuracao = {
         exchange: 'bittrex',
         parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 10,
+        quantidadePeriodos: 26,
         tamanhoCandle: '5m',
         estrategia: {
             sinalExterno: {},
             indicadores: {
                 sma: {
                     nome: 'sma',
-                    status: true,
+                    status: false,
                     period: 3
                 },
                 macd: {
@@ -67,7 +67,7 @@ async function roboDesligado(params) {
                 },
                 rsi: {
                     nome: 'rsi',
-                    status: true,
+                    status: false,
                     period: 5
                 }
             }
