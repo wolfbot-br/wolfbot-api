@@ -9,7 +9,7 @@ const validade_signup = usuario => {
     errors.push(Object.assign({}, { message: 'O email informado está inválido' }))
   }
   if (!usuario.password.match(passwordRegex)) {
-    errors.push(Object.assign({}, { message: 'A senha informada está inválida' }))
+    errors.push(Object.assign({}, { message: 'Ops! A senha deve conter de 6 a 20 caracteres, com letra maiscula e caracteres especiais.' }))
   }
   if (!bcrypt.compareSync(usuario.confirm_password, usuario.password_encripted)) {
     errors.push(Object.assign({}, { message: 'A senha e a senha de confirmação não conferem' }))

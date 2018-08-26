@@ -149,9 +149,9 @@ const login = (res, next, email, password) => {
         .status(401)
         .json({ errors: [{ message: 'Email ou senha inválidos' }], success: false })
     } else {
-      AccountLog.findOne({ usuario: email, pendente: false, dtConfirmacao: { $ne: null }, logTipo: 'Cadastro do usuário' },
-        (err, model) => {
-          if (err || !model) {
+      AccountLog.findOne({ usuario: email, pendente: true, dtConfirmacao: { $eq: null }, logTipo: 'Cadastro do usuário' },
+        (err, log) => {
+          if (err || log) {
             return res.status(400).json({
               success: false,
               errors: [{ message: 'Sua conta não foi ativada, verifique seu email' }]
