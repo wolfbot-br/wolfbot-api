@@ -104,6 +104,35 @@ const post = (req, res, next) => {
     @params : nome, id
 */
 const put = (req, res, next) => {
+  params = {
+    id_usuario: req.body.id_usuario,
+  }
+
+  configuracao.update(params.id_usuario, {
+    $set: {
+      estrategia: {
+        sinalExterno: {},
+        indicadores: {
+          sma: {
+            nome: req.body.estrategia.indicadores.sma.nome || '',
+            status: req.body.estrategia.indicadores.sma.status || '',
+            period: req.body.estrategia.indicadores.sma.period || ''
+          },
+          macd: {
+            nome: req.body.estrategia.indicadores.macd.nome || '',
+            status: req.body.estrategia.indicadores.macd.status || '',
+            period: req.body.estrategia.indicadores.macd.period || ''
+          },
+          rsi: {
+            nome: req.body.estrategia.indicadores.rsi.nome || '',
+            status: req.body.estrategia.indicadores.rsi.status || '',
+            period: req.body.estrategia.indicadores.rsi.period || ''
+          }
+        }
+      }
+    }
+  }, callback)
+
   res.send({ message: 'Não implementado ainda' })
 }
 
