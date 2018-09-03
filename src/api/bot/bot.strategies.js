@@ -65,14 +65,16 @@ function loadStrategy(config, candle) {
                 if (macd > 0 && macd < sinal) {
                     if (macdiff < tendencia.down) {
                         console.log(chalk.green('SINAL DE VENDA'))
+                    } else {
+                        console.log(chalk.yellow('NEUTRO'))
                     }
                 } else if (macd < 0 && macd > sinal) {
                     macdiffPositivo = Math.abs(macdiff)
                     if (macdiffPositivo > tendencia.up) {
                         console.log(chalk.red('SINAL DE COMPRA!'))
+                    } else {
+                        console.log(chalk.yellow('NEUTRO'))
                     }
-                } else {
-                    console.log(chalk.yellow('NEUTRO'))
                 }
             }
         })
