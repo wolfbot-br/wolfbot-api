@@ -63,18 +63,20 @@ function loadStrategy(config, candle) {
                 // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
                 // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra
                 if (macd > 0 && macd < sinal) {
-                    if (macdiff < tendencia.down) {
+                    if (macdiff < tendencia.down && macdiff > (tendencia.down - tendencia.persistence)) {
                         console.log(chalk.green('SINAL DE VENDA'))
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }
                 } else if (macd < 0 && macd > sinal) {
                     macdiffPositivo = Math.abs(macdiff)
-                    if (macdiffPositivo > tendencia.up) {
+                    if (macdiffPositivo > tendencia.up && macdiffPositivo < (tendencia.up + tendencia.persistence)) {
                         console.log(chalk.red('SINAL DE COMPRA!'))
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }
+                } else {
+                    console.log(chalk.yellow('NEUTRO'))
                 }
             }
         })
