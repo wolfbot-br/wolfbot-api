@@ -6,10 +6,11 @@ const configuracao = require('../../infraestrutura/mongo/models/configuracao.mod
 const chalk = require('chalk')
 
 async function roboLigado(params) {
-    const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
+    const config = await configuracao.findOne({ 'user.user_id': params.user_id })
 
     console.log(chalk.green('########## Robo Ligado ##########'))
-    acionarMonitoramento(config)
+    console.log(config)
+    //acionarMonitoramento(config)
 }
 
 async function roboDesligado(params) {
@@ -17,7 +18,7 @@ async function roboDesligado(params) {
     const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
 
     console.log(chalk.red('########## Robo Desligado ##########'))
-    robo.clear(config.status.key)
+    //robo.clear(config.status.key)
 }
 
 function acionarMonitoramento(config) {

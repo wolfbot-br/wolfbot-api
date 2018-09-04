@@ -5,25 +5,22 @@ const acionarRobo = async (req, res, next) => {
   try {
 
     params = {
-      id_usuario: req.body.id_usuario || '',
-      status: req.query.status || '',
-      chave: req.query.chave || ''
+      user_id: req.body.user_id,
+      status_bot: req.body.status_bot
     }
 
-    if (params.status == 'on') {
+    if (params.status_bot) {
       bot.roboLigado(params)
       res.status(200).json({
-        'message': 'Robo Acionado',
+        'message': 'Robo Ligado',
         'status': '200'
       })
-    } else if (params.status == 'off') {
+    } else {
       bot.roboDesligado(params)
       res.status(200).json({
         'message': 'Robo Desligado',
         'status': '200'
       })
-    } else {
-      throw new Error('ação inválida')
     }
 
   } catch (e) {

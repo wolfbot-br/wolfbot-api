@@ -40,7 +40,7 @@ const post = (req, res, next) => {
     secret: req.body.secret || '',
     user: {
       user_name: req.body.user.user_name || '',
-      user_id: req.body.user.user_name || ''
+      user_id: req.body.user.user_id || ''
     },
     status: {
       status_bot: req.body.status.status_bot || false,
