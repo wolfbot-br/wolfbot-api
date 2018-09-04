@@ -154,7 +154,7 @@ const login = (res, next, email, password) => {
           if (err || log) {
             return res.status(400).json({
               success: false,
-              errors: [{ message: 'Sua conta não foi ativada, verifique seu email' }]
+              errors: [{ message: 'Sua conta não foi ativada, verifique seu email.' }]
             })
           }
           else {
