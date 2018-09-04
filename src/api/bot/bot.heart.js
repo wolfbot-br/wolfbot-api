@@ -2,94 +2,34 @@ const ccxt = require('ccxt')
 const moment = require('moment')
 const robo = require('set-interval')
 const strategy = require('./bot.strategies')
-//const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
+const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 const chalk = require('chalk')
 
 async function roboLigado(params) {
-    /* Comentando para gravação do video */
-    // const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
+    const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
 
-    const configuracao = {
-        exchange: 'bittrex',
-        parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 26,
-        tamanhoCandle: '5m',
-        estrategia: {
-            sinalExterno: {},
-            indicadores: {
-                sma: {
-                    nome: 'sma',
-                    status: false,
-                    period: 3
-                },
-                macd: {
-                    nome: 'macd',
-                    status: true,
-                    shortPeriod: 2,
-                    longPeriod: 5,
-                    signalPeriod: 9
-                },
-                rsi: {
-                    nome: 'rsi',
-                    status: false,
-                    period: 5
-                }
-            }
-        },
-        intervaloMonitoramento: 30000,
-        chave: params.chave
-    }
     console.log(chalk.green('########## Robo Ligado ##########'))
-    acionarMonitoramento(configuracao)
+    acionarMonitoramento(config)
 }
 
 async function roboDesligado(params) {
-    /* Comentando para gravação do video */
-    // const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
-    const configuracao = {
-        exchange: 'bittrex',
-        parMoedas: 'BTC/USDT',
-        quantidadePeriodos: 26,
-        tamanhoCandle: '5m',
-        estrategia: {
-            sinalExterno: {},
-            indicadores: {
-                sma: {
-                    nome: 'sma',
-                    status: false,
-                    period: 3
-                },
-                macd: {
-                    nome: 'macd',
-                    status: true,
-                    shortPeriod: 2,
-                    longPeriod: 5,
-                    signalPeriod: 9
-                },
-                rsi: {
-                    nome: 'rsi',
-                    status: false,
-                    period: 5
-                }
-            }
-        },
-        intervaloMonitoramento: 10000,
-        chave: params.chave
-    }
+
+    const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
+
     console.log(chalk.red('########## Robo Desligado ##########'))
-    robo.clear(configuracao.chave)
+    robo.clear(config.status.key)
 }
 
-function acionarMonitoramento(configuracao) {
+function acionarMonitoramento(config) {
 
-    let nome_exchange = configuracao.exchange.toLowerCase()
+    let nome_exchange = config.exchange.toLowerCase()
     exchangeCCXT = new ccxt[nome_exchange]()
 
     let periodo = ''
-    const unidadeTempo = configuracao.tamanhoCandle.substr(-1)
-    const unidadeTamanho = Number.parseInt(configuracao.tamanhoCandle.substr(0))
-    const parMoedas = configuracao.parMoedas
-    const tamanhoCandle = configuracao.tamanhoCandle
+    const unidadeTempo = config.candle_size.substr(-1)
+    const unidadeTamanho = Number.parseInt(config.candle_size.substr(0))
+    const parMoedas = `${config.target_currency}/${config.base_currency}`
+    const tamanhoCandle = config.candle_size
 
     if (unidadeTempo === 'm') {
         periodo = 'minutes'
@@ -99,16 +39,16 @@ function acionarMonitoramento(configuracao) {
         periodo = 'days'
     }
 
-    const tempo = moment().subtract(configuracao.quantidadePeriodos * unidadeTamanho, periodo)
+    const tempo = moment().subtract(100 * unidadeTamanho, periodo)
     let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
     robo.start(
         async function load() {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
-            await strategy.loadStrategy(config = configuracao.estrategia.indicadores, candle)
+            await strategy.loadStrategy(config = config.estrategia.indicadores, candle)
 
-        }, configuracao.intervaloMonitoramento, configuracao.chave
+        }, config.intervaloMonitoramento, config.chave
     )
 }
 

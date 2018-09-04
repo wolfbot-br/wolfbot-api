@@ -12,8 +12,8 @@ module.exports = function (server) {
   server.use('/api', protectedRoutes)
   server.use('/configuracao', openRoutes)
 
-  openRoutes.get('/', configuracaoController.index)
-  openRoutes.post('/', configuracaoController.post)
-  openRoutes.put('/', configuracaoController.put)
-  openRoutes.delete('/', configuracaoController.exclusao)
+  openRoutes.get('/carregar', configuracaoController.get)
+  openRoutes.post('/salvar', configuracaoController.post)
+  openRoutes.put('/alterar', configuracaoController.put)
+  openRoutes.delete('/deletar', configuracaoController.exclusao)
 }
