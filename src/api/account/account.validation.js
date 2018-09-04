@@ -23,11 +23,24 @@ const validade_signup = usuario => {
 
 const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
   const errors = []
-  if (password != passwordConfirm) { errors.push(Object.assign({}, { message: 'A senha e a senha de confirmação não conferem.' })) }
-  if (changePasswordHash == '' || changePasswordHash == null || changePasswordHash == undefined) { errors.push(Object.assign({}, { message: 'Solicitação Inválida.' })) }
-  if (password == '' || password == undefined) { errors.push(Object.assign({}, { message: 'A senha é obrigatória.' })) }
-  if (passwordConfirm == '' || passwordConfirm == undefined) { errors.push(Object.assign({}, { message: 'A senha de confirmação é obrigatória.' })) }
-
+  if (changePasswordHash == '' || changePasswordHash == null || changePasswordHash == undefined) {
+    errors.push(Object.assign({}, { message: 'Solicitação Inválida.' }))
+    return errors
+  }
+  if (password == '' || password == undefined) {
+    errors.push(Object.assign({}, { message: 'A senha é obrigatória.' }))
+  }
+  if (passwordConfirm == '' || passwordConfirm == undefined) {
+    errors.push(Object.assign({}, { message: 'A senha de confirmação é obrigatória.' }))
+    return errors
+  }
+  if (password != passwordConfirm) {
+    errors.push(Object.assign({}, { message: 'A senha e a senha de confirmação não conferem.' }))
+    return errors
+  }
+  if (!password.match(passwordRegex)) {
+    errors.push(Object.assign({}, { message: 'Ops! A senha deve conter de 6 a 20 caracteres, com letra maiuscula e caracteres especiais.' }))
+  }
   return errors
 }
 
