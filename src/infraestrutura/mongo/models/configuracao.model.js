@@ -1,13 +1,42 @@
 const mongoose = require('mongoose')
 
 const configuracao = new mongoose.Schema({
-  api_key: { type: String, require: true },
-  secret: { type: String, require: true },
-  usuario: {},
-  exchange: { type: String, require: true },
-  estrategia: {},
-  status: { type: String, require: true },
-  chave: { type: String, require: true }
+  exchange: { type: String },
+  api_key: { type: String },
+  secret: { type: String },
+  user: {
+    user_name: { type: String, require: true },
+    user_id: { type: String, require: true }
+  },
+  status: {
+    status_bot: { type: Boolean },
+    status_buy: { type: Boolean },
+    status_sell: { type: Boolean },
+    key: { type: String },
+    interval_check: { type: Number }
+  },
+  base_currency: { type: String },
+  target_currency: { type: String },
+  candle_size: { type: String },
+  strategy: {
+    external_signal: {},
+    indicators: {
+      sma: {
+        status: { type: Boolean },
+        period: { type: Number }
+      },
+      macd: {
+        status: { type: Boolean },
+        shortPeriod: { type: Number },
+        longPeriod: { type: Number },
+        signalPeriod: { type: Number }
+      },
+      rsi: {
+        status: { type: Boolean },
+        period: { type: Number }
+      }
+    }
+  }
 })
 
-module.exports = mongoose.model('configuracoes', configuracao)
+module.exports = mongoose.model('configuracao', configuracao, 'configuracao')
