@@ -6,7 +6,8 @@ const acionarRobo = async (req, res, next) => {
 
     params = {
       user_id: req.body.user_id,
-      status_bot: req.body.status_bot
+      status_bot: req.body.status.status_bot,
+      key: req.body.status.key
     }
 
     if (params.status_bot) {

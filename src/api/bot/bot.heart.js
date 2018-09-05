@@ -12,12 +12,10 @@ async function roboLigado(params) {
     acionarMonitoramento(config)
 }
 
-async function roboDesligado(params) {
-
-    const config = await configuracao.findOne({ 'usuario.id_usuario': params.id_usuario })
+function roboDesligado(params) {
 
     console.log(chalk.red('########## Robo Desligado ##########'))
-    robo.clear(config.status_bot.key)
+    robo.clear(params.key)
 }
 
 function acionarMonitoramento(config) {
@@ -47,7 +45,7 @@ function acionarMonitoramento(config) {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
-            strategy.loadStrategy(configIndicators, candle)
+            await strategy.loadStrategy(configIndicators, candle)
 
         }, config.status.interval_check, config.status.key
     )
