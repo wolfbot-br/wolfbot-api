@@ -13,7 +13,7 @@ module.exports = function (server) {
 
     openRoutes.get('/open', orderController.open)
     openRoutes.get('/close', orderController.close)
-    // openRoutes.post('/buy', orderController.buy)
-    // openRoutes.post('/sell', orderController.sell)
+    openRoutes.post('/buy', orderController.buy)
+    openRoutes.post('/sell', orderController.sell)
     // openRoutes.post('/cancel', orderController.cancel)
 }
