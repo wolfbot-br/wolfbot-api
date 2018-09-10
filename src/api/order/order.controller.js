@@ -10,8 +10,8 @@ const open = (req, res, next) => {
             limit: req.query.limite
         }
 
-        let validarDados = validation.dados(params)
-        let orderAberta = service.orderAberta(params, res)
+        validation.dados(params)
+        service.orderAberta(params, res)
     } catch (e) {
         res.status(400).json({
             'message': e.message,
@@ -29,8 +29,8 @@ const close = (req, res, next) => {
             limit: req.query.limite
         }
 
-        let validarDados = validation.dados(params)
-        let orderAberta = service.orderFechada(params, res)
+        validation.dados(params)
+        service.orderFechada(params, res)
     } catch (e) {
         res.status(400).json({
             'message': e.message,
@@ -41,10 +41,42 @@ const close = (req, res, next) => {
 
 const buy = (req, res, next) => {
 
+    try {
+        params = {
+            user_id: req.body.user_id,
+            symbol: req.body.symbol,
+            amount: req.body.amount,
+            price: req.body.price
+        }
+
+        validation.dados(params)
+        service.comprar(params, res)
+    } catch (e) {
+        res.status(400).json({
+            'message': e.message,
+            'status': '400'
+        })
+    }
 }
 
 const sell = (req, res, next) => {
 
+    try {
+        params = {
+            user_id: req.body.user_id,
+            symbol: req.body.symbol,
+            amount: req.body.amount,
+            price: req.body.price
+        }
+
+        validation.dados(params)
+        service.vender(params, res)
+    } catch (e) {
+        res.status(400).json({
+            'message': e.message,
+            'status': '400'
+        })
+    }
 }
 
 module.exports = {

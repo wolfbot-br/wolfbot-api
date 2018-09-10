@@ -40,6 +40,7 @@ const orderAberta = async (params, res) => {
 }
 
 const orderFechada = async (params, res) => {
+
     try {
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
         const parMoedas = `${config.target_currency}/${config.base_currency}`
@@ -71,4 +72,71 @@ const orderFechada = async (params, res) => {
         })
     }
 }
-module.exports = { orderAberta, orderFechada }
+
+const comprar = async (params, res) => {
+
+    try {
+
+        const config = await configuracao.findOne({ 'user.user_id': params.user_id })
+        const parMoedas = `${config.target_currency}/${config.base_currency}`
+
+        let nome_exchange = config.exchange.toLowerCase()
+
+        exchangeCCXT = new ccxt[nome_exchange]()
+        exchangeCCXT.apiKey = config.api_key
+        exchangeCCXT.secret = config.secret
+
+        order = await exchangeCCXT.createLimitBuyOrder(
+            params.symbol, // Simbolo da cryptomoeda BTC/USDT
+            params.amount, // Montante
+            params.price, // Preço de venda
+            { ' tipo ': params.type } // tipo: limite ou mercado
+        )
+
+        res.status(200).json({
+            'data': ordens,
+            'status': 200
+        })
+
+    } catch (e) {
+        res.status(400).json({
+            'message': e.message,
+            'status': '400'
+        })
+    }
+}
+
+const vender = async (params, res) => {
+
+    try {
+
+        const config = await configuracao.findOne({ 'user.user_id': params.user_id })
+        const parMoedas = `${config.target_currency}/${config.base_currency}`
+
+        let nome_exchange = config.exchange.toLowerCase()
+
+        exchangeCCXT = new ccxt[nome_exchange]()
+        exchangeCCXT.apiKey = config.api_key
+        exchangeCCXT.secret = config.secret
+
+        order = await exchangeCCXT.createLimitSellOrder(
+            params.symbol, // Simbolo da cryptomoeda BTC/USDT
+            params.amount, // Montante
+            params.price, // Preço de venda
+            { ' tipo ': params.type } // tipo: limite ou mercado
+        )
+
+        res.status(200).json({
+            'data': order,
+            'status': 200
+        })
+
+    } catch (e) {
+        res.status(400).json({
+            'message': e.message,
+            'status': '400'
+        })
+    }
+}
+
+module.exports = { orderAberta, orderFechada, comprar, vender }
