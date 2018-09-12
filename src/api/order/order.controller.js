@@ -79,9 +79,27 @@ const sell = (req, res, next) => {
     }
 }
 
+const cancel = (req, res, next) => {
+
+    try {
+        params = {
+            user_id: req.body.user_id,
+            order_id: req.body.order_id
+        }
+
+        service.cancelar(params, res)
+    } catch (e) {
+        res.status(400).json({
+            'message': e.message,
+            'status': '400'
+        })
+    }
+}
+
 module.exports = {
     open,
     close,
     buy,
-    sell
+    sell,
+    cancel
 }
