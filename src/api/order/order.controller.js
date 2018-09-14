@@ -84,7 +84,7 @@ const cancel = (req, res, next) => {
     try {
         params = {
             user_id: req.body.user_id,
-            order_id: req.body.order_id
+            identifier: req.body.identifier,
         }
 
         service.cancelar(params, res)

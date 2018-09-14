@@ -96,6 +96,7 @@ const comprar = async (params, res) => {
 
         res.status(200).json({
             'data': ordens,
+            'message': "Order de compra criada com sucesso.",
             'status': 200
         })
 
@@ -131,10 +132,10 @@ const vender = async (params, res) => {
             date: order_sell.datetime,
             amount: order_sell.amount,
             price: order_sell.price,
-            action: order_sell.sell,
             currency: order_sell.symbol,
             type_order: "Limit",
             type_operation: "Automatic",
+            action: order_sell.side,
             user: config.user.user_name,
             identifier: order_sell.id
         })
@@ -147,6 +148,7 @@ const vender = async (params, res) => {
 
         res.status(200).json({
             'data': order_sell,
+            'message': "Order de venda criada com sucesso.",
             'status': 200
         })
 
@@ -165,8 +167,18 @@ const cancelar = async (params, res) => {
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
         let nome_exchange = config.exchange.toLowerCase()
 
+        const orders = await order.findOne({ 'identifier': params.identifier });
+
         exchangeCCXT = new ccxt[nome_exchange]()
-        exchangeCCXT.cancelOrder()
+        exchangeCCXT.apiKey = config.api_key
+        exchangeCCXT.secret = config.secret
+
+        exchangeCCXT.cancelOrder(orders.identifier)
+
+        res.status(200).json({
+            'message': "Order cancelada com sucesso.",
+            'status': 200
+        })
 
     } catch (e) {
         res.status(400).json({
