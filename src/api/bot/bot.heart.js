@@ -29,6 +29,7 @@ function acionarMonitoramento(config) {
     const parMoedas = `${config.target_currency}/${config.base_currency}`
     const tamanhoCandle = config.candle_size
     const configIndicators = config.strategy.indicators
+    const user = config.user.user_id
 
     if (unidadeTempo === 'm') {
         periodo = 'minutes'
@@ -45,7 +46,7 @@ function acionarMonitoramento(config) {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
-            await strategy.loadStrategy(configIndicators, candle)
+            await strategy.loadStrategy(configIndicators, candle, parMoedas, user)
 
         }, config.status.interval_check, config.status.key
     )

@@ -77,7 +77,6 @@ const orderFechada = async (params, res) => {
 const comprar = async (params, res) => {
 
     try {
-
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
         const parMoedas = `${config.target_currency}/${config.base_currency}`
 
@@ -91,7 +90,7 @@ const comprar = async (params, res) => {
             params.symbol, // Simbolo da cryptomoeda BTC/USDT
             params.amount, // Montante
             params.price, // Preço de venda
-            { ' tipo ': params.type } // tipo: limite ou mercado
+            { ' type ': params.type } // tipo: limite ou mercado
         )
 
         res.status(200).json({
@@ -111,7 +110,6 @@ const comprar = async (params, res) => {
 const vender = async (params, res) => {
 
     try {
-
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
         const parMoedas = `${config.target_currency}/${config.base_currency}`
 
@@ -125,7 +123,7 @@ const vender = async (params, res) => {
             params.symbol, // Simbolo da cryptomoeda BTC/USDT
             params.amount, // Montante
             params.price, // Preço de venda
-            { ' tipo ': params.type } // tipo: limite ou mercado
+            { ' type ': params.type } // tipo: limite ou mercado
         )
 
         let orders = new order({
@@ -146,24 +144,23 @@ const vender = async (params, res) => {
             }
         })
 
-        res.status(200).json({
-            'data': order_sell,
-            'message': "Order de venda criada com sucesso.",
-            'status': 200
-        })
+        // res.status(200).json({
+        //     'data': order_sell,
+        //     'message': "Order de venda criada com sucesso.",
+        //     'status': '200'
+        // })
 
     } catch (e) {
-        res.status(400).json({
-            'message': e.message,
-            'status': '400'
-        })
+        // res.status(400).json({
+        //     'message': e.message,
+        //     'status': '400'
+        // })
     }
 }
 
 const cancelar = async (params, res) => {
 
     try {
-
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
         let nome_exchange = config.exchange.toLowerCase()
 

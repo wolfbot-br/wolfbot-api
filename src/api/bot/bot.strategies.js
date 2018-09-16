@@ -2,8 +2,9 @@ const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
 const chalk = require('chalk')
+const order = require('../order/order.service');
 
-function loadStrategy(config, candle) {
+function loadStrategy(config, candle, parMoedas, user) {
 
     let timestamp = lodash.flatten(candle.map(function (value) {
         return value.filter(function (value2, index2) {
@@ -12,6 +13,7 @@ function loadStrategy(config, candle) {
             }
         })
     }))
+
     let close = lodash.flatten(candle.map(function (value) {
         return value.filter(function (value2, index2) {
             if (index2 === 4) {
@@ -65,6 +67,17 @@ function loadStrategy(config, candle) {
                 if (macd > 0 && macd < sinal) {
                     if (macdiff < tendencia.down && macdiff > (tendencia.down - tendencia.persistence)) {
                         console.log(chalk.green('SINAL DE VENDA'))
+
+                        params = {
+                            user_id: user,
+                            type_operation: 'Automatic',
+                            symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
+                            amount: 20, // Montante
+                            price: preco, // Preço de venda
+                            type: 'limit' // tipo: limite ou mercado
+                        }
+
+                        order.vender(params);
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }
