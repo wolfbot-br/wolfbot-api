@@ -85,6 +85,17 @@ function loadStrategy(config, candle, parMoedas, user) {
                     macdiffPositivo = Math.abs(macdiff)
                     if (macdiffPositivo > tendencia.up && macdiffPositivo < (tendencia.up + tendencia.persistence)) {
                         console.log(chalk.red('SINAL DE COMPRA!'))
+
+                        params = {
+                            user_id: user,
+                            type_operation: 'Automatic',
+                            symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
+                            amount: 20, // Montante
+                            price: preco, // Preço de venda
+                            type: 'limit' // tipo: limite ou mercado
+                        }
+
+                        order.comprar(params);
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }

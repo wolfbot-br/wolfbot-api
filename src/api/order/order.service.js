@@ -29,7 +29,7 @@ const orderAberta = async (params, res) => {
 
         res.status(200).json({
             'data': ordens,
-            'status': 200
+            'status': '200'
         })
 
     } catch (e) {
@@ -63,7 +63,7 @@ const orderFechada = async (params, res) => {
 
         res.status(200).json({
             'data': ordens,
-            'status': 200
+            'status': '200'
         })
 
     } catch (e) {
@@ -86,24 +86,46 @@ const comprar = async (params, res) => {
         exchangeCCXT.apiKey = config.api_key
         exchangeCCXT.secret = config.secret
 
-        order = await exchangeCCXT.createLimitBuyOrder(
+        order_buy = await exchangeCCXT.createLimitBuyOrder(
             params.symbol, // Simbolo da cryptomoeda BTC/USDT
             params.amount, // Montante
             params.price, // Preço de venda
             { ' type ': params.type } // tipo: limite ou mercado
         )
 
-        res.status(200).json({
-            'data': ordens,
-            'message': "Order de compra criada com sucesso.",
-            'status': 200
+        let orders = new order({
+            date: order_buy.datetime,
+            amount: order_buy.amount,
+            price: order_buy.price,
+            currency: order_buy.symbol,
+            type_order: params.type,
+            type_operation: params.type_operation,
+            action: order_buy.side,
+            user: config.user.user_name,
+            identifier: order_buy.id
         })
 
-    } catch (e) {
-        res.status(400).json({
-            'message': e.message,
-            'status': '400'
+        orders.save(function (err) {
+            if (err) {
+                throw new Error('Erro!' + err.message);
+            }
         })
+
+        if (params.type_operation != "Automatic") {
+            res.status(200).json({
+                'data': ordens,
+                'message': "Order de compra criada com sucesso.",
+                'status': '200'
+            })
+        }
+
+    } catch (e) {
+        if (params.type_operation != "Automatic") {
+            res.status(400).json({
+                'message': e.message,
+                'status': '400'
+            })
+        }
     }
 }
 
@@ -111,7 +133,6 @@ const vender = async (params, res) => {
 
     try {
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
-        const parMoedas = `${config.target_currency}/${config.base_currency}`
 
         let nome_exchange = config.exchange.toLowerCase()
 
@@ -131,8 +152,8 @@ const vender = async (params, res) => {
             amount: order_sell.amount,
             price: order_sell.price,
             currency: order_sell.symbol,
-            type_order: "Limit",
-            type_operation: "Automatic",
+            type_order: params.type,
+            type_operation: params.type_operation,
             action: order_sell.side,
             user: config.user.user_name,
             identifier: order_sell.id
@@ -144,17 +165,21 @@ const vender = async (params, res) => {
             }
         })
 
-        // res.status(200).json({
-        //     'data': order_sell,
-        //     'message': "Order de venda criada com sucesso.",
-        //     'status': '200'
-        // })
+        if (params.type_operation != "Automatic") {
+            res.status(200).json({
+                'data': order_sell,
+                'message': "Order de venda criada com sucesso.",
+                'status': '200'
+            })
+        }
 
     } catch (e) {
-        // res.status(400).json({
-        //     'message': e.message,
-        //     'status': '400'
-        // })
+        if (params.type_operation != "Automatic") {
+            res.status(400).json({
+                'message': e.message,
+                'status': '400'
+            })
+        }
     }
 }
 
@@ -174,7 +199,7 @@ const cancelar = async (params, res) => {
 
         res.status(200).json({
             'message': "Order cancelada com sucesso.",
-            'status': 200
+            'status': '200'
         })
 
     } catch (e) {
