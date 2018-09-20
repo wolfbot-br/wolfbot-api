@@ -3,7 +3,6 @@ const configuracao = require('../../infraestrutura/mongo/models/configuracao.mod
 const exchangeValidation = require('../exchanges/exchanges.validation')
 const utilService = require('../util/util.service')
 
-
 // # PUBLIC METHODS /
 
 // Método que retorna todas as exchanges que bot trabalha
@@ -229,7 +228,7 @@ const fetchBalance = async (req, res, next) => {
   try {
     params = {
       id_usuario: req.query.id_usuario,
-      exchange: 'bittrex' //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
+      exchange: 'bittrex' // LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
     }
 
     let exchange = utilService.selecionarExchange(params.exchange)
