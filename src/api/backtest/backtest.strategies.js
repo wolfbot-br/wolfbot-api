@@ -3,17 +3,18 @@ const tulind = require('tulind')
 const moment = require('moment')
 const chalk = require('chalk')
 
-function loadStrategy (config, candle) {
+function loadStrategy(config, candle) {
+  let resultMACD = {}
   const ordensCompra = []
   const ordensVenda = []
-  const quantidadeOrdensOpen = 3
-  const vendaPeloIndicador = false
-  const profit = 0.03
-  const stop = 0.05
-  const digits = 4
-  let cont = 0
+  const quantidadeOrdensAbertas = 10
+  let contadorOrdensAbertas = 0
   let numeroOrdensCompra = 0
   let numeroOrdensVenda = 0
+  const vendaPeloIndicador = false
+  const profit = 0.02
+  const stop = 0.1
+  const digits = 4
   let preco = 0
   let time = moment
   time.locale('pt-br')
@@ -53,6 +54,33 @@ function loadStrategy (config, candle) {
     })
   }))
 
+  function criarOrdemCompra(preco, timeCompra, profit) {
+    ordensCompra.push({
+      tipoOrdem: 'COMPRA',
+      status: 'aberta',
+      precoComprado: preco,
+      fee: 0.0025,
+      horaCompra: timeCompra.format('LLL'),
+      target: profit,
+      ordemCompraNumero: ++numeroOrdensCompra
+    })
+  }
+
+  function criarOrdemVenda(preco, precoComprado, timeVenda, timeCompra) {
+    ordensVenda.push({
+      tipoOrdem: 'VENDA',
+      status: 'fechada',
+      precoComprado: precoComprado,
+      horaCompra: timeCompra,
+      precoVendido: preco,
+      fee: 0.0025,
+      lucroObtido: preco - precoComprado - (preco * 0.005),
+      percentualGanho: (preco - precoComprado - (preco * 0.005)) / preco,
+      horaVenda: timeVenda.format('LLL'),
+      ordemVendaNumero: ++numeroOrdensVenda
+    })
+  }
+
   if (config.sma.status) {
     tulind.indicators.sma.indicator([close], [config.sma.period], function (err, result) {
       if (err) {
@@ -70,6 +98,7 @@ function loadStrategy (config, candle) {
     const signal = config.macd.signalPeriod
 
     tulind.indicators.macd.indicator([close], [short, long, signal], function (err, result) {
+      let macd = {}
       if (err) {
         console.log(err)
       } else {
@@ -98,16 +127,9 @@ function loadStrategy (config, candle) {
           if (macd < 0) {
             if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
               console.log(chalk.red('SINAL DE COMPRA!'))
-              if (cont < quantidadeOrdensOpen) {
-                ordensCompra.push({
-                  tipoOrdem: 'COMPRA',
-                  status: 'aberta',
-                  precoComprado: preco,
-                  timeCompra: time.format('LLL'),
-                  target: profit,
-                  ordemCompraNumero: ++numeroOrdensCompra
-                })
-                ++cont
+              if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
+                criarOrdemCompra(preco, time, profit)
+                contadorOrdensAbertas++
               }
             } else {
               console.log(chalk.yellow('NEUTRO'))
@@ -116,12 +138,19 @@ function loadStrategy (config, candle) {
             if (macd > 0) {
               if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
                 console.log(chalk.green('SINAL DE VENDA'))
-                ordensVenda.push({
-                  tipoOrdem: 'VENDA',
-                  status: 'fechada',
-                  precoVendido: preco,
-                  timeVenda: time.format('LLL')
-                })
+                for (let j = 0; j < ordem.ordensCompra.length; j++) {
+                  if (ordem.ordensCompra[j].status === 'aberta') {
+                    if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
+                      ordensCompra[j].status = 'fechada'
+                      criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+                      contadorOrdensAbertas--
+                    } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
+                      ordensCompra[j].status = 'fechada'
+                      criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+                      contadorOrdensAbertas--
+                    }
+                  }
+                }
               } else {
                 console.log(chalk.yellow('NEUTRO'))
               }
@@ -134,38 +163,32 @@ function loadStrategy (config, candle) {
             if (ordensCompra[j].status === 'aberta') {
               if (preco >= ordensCompra[j].precoComprado + (ordensCompra[j].precoComprado * profit)) {
                 ordensCompra[j].status = 'fechada'
-                ordensVenda.push({
-                  tipoOrdem: 'VENDA',
-                  status: 'fechada',
-                  precoComprado: ordensCompra[j].precoComprado,
-                  precoVendido: preco,
-                  lucroObtido: preco - ordensCompra[j].precoComprado,
-                  percentualGanho: (preco - ordensCompra[j].precoComprado) / preco,
-                  timeVenda: time.format('LLL'),
-                  ordemVendaNumero: ++numeroOrdensVenda
-                })
-                --cont
+                criarOrdemVenda(preco, ordensCompra[j].precoComprado, time, ordensCompra[j].horaCompra)
+                contadorOrdensAbertas--
               } else if (preco <= ordensCompra[j].precoComprado - (ordensCompra[j].precoComprado * stop)) {
                 ordensCompra[j].status = 'fechada'
-                ordensVenda.push({
-                  tipoOrdem: 'VENDA',
-                  status: 'fechada',
-                  precoComprado: ordensCompra[j].precoComprado,
-                  precoVendido: preco,
-                  lucroObtido: preco - ordensCompra[j].precoComprado,
-                  percentualGanho: (preco - ordensCompra[j].precoComprado) / preco,
-                  timeVenda: time.format('LLL'),
-                  ordemVendaNumero: ++numeroOrdensVenda
-                })
-                --cont
+                criarOrdemVenda(preco, ordensCompra[j].precoComprado, time, ordensCompra[j].horaCompra)
+                contadorOrdensAbertas--
               }
             }
           }
         }
       }
-      console.log(cont)
-      console.log(ordensCompra)
-      console.log(ordensVenda)
+
+      let resultadoLucro = 0
+      let resultadoPercentual = 0
+      for (let i = 0; i <= ordensVenda.length - 1; i++) {
+        resultadoLucro += ordensVenda[i].lucroObtido
+        resultadoPercentual += ordensVenda[i].percentualGanho
+      }
+
+      resultMACD = {
+        ordersBuy: ordensCompra,
+        ordersSell: ordensVenda,
+        lucro: resultadoLucro,
+        percentual: resultadoPercentual
+
+      }
     })
   }
 
@@ -178,6 +201,10 @@ function loadStrategy (config, candle) {
         console.log(result[0])
       }
     })
+  }
+
+  return {
+    result: resultMACD
   }
 }
 

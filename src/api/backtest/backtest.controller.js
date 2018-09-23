@@ -9,17 +9,12 @@ const testarConfiguracao = async (req, res, next) => {
 
     console.log(params)
     backtest.carregarDados(params)
-    // .then(function (resp) {
-    //     res.status(200).json({
-    //         data: resp,
-    //         status: '200'
-    //     })
-    // })
-
-    res.status(200).json({
-      message: 'OK',
-      status: '200'
-    })
+      .then(function (resp) {
+        res.status(200).json({
+          data: resp,
+          status: '200'
+        })
+      })
   } catch (e) {
     res.status(400).json({
       'message': e.message,
