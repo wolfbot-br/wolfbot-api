@@ -63,7 +63,7 @@ const post = (req, res, next) => {
           status: req.body.strategy.indicators.macd.status || false,
           shortPeriod: req.body.strategy.indicators.macd.shortPeriod || 12,
           longPeriod: req.body.strategy.indicators.macd.longPeriod || 26,
-          signalPeriod: req.body.strategy.indicators.macd.signalPeriod || 9,
+          signalPeriod: req.body.strategy.indicators.macd.signalPeriod || 9
         },
         rsi: {
           status: req.body.strategy.indicators.rsi.status || false,
