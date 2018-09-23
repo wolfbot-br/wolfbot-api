@@ -3,21 +3,20 @@ const moment = require('moment')
 const robo = require('set-interval')
 const strategy = require('./bot.strategies')
 const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
-const chalk = require('chalk')
 
-async function roboLigado (params) {
+async function roboLigado(params) {
   const config = await configuracao.findOne({ 'user.user_id': params.user_id })
 
-  console.log(chalk.green('########## Robo Ligado ##########'))
+  console.log('########## Robo Ligado ##########')
   acionarMonitoramento(config)
 }
 
-function roboDesligado (params) {
-  console.log(chalk.red('########## Robo Desligado ##########'))
+function roboDesligado(params) {
+  console.log('########## Robo Desligado ##########')
   robo.clear(params.key)
 }
 
-function acionarMonitoramento (config) {
+function acionarMonitoramento(config) {
   let nome_exchange = config.exchange.toLowerCase()
   exchangeCCXT = new ccxt[nome_exchange]()
 
@@ -39,7 +38,7 @@ function acionarMonitoramento (config) {
   const tempo = moment().subtract(100 * unidadeTamanho, periodo)
   let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
   robo.start(
-    async function load () {
+    async function load() {
       await sleep(exchangeCCXT.rateLimit) // milliseconds
       const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 

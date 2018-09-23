@@ -46,7 +46,6 @@
     "tulind": "^0.8.12"
   },
   "devDependencies": {
-    "chalk": "^2.4.1",
     "nodemon": "^1.17.3",
     "pm2": "^3.0.3",
     "prettier": "^1.12.1",
