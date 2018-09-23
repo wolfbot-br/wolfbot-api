@@ -1,7 +1,6 @@
 const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
-const chalk = require('chalk')
 
 function loadStrategy(config, candle) {
   let resultMACD = {}
