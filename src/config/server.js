@@ -21,6 +21,7 @@ consign()
   .then('/src/api/configuracao')
   .then('/src/api/bot')
   .then('/src/api/backtest')
+  .then('/src/api/order')
   .into(app)
 
 module.exports = app
