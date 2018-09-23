@@ -3,7 +3,7 @@ const tulind = require('tulind')
 const moment = require('moment')
 const chalk = require('chalk')
 
-function loadStrategy (config, candle) {
+function loadStrategy(config, candle) {
   let timestamp = lodash.flatten(candle.map(function (value) {
     return value.filter(function (value2, index2) {
       if (index2 === 0) {
@@ -51,12 +51,14 @@ function loadStrategy (config, candle) {
           down: -1,
           persistence: 1
         }
-        console.log(chalk.cyan('########## Resultado MACD ##########'))
-        console.log(chalk.magenta('Preço = ' + preco.toFixed(8) + ' - ' + time.format()))
-        console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
-        console.log(chalk.magenta('linha Sinal = ' + sinal.toFixed(digits)))
-        console.log(chalk.magenta('Histograma = ' + histograma.toFixed(digits)))
-        console.log(chalk.magenta('Diferença MACD / Sinal = ' + macdiff.toFixed(digits)))
+
+        //USADO EM DESENVOLVIMENTO PARA TESTAR LOGICA
+        // console.log(chalk.cyan('########## Resultado MACD ##########'))
+        // console.log(chalk.magenta('Preço = ' + preco.toFixed(8) + ' - ' + time.format()))
+        // console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
+        // console.log(chalk.magenta('linha Sinal = ' + sinal.toFixed(digits)))
+        // console.log(chalk.magenta('Histograma = ' + histograma.toFixed(digits)))
+        // console.log(chalk.magenta('Diferença MACD / Sinal = ' + macdiff.toFixed(digits)))
 
         // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
         // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra

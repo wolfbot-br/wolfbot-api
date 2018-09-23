@@ -7,7 +7,6 @@ const testarConfiguracao = async (req, res, next) => {
       date_timestamp: req.body.date
     }
 
-    console.log(params)
     backtest.carregarDados(params)
       .then(function (resp) {
         res.status(200).json({
