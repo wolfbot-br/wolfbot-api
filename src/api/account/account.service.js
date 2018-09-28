@@ -118,7 +118,6 @@ const changePasswordPermition = (res, next, hash) => {
 }
 
 const validateToken = (res, next, token) => {
-
   jwt.verify(token, env.authSecret, function (err, decoded) {
     if (err) {
       return res.status(401).send({
@@ -140,7 +139,6 @@ const validateToken = (res, next, token) => {
 }
 
 const login = (res, next, email, password) => {
-
   Usuario.findOne({ email }, (err, model) => {
     if (err) {
       return sendErrorsFromDB(res, err)
@@ -156,8 +154,7 @@ const login = (res, next, email, password) => {
               success: false,
               errors: [{ message: 'Sua conta não foi ativada, verifique seu email.' }]
             })
-          }
-          else {
+          } else {
             const token = jwt.sign(model, env.authSecret, {
               expiresIn: '1h'
             })
@@ -283,15 +280,13 @@ const activeAccount = (res, next, activeAccountHash) => {
         sucess: false,
         errors: [{ message: 'Sua conta já está ativada ou ocorreu um erro!' }]
       })
-    }
-    else {
+    } else {
       AccountLog.update({ usuario: log.usuario, hash: activeAccountHash },
         { pendente: false, dtConfirmacao: moment().subtract(3, 'hours').format(), emailConfirmado: true }
         , { multi: true }, (err, response) => {
           if (err) {
             return sendErrorsFromDB(response, err)
-          }
-          else {
+          } else {
             return res.status(200).json({
               sucess: true,
               errors: []
@@ -305,14 +300,12 @@ const signup = (res, errors, user) => {
   Usuario.findOne({ email: user.email }, (err, usuario) => {
     if (err) {
       return sendErrorsFromDB(res, err)
-    }
-    else if (usuario) {
+    } else if (usuario) {
       errors.push(Object.assign({}, {}))
       return res.status(406).json({
         errors: [{ message: 'Já existe um usuário cadastrado com esse endereço de email' }]
       })
-    }
-    else {
+    } else {
       const novo_usuario = new Usuario({
         nome: user.nome,
         email: user.email,
@@ -321,8 +314,7 @@ const signup = (res, errors, user) => {
       novo_usuario.save(err => {
         if (err) {
           return sendErrorsFromDB(res, req)
-        }
-        else {
+        } else {
           const hash = randStr.generate(64)
           const log = new AccountLog({
             usuario: novo_usuario.email,
@@ -344,8 +336,7 @@ const signup = (res, errors, user) => {
                 },
                 sucess: false
               })
-            }
-            else {
+            } else {
               const $from = env.gmail_account.email
               const $passwd = env.gmail_account.password
 
@@ -383,8 +374,7 @@ const signup = (res, errors, user) => {
                     },
                     sucess: false
                   })
-                }
-                else {
+                } else {
                   return res.status(200).json({
                     id: `${novo_usuario.id}`,
                     nome: `${novo_usuario.nome}`,

@@ -20,6 +20,7 @@ consign()
   .then('/src/api/util')
   .then('/src/api/configuracao')
   .then('/src/api/bot')
+  .then('/src/api/backtest')
   .then('/src/api/order')
   .into(app)
 

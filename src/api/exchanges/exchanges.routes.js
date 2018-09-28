@@ -5,28 +5,25 @@ module.exports = function (server) {
   const exchangeController = require('../exchanges/exchanges.controller')
 
   const protectedRoutes = express.Router()
-  const openRoutes = express.Router()
 
   protectedRoutes.use(auth)
-
-  server.use('/api', protectedRoutes)
-  server.use('/exchanges', openRoutes)
+  server.use('/api/exchanges', protectedRoutes)
 
   // PUBLIC METHODS
-  openRoutes.get('/loadExchanges', exchangeController.loadExchanges)
-  openRoutes.get('/structure', exchangeController.structure)
-  openRoutes.get('/symbols', exchangeController.symbols)
-  openRoutes.get('/currencies', exchangeController.currencies)
-  openRoutes.get('/loadmarkets', exchangeController.loadMarkets)
-  openRoutes.get('/getMarketStructureBySimbol', exchangeController.getMarketStructureBySimbol)
-  openRoutes.get('/getMarketIdBySimbol', exchangeController.getMarketIdBySimbol)
-  openRoutes.get('/fetchOrderBookBySymbol', exchangeController.fetchOrderBookBySymbol)
-  openRoutes.get('/ticker', exchangeController.fetchTicker)
-  openRoutes.get('/tickers', exchangeController.fetchTickers)
+  protectedRoutes.get('/loadExchanges', exchangeController.loadExchanges)
+  protectedRoutes.get('/structure', exchangeController.structure)
+  protectedRoutes.get('/symbols', exchangeController.symbols)
+  protectedRoutes.get('/currencies', exchangeController.currencies)
+  protectedRoutes.get('/loadmarkets', exchangeController.loadMarkets)
+  protectedRoutes.get('/getMarketStructureBySimbol', exchangeController.getMarketStructureBySimbol)
+  protectedRoutes.get('/getMarketIdBySimbol', exchangeController.getMarketIdBySimbol)
+  protectedRoutes.get('/fetchOrderBookBySymbol', exchangeController.fetchOrderBookBySymbol)
+  protectedRoutes.get('/ticker', exchangeController.fetchTicker)
+  protectedRoutes.get('/tickers', exchangeController.fetchTickers)
 
   // PRIVATE METHODS
-  openRoutes.get('/saldo', exchangeController.fetchBalance)
-  openRoutes.post('/buy', exchangeController.orderBuy)
-  openRoutes.post('/sell', exchangeController.orderSell)
-  openRoutes.get('/openOrdens', exchangeController.openOrders)
+  protectedRoutes.get('/saldo', exchangeController.fetchBalance)
+  protectedRoutes.post('/buy', exchangeController.orderBuy)
+  protectedRoutes.post('/sell', exchangeController.orderSell)
+  protectedRoutes.get('/openOrdens', exchangeController.openOrders)
 }

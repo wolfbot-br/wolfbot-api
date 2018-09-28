@@ -1,9 +1,8 @@
 const bot = require('./bot.heart')
 
-//requisição que aciona ou desliga o robo
+// requisição que aciona ou desliga o robo
 const acionarRobo = async (req, res, next) => {
   try {
-
     params = {
       user_id: req.body.user_id,
       status_bot: req.body.status.status_bot,
@@ -23,7 +22,6 @@ const acionarRobo = async (req, res, next) => {
         'status': '200'
       })
     }
-
   } catch (e) {
     res.status(400).json({
       'message': e.message,

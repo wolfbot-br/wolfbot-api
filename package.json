@@ -38,14 +38,14 @@
     "node-restful": "^0.2.6",
     "nodemailer": "^4.6.7",
     "nodemailer-smtp-transport": "^2.7.4",
+    "npm": "^6.4.1",
     "randomstring": "^1.1.5",
     "redis": "^2.8.0",
     "set-interval": "^2.0.3",
     "setinterval": "^0.2.0",
-    "tulind": "^0.8.10"
+    "tulind": "^0.8.12"
   },
   "devDependencies": {
-    "chalk": "^2.4.1",
     "nodemon": "^1.17.3",
     "pm2": "^3.0.3",
     "prettier": "^1.12.1",

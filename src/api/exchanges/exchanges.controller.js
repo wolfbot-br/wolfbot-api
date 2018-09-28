@@ -3,7 +3,6 @@ const configuracao = require('../../infraestrutura/mongo/models/configuracao.mod
 const exchangeValidation = require('../exchanges/exchanges.validation')
 const utilService = require('../util/util.service')
 
-
 // # PUBLIC METHODS /
 
 // Método que retorna todas as exchanges que bot trabalha
@@ -232,22 +231,18 @@ const fetchBalance = async (req, res, next) => {
       exchange: req.query.exchange //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
     }
 
-    let exchange = utilService.selecionarExchange(params.exchange)
-    exchangeValidation.validarDados(params)
+    if (params.id_usuario) {
+      const config = await configuracao.findOne({ 'user.user_id': params.id_usuario });
+      let nome_exchange = config.exchange.toLowerCase()
+      const exchangeCCXT = new ccxt[nome_exchange]()
+      exchangeCCXT.apiKey = config.api_key
+      exchangeCCXT.secret = config.secret
 
-    // Um dos melhores jeitos de fazer um select
-    const credenciais = await configuracao
-      .findOne({ 'user.user_id': params.id_usuario })
-
-    exchangeValidation.validarRequisitosExchange(credenciais)
-
-    exchange.apiKey = credenciais.api_key
-    exchange.secret = credenciais.secret
-
-    let saldo = await exchange.fetchBalance()
-    res.status(200).json({
-      'data': saldo
-    })
+      let saldo = await exchangeCCXT.fetchBalance()
+      res.status(200).json({
+        'data': saldo
+      })
+    }
   } catch (e) {
     res.status(400).json({
       'message': e.message,

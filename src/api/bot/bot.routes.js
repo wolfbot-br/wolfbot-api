@@ -5,10 +5,9 @@ module.exports = function (server) {
   const botController = require('../bot/bot.controller')
 
   const protectedRoutes = express.Router()
-  const openRoutes = express.Router()
 
-  // protectedRoutes.use(auth);
+  protectedRoutes.use(auth)
+  server.use('/api/bot', protectedRoutes)
 
-  server.use('/bot', openRoutes)
-  openRoutes.post('/acionarRobo', botController.acionarRobo)
+  protectedRoutes.post('/acionarRobo', botController.acionarRobo)
 }

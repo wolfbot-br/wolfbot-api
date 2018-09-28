@@ -28,7 +28,7 @@ const signup = (req, res, next) => {
   const errors = accountValidation.validade_signup(user)
 
   if (errors.length < 1) {
-    accountService.signup(res, errors, user);
+    accountService.signup(res, errors, user)
   } else {
     res.status(406).json({ errors })
   }
