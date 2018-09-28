@@ -4,7 +4,12 @@ const moment = require('moment')
 const chalk = require('chalk')
 const order = require('../order/order.service');
 
-function loadStrategy(config, candle, parMoedas, user) {
+function loadStrategy(config, candle, saldo, config) {
+
+    let user = config.user
+    let amount = config.amount
+    let target = config.target
+    const parMoedas = `${config.target_currency}/${config.base_currency}`
 
     let timestamp = lodash.flatten(candle.map(function (value) {
         return value.filter(function (value2, index2) {
@@ -61,23 +66,22 @@ function loadStrategy(config, candle, parMoedas, user) {
                 console.log(chalk.magenta('linha Sinal = ' + sinal.toFixed(digits)))
                 console.log(chalk.magenta('Histograma = ' + histograma.toFixed(digits)))
                 console.log(chalk.magenta('Diferença MACD / Sinal = ' + macdiff.toFixed(digits)))
-
+                console.log(saldo)
                 // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
                 // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra
                 if (macd > 0 && macd < sinal) {
                     if (macdiff < tendencia.down && macdiff > (tendencia.down - tendencia.persistence)) {
                         console.log(chalk.green('SINAL DE VENDA'))
-
                         params = {
                             user_id: user,
                             type_operation: 'Automatic',
                             symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
-                            amount: 20, // Montante
+                            amount: amount, // Montante
                             price: preco, // Preço de venda
                             type: 'limit' // tipo: limite ou mercado
                         }
-
-                        order.vender(params);
+                        console.log(params)
+                        // order.vender(params);
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }
@@ -86,16 +90,21 @@ function loadStrategy(config, candle, parMoedas, user) {
                     if (macdiffPositivo > tendencia.up && macdiffPositivo < (tendencia.up + tendencia.persistence)) {
                         console.log(chalk.red('SINAL DE COMPRA!'))
 
-                        params = {
-                            user_id: user,
-                            type_operation: 'Automatic',
-                            symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
-                            amount: 20, // Montante
-                            price: preco, // Preço de venda
-                            type: 'limit' // tipo: limite ou mercado
-                        }
+                        if (saldo > 0) {
+                            let preco_real = preco * amount
+                            if (saldo >= preco_real) {
+                                params = {
+                                    user_id: user,
+                                    type_operation: 'Automatic',
+                                    symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
+                                    amount: amount, // Montante
+                                    price: preco, // Preço de venda
+                                    type: 'limit' // tipo: limite ou mercado
+                                }
 
-                        order.comprar(params);
+                                order.comprar(params);
+                            }
+                        }
                     } else {
                         console.log(chalk.yellow('NEUTRO'))
                     }

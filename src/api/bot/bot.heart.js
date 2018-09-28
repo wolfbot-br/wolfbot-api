@@ -18,18 +18,22 @@ function roboDesligado(params) {
     robo.clear(params.key)
 }
 
-function acionarMonitoramento(config) {
+async function acionarMonitoramento(config) {
 
     let nome_exchange = config.exchange.toLowerCase()
     exchangeCCXT = new ccxt[nome_exchange]()
 
+    exchangeCCXT.apiKey = config.api_key
+    exchangeCCXT.secret = config.secret
+
+    const saldo = await exchangeCCXT.fetchBalance()
     let periodo = ''
     const unidadeTempo = config.candle_size.substr(-1)
     const unidadeTamanho = Number.parseInt(config.candle_size.substr(0))
     const parMoedas = `${config.target_currency}/${config.base_currency}`
     const tamanhoCandle = config.candle_size
     const configIndicators = config.strategy.indicators
-    const user = config.user.user_id
+    const moedaBase = saldo.USDT.free
 
     if (unidadeTempo === 'm') {
         periodo = 'minutes'
@@ -46,7 +50,7 @@ function acionarMonitoramento(config) {
             await sleep(exchangeCCXT.rateLimit) // milliseconds
             const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
 
-            await strategy.loadStrategy(configIndicators, candle, parMoedas, user)
+            await strategy.loadStrategy(configIndicators, candle, config)
 
         }, config.status.interval_check, config.status.key
     )

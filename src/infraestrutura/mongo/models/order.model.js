@@ -9,7 +9,8 @@ const orderSchema = new mongoose.Schema({
     type_order: { type: String, required: true },
     type_operation: { type: String, required: true },
     user: { type: String, required: true },
-    identifier: { type: String, required: true }
+    identifier: { type: String, required: true },
+    status: { type: String, require: true }
 })
 
 module.exports = mongoose.model('order', orderSchema)

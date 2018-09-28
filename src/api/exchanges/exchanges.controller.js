@@ -229,7 +229,7 @@ const fetchBalance = async (req, res, next) => {
   try {
     params = {
       id_usuario: req.query.id_usuario,
-      exchange: 'bittrex' //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
+      exchange: req.query.exchange //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
     }
 
     let exchange = utilService.selecionarExchange(params.exchange)
@@ -237,7 +237,7 @@ const fetchBalance = async (req, res, next) => {
 
     // Um dos melhores jeitos de fazer um select
     const credenciais = await configuracao
-      .findOne({ 'usuario.id_usuario': params.id_usuario })
+      .findOne({ 'user.user_id': params.id_usuario })
 
     exchangeValidation.validarRequisitosExchange(credenciais)
 
