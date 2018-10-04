@@ -49,8 +49,7 @@ const post = (req, res, next) => {
       key: req.body.status.key || '',
       interval_check: req.body.status.interval_check || 30000
     },
-    base_currency: req.body.base_currency || '',
-    target_currency: req.body.target_currency || '',
+    target_currency: req.body.target_currency || [],
     candle_size: req.body.candle_size || '30m',
     strategy: {
       external_signal: {},

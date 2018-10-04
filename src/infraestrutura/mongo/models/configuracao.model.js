@@ -15,8 +15,15 @@ const configuracao = new mongoose.Schema({
     key: { type: String },
     interval_check: { type: Number }
   },
-  base_currency: { type: String },
-  target_currency: { type: String },
+  target_currency: [
+    {
+      currency: { type: String },
+      base_currency: { type: String },
+      profit: { type: String },
+      amount: { type: String },
+      open_order_limit: { type: String }
+    }
+  ],
   candle_size: { type: String },
   strategy: {
     external_signal: {},
