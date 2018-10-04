@@ -21,8 +21,6 @@ const configuracao = new mongoose.Schema({
     key: { type: String },
     interval_check: { type: Number }
   },
-<<<<<<< HEAD
-=======
   target_currency: [
     {
       currency: { type: String },
@@ -33,7 +31,6 @@ const configuracao = new mongoose.Schema({
     }
   ],
   candle_size: { type: String },
->>>>>>> master
   strategy: {
     external_signal: {},
     indicators: {
