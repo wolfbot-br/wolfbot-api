@@ -97,12 +97,10 @@ function loadStrategy(config, candle) {
     const signal = config.macd.signalPeriod
 
     tulind.indicators.macd.indicator([close], [short, long, signal], function (err, result) {
-      let macd = {}
       if (err) {
         console.log(err)
       } else {
         const arrayMacd = result[0]
-        const arraySinal = result[1]
         const arrayHistograma = result[2]
         let cont2 = 0
 

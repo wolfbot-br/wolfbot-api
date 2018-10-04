@@ -48,3 +48,21 @@ function acionarMonitoramento(config) {
 }
 
 module.exports = { roboLigado, roboDesligado }
+
+//VOU USAR ISSO PRA VÁRIAS MOEDAS
+
+// await exchangeCCXT.loadMarkets()
+
+//   let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+//   if (exchangeCCXT.has.fetchOHLCV) {
+//     for (let i = 0; i <= markets.length - 1; i++) {
+//       await sleep(exchangeCCXT.rateLimit) // milliseconds
+//       candle[i] = await exchangeCCXT.fetchOHLCV(markets[i], tamanhoCandle, tempo)
+//       result[i] = await strategy.loadStrategy(configIndicators, candle)
+//     }
+//   }
+//   return {
+//     candle: candle,
+//     result: result
+//   }
+// }
