@@ -4,6 +4,12 @@ const configuracao = new mongoose.Schema({
   exchange: { type: String },
   api_key: { type: String },
   secret: { type: String },
+  base_currency: { type: String },
+  target_currency: { type: String },
+  candle_size: { type: String },
+  profit: { type: String },
+  amount: { type: String },
+  open_order_limit: { type: String },
   user: {
     user_name: { type: String, require: true },
     user_id: { type: String, require: true }
