@@ -49,8 +49,9 @@ function loadStrategy(config, candle, market) {
     })
   }))
 
-  function criarOrdemCompra(preco, timeCompra, profit) {
+  function criarOrdemCompra(preco, timeCompra, profit, candlePosition) {
     ordersBuy.push({
+      candle: candlePosition,
       tipoOrdem: 'COMPRA',
       status: 'aberta',
       precoComprado: preco,
@@ -76,7 +77,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.name === 'EMA') {
+  if (config.indicator.name === 'EMA') {
     const period = config.ema.period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
       if (err) {
@@ -120,10 +121,10 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.name === 'MACD') {
-    const shortPeriod = config.short_period
-    const longPeriod = config.long_period
-    const signalPeriod = config.signal_period
+  if (config.indicator.name === 'MACD') {
+    const shortPeriod = config.indicator.short_period
+    const longPeriod = config.indicator.long_period
+    const signalPeriod = config.indicator.signal_period
 
     tulind.indicators.macd.indicator([close], [shortPeriod, longPeriod, signalPeriod], function (err, result) {
       if (err) {
@@ -139,13 +140,13 @@ function loadStrategy(config, candle, market) {
         let cont2 = 0
 
         //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
-        for (let i = longPeriod - 1; i <= close.length - 1; i++) {
+        for (let i = longPeriod + 1; i <= candle.length - 1; i++) {
           let macd = parseFloat(arrayMacd[cont2])
           let histograma = parseFloat(arrayHistograma[cont2])
           cont2++
 
           if (macd < 0) {
-            if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
+            if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence) && close[i] >= close[i - 1]) {
               signalBUY.push({
                 candle: i,
                 indicator: 'MACD'
@@ -164,7 +165,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.name === 'RSI') {
+  if (config.indicator.name === 'RSI') {
     tulind.indicators.rsi.indicator([close], [config.rsi.period], function (err, result) {
       if (err) {
         console.log(err)
@@ -178,101 +179,86 @@ function loadStrategy(config, candle, market) {
   for (let i = 0; i <= candle.length - 1; i++) {
     for (let j = 0; j <= signalBUY.length - 1; j++) {
       if (signalBUY[j].candle === i) {
-        let preco = candle[i]
-        criarOrdemCompra(preco, time, profit)
+        let preco = parseFloat(candle[i][4])
+        let time = moment(candle[i][0])
+        ordersBuy.push({
+          candle: i,
+          tipoOrdem: 'COMPRA',
+          status: 'aberta',
+          precoComprado: preco,
+          close: close[i],
+          horaCompra: time.format('LLL'),
+          target: profit,
+          ordemCompraNumero: ++numberOrdersBuy
+        })
       }
     }
     if (sellForIndicator === true) {
       for (let k = 0; k <= signalSELL.length - 1; k++) {
         if (signalSELL[k].candle === i) {
-          console.log('vender')
-        }
-      }
-    } else {
-
-    }
-  }
-
-
-
-
-  if (macd < 0) {
-    if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
-      if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
-        criarOrdemCompra(preco, time, profit)
-        contadorOrdensAbertas++
-      }
-    }
-  } else if (vendaPeloIndicador === true) {
-    if (macd > 0) {
-      if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
-        for (let j = 0; j < ordem.ordensCompra.length; j++) {
-          if (ordem.ordensCompra[j].status === 'aberta') {
-            if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
-              ordensCompra[j].status = 'fechada'
-              criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-              contadorOrdensAbertas--
-            } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
-              ordensCompra[j].status = 'fechada'
-              criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-              contadorOrdensAbertas--
+          for (let x = 0; x <= ordersBuy.length; x++) {
+            if (ordersBuy[x].status === 'aberta') {
+              let preco = parseFloat(candle[i][4])
+              let time = moment(candle[i][0])
+              ordersSell.push({
+                tipoOrdem: 'VENDA',
+                status: 'fechada',
+                precoComprado: ordersBuy[x].precoComprado,
+                horaCompra: ordersBuy[x].horaCompra,
+                precoVendido: preco,
+                lucroObtido: preco - precoComprado - (preco * (2 * parseFloat(fee))),
+                percentualGanho: (preco - precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
+                horaVenda: time.format('LLL'),
+                ordemVendaNumero: ++numberOrdersSell
+              })
             }
           }
         }
       }
-      // console.log(signalEMA)
-      // console.log("\n")
-      // console.log(signalMACD)
-
-      // if (config.stoch.status) {
-      //   tulind.indicators.stoch.indicator([high, low, close], [config.stoch.period_k, config.stoch.slow_period_k, config.stoch.period_d], function (err, result) {
-      //     if (err) {
-      //       console.log(err)
-      //     } else {
-      //       console.log('Resultado STOCK')
-      //       console.log(result[0])
-      //       console.log(result[1])
-      //     }
-      //   })
-      // }
-
-      // if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
-      //   criarOrdemCompra(preco, time, profit)
-      //   contadorOrdensAbertas++
-      // }
-
-      // for (let j = 0; j < ordem.ordensCompra.length; j++) {
-      //   if (ordem.ordensCompra[j].status === 'aberta') {
-      //     if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
-      //       ordensCompra[j].status = 'fechada'
-      //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-      //       contadorOrdensAbertas--
-      //     } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
-      //       ordensCompra[j].status = 'fechada'
-      //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-      //       contadorOrdensAbertas--
-      //     }
-      //   }
-      // }
-
-      // let resultadoLucro = 0
-      // let resultadoPercentual = 0
-      // for (let i = 0; i <= ordensVenda.length - 1; i++) {
-      //   resultadoLucro += ordensVenda[i].lucroObtido
-      //   resultadoPercentual += ordensVenda[i].percentualGanho
-      // }
-
-      // resultMACD = {
-      //   ordersBuy: ordensCompra,
-      //   ordersSell: ordensVenda,
-      //   lucro: resultadoLucro,
-      //   percentual: resultadoPercentual
-
-      // }
-
-      return {
-        result: 'teste'
+    } else {
+      for (let x = 0; x <= ordersBuy.length - 1; x++) {
+        if (ordersBuy[x].status === 'aberta') {
+          let preco = parseFloat(candle[i][4])
+          let time = moment(candle[i][0])
+          if (preco >= ordersBuy[x].precoComprado + (ordersBuy[x].precoComprado * profit)) {
+            ordersBuy[x].status = 'fechada'
+            ordersSell.push({
+              tipoOrdem: 'VENDA',
+              status: 'fechada',
+              precoComprado: ordersBuy[x].precoComprado,
+              horaCompra: ordersBuy[x].horaCompra,
+              precoVendido: preco,
+              lucroObtido: preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee))),
+              percentualGanho: (preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
+              horaVenda: time.format('LLL'),
+              ordemVendaNumero: ++numberOrdersSell
+            })
+          } else if (preco <= ordersBuy[x].precoComprado - (ordersBuy[x].precoComprado * stop)) {
+            ordersBuy[x].status = 'fechada'
+            ordersSell.push({
+              tipoOrdem: 'VENDA',
+              status: 'fechada',
+              precoComprado: ordersBuy[x].precoComprado,
+              horaCompra: ordersBuy[x].horaCompra,
+              precoVendido: preco,
+              lucroObtido: preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee))),
+              percentualGanho: (preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
+              horaVenda: time.format('LLL'),
+              ordemVendaNumero: ++numberOrdersSell
+            })
+          }
+        }
       }
     }
+  }
 
-    module.exports = { loadStrategy }
+  console.log(ordersBuy)
+  console.log('\n')
+  console.log(ordersSell)
+
+  return {
+    result: 'teste'
+  }
+}
+
+module.exports = { loadStrategy }

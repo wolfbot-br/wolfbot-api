@@ -10,7 +10,7 @@ async function carregarDados(params) {
   const pair_currency = `${params.target_currency}/${params.base_currency}`
   const market = exchangeCCXT.markets[pair_currency]
   const candle_size = params.candle_size
-  const configIndicators = params.indicator
+  const configIndicators = params
 
   let time = params.date_timestamp
 
