@@ -54,7 +54,7 @@ function loadStrategy(config, candle, market) {
       tipoOrdem: 'COMPRA',
       status: 'aberta',
       precoComprado: preco,
-      fee: 0.0025,
+      fee: fee,
       horaCompra: timeCompra.format('LLL'),
       target: profit,
       ordemCompraNumero: ++numberOrdersBuy
@@ -68,7 +68,7 @@ function loadStrategy(config, candle, market) {
       precoComprado: precoComprado,
       horaCompra: timeCompra,
       precoVendido: preco,
-      fee: 0.0025,
+      fee: fee,
       lucroObtido: preco - precoComprado - (preco * 0.005),
       percentualGanho: (preco - precoComprado - (preco * 0.005)) / preco,
       horaVenda: timeVenda.format('LLL'),
@@ -175,10 +175,11 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  for (let i = 0; i <= candle.length; i++) {
+  for (let i = 0; i <= candle.length - 1; i++) {
     for (let j = 0; j <= signalBUY.length - 1; j++) {
       if (signalBUY[j].candle === i) {
-        console.log('comprar')
+        let preco = candle[i]
+        criarOrdemCompra(preco, time, profit)
       }
     }
     if (sellForIndicator === true) {
@@ -193,59 +194,85 @@ function loadStrategy(config, candle, market) {
   }
 
 
-  // console.log(signalEMA)
-  // console.log("\n")
-  // console.log(signalMACD)
 
-  // if (config.stoch.status) {
-  //   tulind.indicators.stoch.indicator([high, low, close], [config.stoch.period_k, config.stoch.slow_period_k, config.stoch.period_d], function (err, result) {
-  //     if (err) {
-  //       console.log(err)
-  //     } else {
-  //       console.log('Resultado STOCK')
-  //       console.log(result[0])
-  //       console.log(result[1])
-  //     }
-  //   })
-  // }
 
-  // if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
-  //   criarOrdemCompra(preco, time, profit)
-  //   contadorOrdensAbertas++
-  // }
+  if (macd < 0) {
+    if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
+      if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
+        criarOrdemCompra(preco, time, profit)
+        contadorOrdensAbertas++
+      }
+    }
+  } else if (vendaPeloIndicador === true) {
+    if (macd > 0) {
+      if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
+        for (let j = 0; j < ordem.ordensCompra.length; j++) {
+          if (ordem.ordensCompra[j].status === 'aberta') {
+            if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
+              ordensCompra[j].status = 'fechada'
+              criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+              contadorOrdensAbertas--
+            } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
+              ordensCompra[j].status = 'fechada'
+              criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+              contadorOrdensAbertas--
+            }
+          }
+        }
+      }
+      // console.log(signalEMA)
+      // console.log("\n")
+      // console.log(signalMACD)
 
-  // for (let j = 0; j < ordem.ordensCompra.length; j++) {
-  //   if (ordem.ordensCompra[j].status === 'aberta') {
-  //     if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
-  //       ordensCompra[j].status = 'fechada'
-  //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-  //       contadorOrdensAbertas--
-  //     } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
-  //       ordensCompra[j].status = 'fechada'
-  //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-  //       contadorOrdensAbertas--
-  //     }
-  //   }
-  // }
+      // if (config.stoch.status) {
+      //   tulind.indicators.stoch.indicator([high, low, close], [config.stoch.period_k, config.stoch.slow_period_k, config.stoch.period_d], function (err, result) {
+      //     if (err) {
+      //       console.log(err)
+      //     } else {
+      //       console.log('Resultado STOCK')
+      //       console.log(result[0])
+      //       console.log(result[1])
+      //     }
+      //   })
+      // }
 
-  // let resultadoLucro = 0
-  // let resultadoPercentual = 0
-  // for (let i = 0; i <= ordensVenda.length - 1; i++) {
-  //   resultadoLucro += ordensVenda[i].lucroObtido
-  //   resultadoPercentual += ordensVenda[i].percentualGanho
-  // }
+      // if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
+      //   criarOrdemCompra(preco, time, profit)
+      //   contadorOrdensAbertas++
+      // }
 
-  // resultMACD = {
-  //   ordersBuy: ordensCompra,
-  //   ordersSell: ordensVenda,
-  //   lucro: resultadoLucro,
-  //   percentual: resultadoPercentual
+      // for (let j = 0; j < ordem.ordensCompra.length; j++) {
+      //   if (ordem.ordensCompra[j].status === 'aberta') {
+      //     if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
+      //       ordensCompra[j].status = 'fechada'
+      //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+      //       contadorOrdensAbertas--
+      //     } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
+      //       ordensCompra[j].status = 'fechada'
+      //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+      //       contadorOrdensAbertas--
+      //     }
+      //   }
+      // }
 
-  // }
+      // let resultadoLucro = 0
+      // let resultadoPercentual = 0
+      // for (let i = 0; i <= ordensVenda.length - 1; i++) {
+      //   resultadoLucro += ordensVenda[i].lucroObtido
+      //   resultadoPercentual += ordensVenda[i].percentualGanho
+      // }
 
-  return {
-    result: 'teste'
-  }
-}
+      // resultMACD = {
+      //   ordersBuy: ordensCompra,
+      //   ordersSell: ordensVenda,
+      //   lucro: resultadoLucro,
+      //   percentual: resultadoPercentual
 
-module.exports = { loadStrategy }
+      // }
+
+      return {
+        result: 'teste'
+      }
+    }
+
+    module.exports = { loadStrategy }
