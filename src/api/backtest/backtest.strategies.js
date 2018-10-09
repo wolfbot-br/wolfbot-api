@@ -6,7 +6,7 @@ function loadStrategy(config, candle, market) {
 
   const ordersBuy = []
   const ordersSell = []
-  const sellForIndicator = config.sellForIndicator
+  const sellForIndicator = false
   const profit = config.profit
   const stop = config.stop
   const fee = market.taker
@@ -76,7 +76,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.ema.status) {
+  if (config.name === 'EMA') {
     const period = config.ema.period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
       if (err) {
@@ -120,10 +120,10 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.macd.status) {
-    const shortPeriod = config.macd.shortPeriod
-    const longPeriod = config.macd.longPeriod
-    const signalPeriod = config.macd.signalPeriod
+  if (config.name === 'MACD') {
+    const shortPeriod = config.short_period
+    const longPeriod = config.long_period
+    const signalPeriod = config.signal_period
 
     tulind.indicators.macd.indicator([close], [shortPeriod, longPeriod, signalPeriod], function (err, result) {
       if (err) {
@@ -152,13 +152,11 @@ function loadStrategy(config, candle, market) {
               })
             }
           } else if (macd > 0) {
-            if (sellForIndicator === true) {
-              if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
-                signalSELL.push({
-                  candle: i,
-                  indicator: 'MACD'
-                })
-              }
+            if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
+              signalSELL.push({
+                candle: i,
+                indicator: 'MACD'
+              })
             }
           }
         }
@@ -166,7 +164,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.rsi.status) {
+  if (config.name === 'RSI') {
     tulind.indicators.rsi.indicator([close], [config.rsi.period], function (err, result) {
       if (err) {
         console.log(err)
@@ -177,8 +175,23 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  console.log(signalBUY)
-  console.log(signalSELL)
+  for (let i = 0; i <= candle.length; i++) {
+    for (let j = 0; j <= signalBUY.length - 1; j++) {
+      if (signalBUY[j].candle === i) {
+        console.log('comprar')
+      }
+    }
+    if (sellForIndicator === true) {
+      for (let k = 0; k <= signalSELL.length - 1; k++) {
+        if (signalSELL[k].candle === i) {
+          console.log('vender')
+        }
+      }
+    } else {
+
+    }
+  }
+
 
   // console.log(signalEMA)
   // console.log("\n")
