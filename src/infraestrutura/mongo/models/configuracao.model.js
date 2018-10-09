@@ -21,7 +21,7 @@ const configuracao = new mongoose.Schema({
   strategy: {
     external_signal: {},
     indicators: {
-      sma: {
+      ema: {
         status: { type: Boolean },
         period: { type: Number }
       },

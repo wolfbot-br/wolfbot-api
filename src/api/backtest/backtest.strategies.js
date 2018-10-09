@@ -2,33 +2,29 @@ const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
 
-function loadStrategy(config, candle) {
-  let resultMACD = {}
-  const ordensCompra = []
-  const ordensVenda = []
-  const quantidadeOrdensAbertas = 10
-  let contadorOrdensAbertas = 0
-  let numeroOrdensCompra = 0
-  let numeroOrdensVenda = 0
-  const vendaPeloIndicador = false
-  const profit = 0.02
-  const stop = 0.1
-  const digits = 4
-  let preco = 0
-  let time = moment
-  time.locale('pt-br')
-  const tendencia = {
-    up: 1,
-    down: -1,
-    persistence: 1
-  }
+function loadStrategy(config, candle, market) {
 
+  const ordersBuy = []
+  const ordersSell = []
+  const sellForIndicator = config.sellForIndicator
+  const profit = config.profit
+  const stop = config.stop
+  const fee = market.taker
   const timestamp = []
   const open = []
   const high = []
   const low = []
   const close = []
   const volume = []
+
+  let signalBUY = []
+  let signalSELL = []
+  let contOrdersOpen = 0
+  let numberOrdersBuy = 0
+  let numberOrdersSell = 0
+  let price = 0
+  let time = moment
+  time.locale('pt-br')
 
   lodash.flatten(candle.map(function (value) {
     return value.filter(function (value2, index2) {
@@ -54,19 +50,19 @@ function loadStrategy(config, candle) {
   }))
 
   function criarOrdemCompra(preco, timeCompra, profit) {
-    ordensCompra.push({
+    ordersBuy.push({
       tipoOrdem: 'COMPRA',
       status: 'aberta',
       precoComprado: preco,
       fee: 0.0025,
       horaCompra: timeCompra.format('LLL'),
       target: profit,
-      ordemCompraNumero: ++numeroOrdensCompra
+      ordemCompraNumero: ++numberOrdersBuy
     })
   }
 
   function criarOrdemVenda(preco, precoComprado, timeVenda, timeCompra) {
-    ordensVenda.push({
+    ordersSell.push({
       tipoOrdem: 'VENDA',
       status: 'fechada',
       precoComprado: precoComprado,
@@ -76,99 +72,96 @@ function loadStrategy(config, candle) {
       lucroObtido: preco - precoComprado - (preco * 0.005),
       percentualGanho: (preco - precoComprado - (preco * 0.005)) / preco,
       horaVenda: timeVenda.format('LLL'),
-      ordemVendaNumero: ++numeroOrdensVenda
+      ordemVendaNumero: ++numberOrdersSell
     })
   }
 
-  if (config.sma.status) {
-    tulind.indicators.sma.indicator([close], [config.sma.period], function (err, result) {
+  if (config.ema.status) {
+    const period = config.ema.period
+    tulind.indicators.ema.indicator([close], [period], function (err, result) {
       if (err) {
         console.log(err)
       } else {
-        console.log('Resultado SMA')
-        console.log(result[0])
-      }
-    })
-  }
-
-  if (config.macd.status) {
-    const short = config.macd.shortPeriod
-    const long = config.macd.longPeriod
-    const signal = config.macd.signalPeriod
-
-    tulind.indicators.macd.indicator([close], [short, long, signal], function (err, result) {
-      if (err) {
-        console.log(err)
-      } else {
-        const arrayMacd = result[0]
-        const arrayHistograma = result[2]
+        const arrayEMA = result[0]
+        const tendencia = {
+          up: 2,
+          down: -2,
+          persistence: 2
+        }
         let cont2 = 0
 
-        for (let i = long - 1; i <= close.length - 1; i++) {
-          time = moment(timestamp[i])
-          preco = parseFloat(close[i])
-          let macd = parseFloat(arrayMacd[cont2])
-          let histograma = parseFloat(arrayHistograma[cont2])
+
+        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        for (let i = period - 1; i <= close.length - 1; i++) {
+          let ema = parseFloat(arrayEMA[cont2])
+          let tendenciaUP = ema + tendencia.up
+          let tendenciaDOWN = ema + tendencia.down
           cont2++
 
-          // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
-          // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra
-          if (macd < 0) {
-            if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
-              if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
-                criarOrdemCompra(preco, time, profit)
-                contadorOrdensAbertas++
-              }
+          if (close[i] < ema) {
+            if (close[i] < tendenciaDOWN && close[i] > (tendenciaDOWN - tendencia.persistence)) {
+              signalBUY.push({
+                candle: i,
+                indicator: 'EMA'
+              })
             }
-          } else if (vendaPeloIndicador === true) {
-            if (macd > 0) {
-              if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
-                for (let j = 0; j < ordem.ordensCompra.length; j++) {
-                  if (ordem.ordensCompra[j].status === 'aberta') {
-                    if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
-                      ordensCompra[j].status = 'fechada'
-                      criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-                      contadorOrdensAbertas--
-                    } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
-                      ordensCompra[j].status = 'fechada'
-                      criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
-                      contadorOrdensAbertas--
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          for (let j = 0; j < ordensCompra.length; j++) {
-            if (ordensCompra[j].status === 'aberta') {
-              if (preco >= ordensCompra[j].precoComprado + (ordensCompra[j].precoComprado * profit)) {
-                ordensCompra[j].status = 'fechada'
-                criarOrdemVenda(preco, ordensCompra[j].precoComprado, time, ordensCompra[j].horaCompra)
-                contadorOrdensAbertas--
-              } else if (preco <= ordensCompra[j].precoComprado - (ordensCompra[j].precoComprado * stop)) {
-                ordensCompra[j].status = 'fechada'
-                criarOrdemVenda(preco, ordensCompra[j].precoComprado, time, ordensCompra[j].horaCompra)
-                contadorOrdensAbertas--
+          } else if (close[i] > ema) {
+            if (sellForIndicator === true) {
+              if ((close[i] > tendenciaUP && close[i] < (tendenciaUP + tendencia.persistence))) {
+                signalSELL.push({
+                  candle: i,
+                  indicator: 'EMA'
+                })
               }
             }
           }
         }
       }
+    })
+  }
 
-      let resultadoLucro = 0
-      let resultadoPercentual = 0
-      for (let i = 0; i <= ordensVenda.length - 1; i++) {
-        resultadoLucro += ordensVenda[i].lucroObtido
-        resultadoPercentual += ordensVenda[i].percentualGanho
-      }
+  if (config.macd.status) {
+    const shortPeriod = config.macd.shortPeriod
+    const longPeriod = config.macd.longPeriod
+    const signalPeriod = config.macd.signalPeriod
 
-      resultMACD = {
-        ordersBuy: ordensCompra,
-        ordersSell: ordensVenda,
-        lucro: resultadoLucro,
-        percentual: resultadoPercentual
+    tulind.indicators.macd.indicator([close], [shortPeriod, longPeriod, signalPeriod], function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        const arrayMacd = result[0]
+        const arrayHistograma = result[2]
+        const tendencia = {
+          up: 1,
+          down: -1,
+          persistence: 1
+        }
+        let cont2 = 0
 
+        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        for (let i = longPeriod - 1; i <= close.length - 1; i++) {
+          let macd = parseFloat(arrayMacd[cont2])
+          let histograma = parseFloat(arrayHistograma[cont2])
+          cont2++
+
+          if (macd < 0) {
+            if (histograma > tendencia.up && histograma < (tendencia.up + tendencia.persistence)) {
+              signalBUY.push({
+                candle: i,
+                indicator: 'MACD'
+              })
+            }
+          } else if (macd > 0) {
+            if (sellForIndicator === true) {
+              if ((histograma < tendencia.down && histograma > (tendencia.down - tendencia.persistence))) {
+                signalSELL.push({
+                  candle: i,
+                  indicator: 'MACD'
+                })
+              }
+            }
+          }
+        }
       }
     })
   }
@@ -184,8 +177,61 @@ function loadStrategy(config, candle) {
     })
   }
 
+  console.log(signalBUY)
+  console.log(signalSELL)
+
+  // console.log(signalEMA)
+  // console.log("\n")
+  // console.log(signalMACD)
+
+  // if (config.stoch.status) {
+  //   tulind.indicators.stoch.indicator([high, low, close], [config.stoch.period_k, config.stoch.slow_period_k, config.stoch.period_d], function (err, result) {
+  //     if (err) {
+  //       console.log(err)
+  //     } else {
+  //       console.log('Resultado STOCK')
+  //       console.log(result[0])
+  //       console.log(result[1])
+  //     }
+  //   })
+  // }
+
+  // if (contadorOrdensAbertas < quantidadeOrdensAbertas) {
+  //   criarOrdemCompra(preco, time, profit)
+  //   contadorOrdensAbertas++
+  // }
+
+  // for (let j = 0; j < ordem.ordensCompra.length; j++) {
+  //   if (ordem.ordensCompra[j].status === 'aberta') {
+  //     if (preco >= ordem.ordensCompra[j].precoComprado + (ordem.ordensCompra[j].precoComprado * profit)) {
+  //       ordensCompra[j].status = 'fechada'
+  //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+  //       contadorOrdensAbertas--
+  //     } else if (preco <= ordem.ordensCompra[j].precoComprado - (ordem.ordensCompra[j].precoComprado * stop)) {
+  //       ordensCompra[j].status = 'fechada'
+  //       criarOrdemVenda(preco, ordem.ordensCompra[j].precoComprado, time)
+  //       contadorOrdensAbertas--
+  //     }
+  //   }
+  // }
+
+  // let resultadoLucro = 0
+  // let resultadoPercentual = 0
+  // for (let i = 0; i <= ordensVenda.length - 1; i++) {
+  //   resultadoLucro += ordensVenda[i].lucroObtido
+  //   resultadoPercentual += ordensVenda[i].percentualGanho
+  // }
+
+  // resultMACD = {
+  //   ordersBuy: ordensCompra,
+  //   ordersSell: ordensVenda,
+  //   lucro: resultadoLucro,
+  //   percentual: resultadoPercentual
+
+  // }
+
   return {
-    result: resultMACD
+    result: 'teste'
   }
 }
 
