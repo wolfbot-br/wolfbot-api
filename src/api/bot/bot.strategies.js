@@ -1,7 +1,6 @@
 const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
-const chalk = require('chalk')
 const order = require('../order/order.service');
 
 function loadStrategy(config, candle, saldo, config) {
