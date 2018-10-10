@@ -252,10 +252,6 @@ function loadStrategy(config, candle, market) {
     }
   }
 
-  console.log(ordersBuy)
-  console.log('\n')
-  console.log(ordersSell)
-
   return {
     result: 'teste'
   }
