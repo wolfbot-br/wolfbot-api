@@ -201,6 +201,7 @@ function loadStrategy(config, candle, market) {
               let preco = parseFloat(candle[i][4])
               let time = moment(candle[i][0])
               ordersSell.push({
+                candle: i,
                 tipoOrdem: 'VENDA',
                 status: 'fechada',
                 precoComprado: ordersBuy[x].precoComprado,
@@ -223,6 +224,7 @@ function loadStrategy(config, candle, market) {
           if (preco >= ordersBuy[x].precoComprado + (ordersBuy[x].precoComprado * profit)) {
             ordersBuy[x].status = 'fechada'
             ordersSell.push({
+              candle: i,
               tipoOrdem: 'VENDA',
               status: 'fechada',
               precoComprado: ordersBuy[x].precoComprado,
@@ -236,6 +238,7 @@ function loadStrategy(config, candle, market) {
           } else if (preco <= ordersBuy[x].precoComprado - (ordersBuy[x].precoComprado * stop)) {
             ordersBuy[x].status = 'fechada'
             ordersSell.push({
+              candle: i,
               tipoOrdem: 'VENDA',
               status: 'fechada',
               precoComprado: ordersBuy[x].precoComprado,
@@ -252,8 +255,21 @@ function loadStrategy(config, candle, market) {
     }
   }
 
+  let profitResult = 0
+  let percentageResult = 0
+  for (let i = 0; i <= ordersSell.length - 1; i++) {
+    profitResult += ordersSell[i].lucroObtido
+    percentageResult += ordersSell[i].percentualGanho
+  }
+
   return {
-    result: 'teste'
+    result: {
+      ordersBuy: ordersBuy,
+      ordersSell: ordersSell,
+      profit: profitResult,
+      percentage: percentageResult
+
+    }
   }
 }
 
