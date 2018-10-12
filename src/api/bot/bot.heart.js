@@ -32,6 +32,7 @@ async function acionarMonitoramento(config) {
   const tamanhoCandle = config.candle_size
   const configIndicators = config.strategy.indicators
   const moedaBase = saldo.USDT.free
+  const user = config.user.user_id
 
   if (unidadeTempo === 'm') {
     periodo = 'minutes'
@@ -51,7 +52,7 @@ async function acionarMonitoramento(config) {
           const parMoedas = value.currency + "/" + value.base_currency
           const amount = value.amount
           const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
-          await strategy.loadStrategy(configIndicators, candle, moedaBase, parMoedas, amount)
+          await strategy.loadStrategy(configIndicators, candle, moedaBase, parMoedas, amount, user)
         })
       }))
     }, config.status.interval_check, config.status.key

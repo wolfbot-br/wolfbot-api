@@ -4,7 +4,7 @@ const moment = require('moment')
 const chalk = require('chalk')
 const order = require('../order/order.service');
 
-function loadStrategy(config, candle, saldo, parMoedas, amount) {
+function loadStrategy(config, candle, saldo, parMoedas, amount, user) {
     var data = new Array();
     var i = 0
 
@@ -225,12 +225,12 @@ function loadStrategy(config, candle, saldo, parMoedas, amount) {
         })
     }
 
+    var z = 0
     result = lodash.filter(data, function (res) {
         if (res.indicador.action == 'compra') {
-            console.log(res)
             var indicador_ativos = Object.keys(res.indicador).length
             if (indicador_ativos == i) {
-                for (m = 0; m < 1; m++) {
+                while (z == 0) {
                     saldo_disponivel = parseFloat(close.slice(-1)) * amount
                     if (saldo > saldo_disponivel) {
                         const order_compra = {
@@ -239,34 +239,37 @@ function loadStrategy(config, candle, saldo, parMoedas, amount) {
                             amount: amount, // Montante
                             price: parseFloat(close.slice(-1)), // Preço de venda
                             type: 'limit', // tipo: limite ou mercado
-                            action: 'compra',
-                            saldo: saldo
+                            action: 'buy',
+                            saldo: saldo,
+                            user_id: user
                         }
-                        console.log(order_compra)
+                        order.comprar(order_compra)
                     }
+                    z = 1
                 }
             }
         }
 
         if (res.indicador.action == 'venda') {
-            console.log(res)
             var indicador_ativos = Object.keys(res.indicador).length
-            if (indicador_ativos == j) {
-                for (j = 0; j < 1; j++) {
+            if (indicador_ativos == i) {
+                while (z == 0) {
                     const order_venda = {
                         type_operation: 'Automatic',
                         symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
                         amount: amount, // Montante
                         price: parseFloat(close.slice(-1)), // Preço de venda
                         type: 'limit', // tipo: limite ou mercado
-                        action: 'venda',
-                        saldo: saldo
+                        action: 'sell',
+                        saldo: saldo,
+                        user_id: user
                     }
-                    console.log(order_venda)
+                    order.vender(order_venda)
+                    z = 1
                 }
             }
         }
-    });
+    })
 }
 
 module.exports = { loadStrategy }
