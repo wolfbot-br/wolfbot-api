@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt')
 const emailRegex = /\S+@\S+\.\S+/
 const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/
 
@@ -11,7 +10,7 @@ const validade_signup = usuario => {
   if (!usuario.password.match(passwordRegex)) {
     errors.push(Object.assign({}, { message: 'Ops! A senha deve conter de 6 a 20 caracteres, com letra maiuscula e caracteres especiais.' }))
   }
-  if (!bcrypt.compareSync(usuario.confirm_password, usuario.password_encripted)) {
+  if (usuario.confirm_password !== usuario.password) {
     errors.push(Object.assign({}, { message: 'A senha e a senha de confirmação não conferem.' }))
   }
   if (usuario.nome === '') {
