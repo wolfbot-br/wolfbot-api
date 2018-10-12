@@ -133,8 +133,8 @@ function loadStrategy(config, candle, market) {
         const arrayMacd = result[0]
         const arrayHistograma = result[2]
         const tendencia = {
-          up: 1,
-          down: -1,
+          up: 0.025,
+          down: 0.025,
           persistence: 1
         }
         let cont2 = 0
