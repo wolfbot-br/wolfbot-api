@@ -44,9 +44,11 @@ const configuracao = new mongoose.Schema({
         longPeriod: { type: Number },
         signalPeriod: { type: Number }
       },
-      rsi: {
+      stoch: {
         status: { type: Boolean },
-        period: { type: Number }
+        shortPeriod: { type: Number },
+        longPeriod: { type: Number },
+        signalPeriod: { type: Number }
       }
     }
   }

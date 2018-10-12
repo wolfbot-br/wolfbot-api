@@ -3,6 +3,7 @@ const moment = require('moment')
 const robo = require('set-interval')
 const strategy = require('./bot.strategies')
 const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
+const _ = require('lodash')
 
 async function roboLigado(params) {
   const config = await configuracao.findOne({ 'user.user_id': params.user_id })
@@ -28,7 +29,6 @@ async function acionarMonitoramento(config) {
   let periodo = ''
   const unidadeTempo = config.candle_size.substr(-1)
   const unidadeTamanho = Number.parseInt(config.candle_size.substr(0))
-  const parMoedas = `${config.target_currency}/${config.base_currency}`
   const tamanhoCandle = config.candle_size
   const configIndicators = config.strategy.indicators
   const moedaBase = saldo.USDT.free
@@ -46,10 +46,14 @@ async function acionarMonitoramento(config) {
   robo.start(
     async function load() {
       await sleep(exchangeCCXT.rateLimit) // milliseconds
-      const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
-
-      await strategy.loadStrategy(configIndicators, candle, config)
-
+      _.flatten(config.target_currency.map(function (reuslt, key) {
+        _.forEach([reuslt], async function (value) {
+          const parMoedas = value.currency + "/" + value.base_currency
+          const amount = value.amount
+          const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.valueOf(), limit = 1000)
+          await strategy.loadStrategy(configIndicators, candle, moedaBase, parMoedas, amount)
+        })
+      }))
     }, config.status.interval_check, config.status.key
   )
 }
