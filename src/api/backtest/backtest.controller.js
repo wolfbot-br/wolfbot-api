@@ -3,7 +3,13 @@ const backtest = require('./backtest.heart')
 const testarConfiguracao = async (req, res, next) => {
   try {
     params = {
-      user_id: req.body.user_id,
+      exchange: req.body.exchange,
+      indicator: req.body.indicator,
+      profit: req.body.profit,
+      stop: req.body.stop,
+      base_currency: req.body.base_currency,
+      target_currency: req.body.target_currency,
+      candle_size: req.body.candle_size,
       date_timestamp: req.body.date
     }
 

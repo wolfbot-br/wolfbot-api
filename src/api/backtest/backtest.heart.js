@@ -1,21 +1,21 @@
 const ccxt = require('ccxt')
 const moment = require('moment')
-const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
+const configuracao = require('../../infraestrutura/mongo/models/backtest.configuracao.model')
 const strategy = require('./backtest.strategies')
 
 async function carregarDados(params) {
-  const config = await configuracao.findOne({ 'user.user_id': params.user_id })
-  let nome_exchange = config.exchange.toLowerCase()
-  exchangeCCXT = new ccxt[nome_exchange]()
+  exchangeCCXT = new ccxt[params.exchange]()
+  await exchangeCCXT.loadMarkets()
 
-  const parMoedas = `${config.target_currency}/${config.base_currency}`
-  const tamanhoCandle = config.candle_size
-  const configIndicators = config.strategy.indicators
+  const pair_currency = `${params.target_currency}/${params.base_currency}`
+  const market = exchangeCCXT.markets[pair_currency]
+  const candle_size = params.candle_size
+  const configIndicators = params
 
-  let tempo = params.date_timestamp
+  let time = params.date_timestamp
 
-  const candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, tempo)
-  const result = await strategy.loadStrategy(configIndicators, candle)
+  const candle = await exchangeCCXT.fetchOHLCV(pair_currency, candle_size, time)
+  const result = await strategy.loadStrategy(configIndicators, candle, market)
 
   return {
     candle: candle,
