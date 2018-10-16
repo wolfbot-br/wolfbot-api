@@ -20,6 +20,20 @@ const validade_signup = usuario => {
   return errors
 }
 
+const validade_login = (email, password) => {
+  const errors = []
+
+  if (!email.match(emailRegex)) {
+    errors.push(Object.assign({}, { message: 'O email informado está inválido.' }))
+  }
+
+  if (password === '') {
+    errors.push(Object.assign({}, { message: 'Senha inválida' }))
+  }
+
+  return errors
+}
+
 const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
   const errors = []
   if (changePasswordHash == '' || changePasswordHash == null || changePasswordHash == undefined) {
@@ -43,4 +57,4 @@ const changePasswordValidation = (password, passwordConfirm, changePasswordHash)
   return errors
 }
 
-module.exports = { validade_signup, changePasswordValidation }
+module.exports = { validade_signup, changePasswordValidation, validade_login }

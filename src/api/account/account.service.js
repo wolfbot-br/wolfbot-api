@@ -265,8 +265,61 @@ const activeAccount = (res, next, activeAccountHash) => {
     })
 }
 
-// Firebase 
+// Cria um token para o usuário 
+const createToken = (email, password, res) => {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(function (currentUser) {
+            if (firebase.auth().currentUser.emailVerified) {
+                const usuario = firebase.auth().currentUser.toJSON()
+                return res.status(200).json({
+                    id: usuario.uid,
+                    email: usuario.email,
+                    emailVerificado: usuario.emailVerified,
+                    anonimo: usuario.isAnonymous,
+                    MetodoLogin: usuario.providerData[0].providerId,
+                    refreshToken: usuario.stsTokenManager.refreshToken,
+                    Token: usuario.stsTokenManager.accessToken,
+                    expiration: usuario.stsTokenManager.expirationTime,
+                    ultimoLogin: usuario.lastLoginAt,
+                    criado: usuario.createdAt
+                })
+            }
+            else {
+                return res.status(400).json({
+                    errors: [{
+                        message: 'Email não verificado pelo usuário'
+                    }]
+                })
+            }
 
+        })
+        .catch(function (error) {
+            switch (error.code) {
+                case 'auth/wrong-password':
+                    return res.status(400).json({
+                        errors: [{
+                            message: 'Senha do usuário está Inválida'
+                        }]
+                    })
+                case 'auth/user-not-found':
+                    return res.status(400).json({
+                        errors: [{
+                            message: 'Não existe usuário com esse endereço de email'
+                        }]
+                    })
+                case 'auth/invalid-email':
+                    return res.status(400).json({
+                        errors: [{
+                            message: 'O email informado está inválido'
+                        }]
+                    })
+                default:
+                    return res.status(400).json(error)
+            }
+        })
+}
+
+// Informações do usuário logado (Uso interno)
 const getUserByEmail = (email, res) => {
     admin.auth().getUserByEmail(email)
         .then(function (userRecord) {
@@ -279,15 +332,12 @@ const getUserByEmail = (email, res) => {
         })
 }
 
+// Processo de Cadastro
 const signup = (res, usuario) => {
 
     const firebaseUser = {
         email: usuario.email,
-        emailVerified: false,
-        password: usuario.password,
-        displayName: usuario.nome,
-        photoURL: "http://www.example.com/12345678/photo.png",
-        disabled: false
+        password: usuario.password
     }
     firebase.auth().createUserWithEmailAndPassword(firebaseUser.email, firebaseUser.password)
         .then(function (userRecord) {
@@ -311,6 +361,7 @@ const signup = (res, usuario) => {
         })
 }
 
+// Envio do email para ativação da conta 
 const sendEmailActiveAccount = (res) => {
     firebase.auth().currentUser.sendEmailVerification()
         .then(function () {
@@ -322,12 +373,25 @@ const sendEmailActiveAccount = (res) => {
         })
 }
 
+// Processo de Login 
 const login = (res, email, password) => {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(function (currentUser) {
             if (firebase.auth().currentUser.emailVerified) {
-                return res.status(200).json(firebase.auth().currentUser)
+                const usuario = firebase.auth().currentUser.toJSON()
+                return res.status(200).json({
+                    id: usuario.uid,
+                    email: usuario.email,
+                    emailVerificado: usuario.emailVerified,
+                    anonimo: usuario.isAnonymous,
+                    MetodoLogin: usuario.providerData[0].providerId,
+                    refreshToken: usuario.stsTokenManager.refreshToken,
+                    Token: usuario.stsTokenManager.accessToken,
+                    expiration: usuario.stsTokenManager.expirationTime,
+                    ultimoLogin: usuario.lastLoginAt,
+                    criado: usuario.createdAt
+                })
             }
             else {
                 return res.status(400).json({
@@ -364,6 +428,7 @@ const login = (res, email, password) => {
         })
 }
 
+// Informações do Usuário Logado
 const me = (res, token) => {
     admin.auth().verifyIdToken(token)
         .then(function (decodedToken) {
@@ -401,6 +466,7 @@ module.exports =
         validateToken,
         login,
         me,
+        createToken,
         changePassword,
         activeAccount,
         getUserByEmail

@@ -19,6 +19,7 @@ module.exports = function (server) {
   openRoutes.post('/active', accountController.activeAccount)
 
   // NEW ROUTER FIREBASE
+  openRoutes.post('/createtoken', accountController.createToken)
   openRoutes.get('/getuserbyemail', accountController.getUserByEmail)
   openRoutes.post('/login', accountController.login)
   openRoutes.post('/signup', accountController.signup)

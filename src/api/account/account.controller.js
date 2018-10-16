@@ -40,7 +40,7 @@ const activeAccount = (req, res, next) => {
   accountService.activeAccount(res, next, activeAccountHash)
 }
 
-// Firebase
+// Firebase new Auth
 
 const getUserByEmail = (req, res) => {
   const email = req.headers['email']
@@ -53,7 +53,6 @@ const me = (req, res) => {
 }
 
 const signup = (req, res) => {
-
   const usuario = {
     nome: req.body.nome || '',
     email: req.body.email || '',
@@ -65,20 +64,40 @@ const signup = (req, res) => {
 
   if (errors.length > 0) {
     res.status(406).json({ errors })
-  } else {
+  }
+  else {
     accountService.signup(res, usuario)
   }
 }
 
-const login = (req, res, next) => {
+const createToken = (req, res) => {
   const email = req.body.email || ''
   const password = req.body.password || ''
-  accountService.login(res, email, password)
+  const errors = accountValidation.validade_login(email, password)
+  if (errors.length > 0) {
+    res.status(406).json({ errors })
+  }
+  else {
+    accountService.createToken(email, password, res)
+  }
+}
+
+const login = (req, res) => {
+  const email = req.body.email || ''
+  const password = req.body.password || ''
+  const errors = accountValidation.validade_login(email, password)
+  if (errors.length > 0) {
+    res.status(406).json({ errors })
+  }
+  else {
+    accountService.login(res, email, password)
+  }
 }
 
 module.exports =
   {
     login,
+    createToken,
     signup,
     me,
     validateToken,
