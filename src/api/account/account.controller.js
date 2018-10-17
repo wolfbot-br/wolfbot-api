@@ -34,13 +34,19 @@ const changePassword = (req, res, next) => {
   }
 }
 
-const activeAccount = (req, res, next) => {
-  console.log(req.body)
-  const activeAccountHash = req.body.activeAccountHash
-  accountService.activeAccount(res, next, activeAccountHash)
-}
+
 
 // Firebase new Auth
+
+const activeAccount = (req, res) => {
+  const code = req.headers['code']
+  if (!code) {
+    return res.status(400).json({
+      errors: [{ message: '"code" na requisição é obrigatório' }]
+    })
+  }
+  accountService.activeAccount(res, code)
+}
 
 const getUserByEmail = (req, res) => {
   const email = req.headers['email']

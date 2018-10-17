@@ -24,4 +24,5 @@ module.exports = function (server) {
   openRoutes.post('/login', accountController.login)
   openRoutes.post('/signup', accountController.signup)
   openRoutes.get('/me', accountController.me)
+  openRoutes.get('/active', accountController.activeAccount)
 }

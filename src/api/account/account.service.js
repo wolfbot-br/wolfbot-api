@@ -238,31 +238,49 @@ const changePassword = (res, next, changePasswordHash, password) => {
         }
     })
 }
-const activeAccount = (res, next, activeAccountHash) => {
-    AccountLog.findOne({ hash: activeAccountHash, pendente: true }, (err, log) => {
-        if (err) {
-            return sendErrorsFromDB(res, err)
-        }
-        if (!log) {
-            return res.status(400).json({
-                sucess: false,
-                errors: [{ message: 'Sua conta já está ativada ou ocorreu um erro!' }]
-            })
-        } else {
-            AccountLog.update({ usuario: log.usuario, hash: activeAccountHash },
-                { pendente: false, dtConfirmacao: moment().subtract(3, 'hours').format(), emailConfirmado: true }
-                , { multi: true }, (err, response) => {
-                    if (err) {
-                        return sendErrorsFromDB(response, err)
-                    } else {
-                        return res.status(200).json({
-                            sucess: true,
-                            errors: []
-                        })
-                    }
+
+// Realiza a ativação da conta do usuário 
+const activeAccount = (res, code) => {
+    firebase.auth().checkActionCode(code)
+        .then(function (response) {
+            if (response.operation == 'VERIFY_EMAIL') {
+
+                const usuario = response.data.email;
+                admin.auth().getUserByEmail(usuario)
+                    .then(function (userRecord) {
+                        if (userRecord.emailVerified) {
+                            return res.status(400).json({
+                                errors: [{ message: 'Email já foi verificado pelo usuário' }]
+                            })
+                        }
+                        admin.auth().updateUser(userRecord.uid,
+                            {
+                                emailVerified: true
+                            })
+                            .then(function (user) {
+                                return res.status(200).json(user)
+                            })
+                            .catch(function (error) {
+                                return res.status(400).json(error)
+                            })
+                    })
+            }
+            else {
+                return res.status(400).json({
+                    errors: [{ message: 'Operação Inválida' }]
                 })
-        }
-    })
+            }
+        })
+        .catch(function (error) {
+            switch (error.code) {
+                case 'auth/invalid-action-code': {
+                    return res.status(400).json({
+                        errors:
+                            [{ message: 'O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.' }]
+                    })
+                }
+            }
+        })
 }
 
 // Cria um token para o usuário 
