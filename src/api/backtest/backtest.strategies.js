@@ -19,10 +19,8 @@ function loadStrategy(config, candle, market) {
 
   let signalBUY = []
   let signalSELL = []
-  let contOrdersOpen = 0
   let numberOrdersBuy = 0
   let numberOrdersSell = 0
-  let price = 0
   let time = moment
   time.locale('pt-br')
 
@@ -48,34 +46,6 @@ function loadStrategy(config, candle, market) {
       }
     })
   }))
-
-  function criarOrdemCompra(preco, timeCompra, profit, candlePosition) {
-    ordersBuy.push({
-      candle: candlePosition,
-      tipoOrdem: 'COMPRA',
-      status: 'aberta',
-      precoComprado: preco,
-      fee: fee,
-      horaCompra: timeCompra.format('LLL'),
-      target: profit,
-      ordemCompraNumero: ++numberOrdersBuy
-    })
-  }
-
-  function criarOrdemVenda(preco, precoComprado, timeVenda, timeCompra) {
-    ordersSell.push({
-      tipoOrdem: 'VENDA',
-      status: 'fechada',
-      precoComprado: precoComprado,
-      horaCompra: timeCompra,
-      precoVendido: preco,
-      fee: fee,
-      lucroObtido: preco - precoComprado - (preco * 0.005),
-      percentualGanho: (preco - precoComprado - (preco * 0.005)) / preco,
-      horaVenda: timeVenda.format('LLL'),
-      ordemVendaNumero: ++numberOrdersSell
-    })
-  }
 
   if (config.indicator.name === 'EMA') {
     const period = config.ema.period

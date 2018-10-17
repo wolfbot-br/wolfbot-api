@@ -12,9 +12,9 @@ async function carregarDados(params) {
   const candle_size = params.candle_size
   const configIndicators = params
 
-  let time = params.date_timestamp
+  let time = moment(params.date)
 
-  const candle = await exchangeCCXT.fetchOHLCV(pair_currency, candle_size, time)
+  const candle = await exchangeCCXT.fetchOHLCV(pair_currency, candle_size, time.format('x'))
   const result = await strategy.loadStrategy(configIndicators, candle, market)
 
   return {
