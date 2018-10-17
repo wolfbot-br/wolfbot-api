@@ -46,7 +46,11 @@ const buy = (req, res, next) => {
             user_id: req.body.user_id,
             symbol: req.body.symbol,
             amount: req.body.amount,
-            price: req.body.price
+            price: req.body.price,
+            type_operation: req.body.type_operation,
+            symbol: req.body.symbol,
+            type: req.body.type,
+            action: req.body.action
         }
 
         validation.dados(params)
@@ -66,7 +70,11 @@ const sell = (req, res, next) => {
             user_id: req.body.user_id,
             symbol: req.body.symbol,
             amount: req.body.amount,
-            price: req.body.price
+            price: req.body.price,
+            type_operation: req.body.type_operation,
+            symbol: req.body.symbol,
+            type: req.body.type,
+            action: req.body.action
         }
 
         validation.dados(params)
