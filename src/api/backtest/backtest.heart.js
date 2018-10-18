@@ -18,8 +18,7 @@ async function carregarDados(params) {
   const result = await strategy.loadStrategy(configIndicators, candle, market)
 
   return {
-    candle: candle,
-    result: result
+    result
   }
 }
 

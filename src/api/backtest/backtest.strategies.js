@@ -48,7 +48,7 @@ function loadStrategy(config, candle, market) {
   }))
 
   if (config.indicator.name === 'EMA') {
-    const period = config.ema.period
+    const period = config.indicator.period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
       if (err) {
         console.log(err)
@@ -157,7 +157,7 @@ function loadStrategy(config, candle, market) {
           status: 'aberta',
           precoComprado: preco,
           close: close[i],
-          horaCompra: time.format('LLL'),
+          horaCompra: time.format('DD-MM-YYYY HH:mm'),
           target: profit,
           ordemCompraNumero: ++numberOrdersBuy
         })
@@ -177,9 +177,10 @@ function loadStrategy(config, candle, market) {
                 precoComprado: ordersBuy[x].precoComprado,
                 horaCompra: ordersBuy[x].horaCompra,
                 precoVendido: preco,
+                taxaNegociacao: preco * (2 * parseFloat(fee)),
                 lucroObtido: preco - precoComprado - (preco * (2 * parseFloat(fee))),
                 percentualGanho: (preco - precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
-                horaVenda: time.format('LLL'),
+                horaVenda: time.format('DD-MM-YYYY HH:mm'),
                 ordemVendaNumero: ++numberOrdersSell
               })
             }
@@ -200,9 +201,10 @@ function loadStrategy(config, candle, market) {
               precoComprado: ordersBuy[x].precoComprado,
               horaCompra: ordersBuy[x].horaCompra,
               precoVendido: preco,
+              taxaNegociacao: preco * (2 * parseFloat(fee)),
               lucroObtido: preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee))),
               percentualGanho: (preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
-              horaVenda: time.format('LLL'),
+              horaVenda: time.format('DD-MM-YYYY HH:mm'),
               ordemVendaNumero: ++numberOrdersSell
             })
           } else if (preco <= ordersBuy[x].precoComprado - (ordersBuy[x].precoComprado * stop)) {
@@ -214,9 +216,10 @@ function loadStrategy(config, candle, market) {
               precoComprado: ordersBuy[x].precoComprado,
               horaCompra: ordersBuy[x].horaCompra,
               precoVendido: preco,
+              taxaNegociacao: preco * (2 * parseFloat(fee)),
               lucroObtido: preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee))),
               percentualGanho: (preco - ordersBuy[x].precoComprado - (preco * (2 * parseFloat(fee)))) / preco,
-              horaVenda: time.format('LLL'),
+              horaVenda: time.format('DD-MM-YYYY HH:mm'),
               ordemVendaNumero: ++numberOrdersSell
             })
           }
@@ -233,13 +236,10 @@ function loadStrategy(config, candle, market) {
   }
 
   return {
-    result: {
-      ordersBuy: ordersBuy,
-      ordersSell: ordersSell,
-      profit: profitResult,
-      percentage: percentageResult
-
-    }
+    ordersBuy: ordersBuy,
+    ordersSell: ordersSell,
+    profit: profitResult,
+    percentage: percentageResult
   }
 }
 
