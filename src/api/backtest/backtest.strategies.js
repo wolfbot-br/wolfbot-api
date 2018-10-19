@@ -48,7 +48,7 @@ function loadStrategy(config, candle, market) {
   }))
 
   if (config.indicator.name === 'EMA') {
-    const period = config.indicator.period
+    const period = config.indicator.ema_period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
       if (err) {
         console.log(err)
@@ -92,9 +92,9 @@ function loadStrategy(config, candle, market) {
   }
 
   if (config.indicator.name === 'MACD') {
-    const shortPeriod = config.indicator.short_period
-    const longPeriod = config.indicator.long_period
-    const signalPeriod = config.indicator.signal_period
+    const shortPeriod = config.indicator.macd_short_period
+    const longPeriod = config.indicator.macd_long_period
+    const signalPeriod = config.indicator.macd_signal_period
 
     tulind.indicators.macd.indicator([close], [shortPeriod, longPeriod, signalPeriod], function (err, result) {
       if (err) {
@@ -135,13 +135,49 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  if (config.indicator.name === 'RSI') {
-    tulind.indicators.rsi.indicator([close], [config.rsi.period], function (err, result) {
+  if (config.indicator.name === 'STOCH') {
+    const k_period = config.indicator.stoch_k_period
+    const k_slow_period = config.indicator.stoch_k_slow_period
+    const d_period = config.indicator.stoch_d_period
+    tulind.indicators.stoch.indicator([high, low, close], [k_period, k_slow_period, d_period], function (err, result) {
       if (err) {
         console.log(err)
       } else {
-        console.log('Resultado RSI')
-        console.log(result[0])
+        console.log('Resultado STOCH')
+      }
+    })
+  }
+
+  if (config.indicator.name === 'CCI') {
+    const period = config.indicator.cci_period
+    tulind.indicators.rsi.indicator([high, low, close], [period], function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('Resultado CCI')
+      }
+    })
+  }
+
+  if (config.indicator.name === 'ADX') {
+    const period = config.indicator.adx_period
+    tulind.indicators.rsi.indicator([high, low, close], [period], function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('Resultado ADX')
+      }
+    })
+  }
+
+  if (config.indicator.name === 'BOLLINGER BANDS') {
+    const period = config.indicator.bbands_period
+    const stddev = config.indicator.bbands_stddev_period
+    tulind.indicators.rsi.indicator([close], [period, stddev], function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('Resultado BOLLINGER BANDS')
       }
     })
   }
