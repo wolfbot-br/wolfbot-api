@@ -1,7 +1,8 @@
 const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
-const order = require('../order/order.service');
+const order = require('../order/order.service')
+const chalk = require('chalk')
 
 function loadStrategy(config, candle, saldo, parMoedas, amount, user) {
     var data = new Array();
