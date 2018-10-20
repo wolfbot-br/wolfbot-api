@@ -37,7 +37,6 @@ const changePassword = (req, res, next) => {
 
 
 // Firebase new Auth
-
 const activeAccount = (req, res) => {
   const code = req.headers['code']
   if (!code) {
