@@ -25,6 +25,7 @@
     "bcrypt": "1.0.2",
     "body-parser": "^1.18.2",
     "ccxt": "^1.14.301",
+    "chalk": "^2.4.1",
     "consign": "^0.1.6",
     "dotenv-safe": "^6.0.0",
     "express": "^4.16.3",
