@@ -1,6 +1,5 @@
 const randStr = require('randomstring')
 const moment = require('moment')
-const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const nodemailer = require('nodemailer')
 const smtpTransport = require('nodemailer-smtp-transport')
@@ -8,8 +7,6 @@ const env = require('../../../.env')
 const bcrypt = require('bcrypt')
 const admin = require('firebase-admin')
 const firebase = require('firebase')
-
-const utilService = require('../util/util.service')
 
 const AccountLog = require('../../infraestrutura/mongo/models/account.log.model')
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model')
@@ -117,27 +114,6 @@ const changePasswordPermition = (res, next, hash) => {
             errors: [{ message: 'Solicitação Inválida' }]
         })
     }
-}
-
-const validateToken = (res, next, token) => {
-    jwt.verify(token, env.authSecret, function (err, decoded) {
-        if (err) {
-            return res.status(401).send({
-                errors: 'Não Autorizado'
-            })
-        }
-        const created = utilService.convertTimeStampToHours(decoded.iat)
-        const exp = utilService.convertTimeStampToHours(decoded.exp)
-        return res.status(200).send(
-            {
-                token: `${token}`,
-                dateCreated: new Date(decoded.iat * 1000),
-                valid: `${!err}`,
-                usuario: decoded._doc,
-                hourCreated: created,
-                hourExpiration: exp
-            })
-    })
 }
 
 const findLogChangePassword = (ChangePasswordHash, res) => {
@@ -425,7 +401,7 @@ const login = (res, email, password) => {
                 case 'auth/wrong-password':
                     return res.status(400).json({
                         errors: [{
-                            message: 'Senha Inválida'
+                            message: 'Email ou senha inválidos!'
                         }]
                     })
                 case 'auth/user-not-found':
@@ -438,6 +414,12 @@ const login = (res, email, password) => {
                     return res.status(400).json({
                         errors: [{
                             message: 'O email informado está inválido'
+                        }]
+                    })
+                case 'auth/too-many-requests':
+                    return res.status(400).json({
+                        errors: [{
+                            message: 'Muitas tentativas de login malsucedidas. Por favor, inclua a verificação reCaptcha ou tente novamente mais tarde'
                         }]
                     })
                 default:
@@ -466,7 +448,6 @@ const me = (res, token) => {
         })
 }
 
-
 const sendErrorsFromDB = (res, dbErrors) => {
     const errors = []
     _.forIn(dbErrors.errors, error => errors.push(error.message))
@@ -481,7 +462,6 @@ module.exports =
         findLogChangePassword,
         updatePassword,
         signup,
-        validateToken,
         login,
         me,
         createToken,

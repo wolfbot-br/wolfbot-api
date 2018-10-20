@@ -12,7 +12,6 @@ module.exports = function (server) {
   server.use('/api', protectedRoutes)
   server.use('/account', openRoutes)
 
-  openRoutes.get('/validateToken', accountController.validateToken)
   openRoutes.post('/passwordRecovery', accountController.passwordRecovery)
   openRoutes.post('/changepasswordpermition', accountController.changePasswordPermition)
   openRoutes.post('/changepassword', accountController.changePassword)

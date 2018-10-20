@@ -4,11 +4,6 @@ const bcrypt = require('bcrypt')
 const accountValidation = require('../account/account.validation')
 const accountService = require('../account/account.service')
 
-const validateToken = (req, res, next) => {
-  const token = req.headers['authorization'] || ''
-  accountService.validateToken(res, next, token)
-}
-
 const passwordRecovery = (req, res, next) => {
   const email = req.body.email
   accountService.passwordRecovery(res, next, email)
@@ -110,7 +105,6 @@ module.exports =
     createToken,
     signup,
     me,
-    validateToken,
     passwordRecovery,
     changePasswordPermition,
     changePassword,
