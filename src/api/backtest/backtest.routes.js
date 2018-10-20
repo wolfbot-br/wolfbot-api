@@ -9,5 +9,6 @@ module.exports = function (server) {
   protectedRoutes.use(auth);
 
   server.use('/api', protectedRoutes)
+
   protectedRoutes.post('/backtest/testarConfiguracao', backtestController.testarConfiguracao)
 }
