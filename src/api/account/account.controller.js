@@ -36,7 +36,7 @@ const changePassword = (req, res, next) => {
 
 
 
-// Firebase new Auth
+// Ativa a conta do usuário 
 const activeAccount = (req, res) => {
   const code = req.headers['code']
   if (!code) {
@@ -47,16 +47,19 @@ const activeAccount = (req, res) => {
   accountService.activeAccount(res, code)
 }
 
+// Busca as informações do usuário pelo email
 const getUserByEmail = (req, res) => {
   const email = req.headers['email']
   accountService.getUserByEmail(email, res)
 }
 
+// Informações do usuário logado (Verificação se o token é válido)
 const me = (req, res) => {
   const token = req.headers['token']
   accountService.me(res, token)
 }
 
+// Cadastro de um novo usuário
 const signup = (req, res) => {
   const usuario = {
     nome: req.body.nome || '',
@@ -75,6 +78,7 @@ const signup = (req, res) => {
   }
 }
 
+// Cria um novo token para um usuário 
 const createToken = (req, res) => {
   const email = req.body.email || ''
   const password = req.body.password || ''
@@ -87,6 +91,7 @@ const createToken = (req, res) => {
   }
 }
 
+// Login por email e senha de um usuário 
 const login = (req, res) => {
   const email = req.body.email || ''
   const password = req.body.password || ''

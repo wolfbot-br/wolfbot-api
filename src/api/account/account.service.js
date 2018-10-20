@@ -337,7 +337,7 @@ const createToken = (email, password, res) => {
         })
 }
 
-// Informações do usuário logado (Uso interno)
+// Informações do usuário logado com base no email (Uso interno)
 const getUserByEmail = (email, res) => {
     admin.auth().getUserByEmail(email)
         .then(function (userRecord) {
@@ -350,7 +350,7 @@ const getUserByEmail = (email, res) => {
         })
 }
 
-// Processo de Cadastro
+// Cadastro de um novo usuário
 const signup = (res, usuario) => {
 
     const firebaseUser = {
@@ -391,7 +391,7 @@ const sendEmailActiveAccount = (res) => {
         })
 }
 
-// Processo de Login 
+// Login por email e senha de um usuário 
 const login = (res, email, password) => {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
@@ -446,7 +446,7 @@ const login = (res, email, password) => {
         })
 }
 
-// Informações do Usuário Logado
+// Informações do Usuário Logado (Verificação do Token)
 const me = (res, token) => {
     admin.auth().verifyIdToken(token)
         .then(function (decodedToken) {
