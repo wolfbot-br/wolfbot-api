@@ -160,7 +160,7 @@ const login = (res, next, email, password) => {
             })
             res.status(200).json({
               id: `${model.id}`,
-              nome: `${model.usuario}`,
+              nome: `${model.nome}`,
               token: `${token}`,
               message: 'Ok',
               success: 'true'
