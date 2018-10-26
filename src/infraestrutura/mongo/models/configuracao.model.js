@@ -4,12 +4,15 @@ const configuracao = new mongoose.Schema({
   exchange: { type: String },
   api_key: { type: String },
   secret: { type: String },
+  target_currency: [
+    { currency: { type: String } }
+  ],
   base_currency: { type: String },
-  target_currency: { type: String },
-  candle_size: { type: String },
+  purchase_quantity: { type: Number },
   profit: { type: String },
-  amount: { type: String },
+  stop: { type: Number },
   open_order_limit: { type: String },
+  candle_size: { type: String },
   user: {
     user_name: { type: String, require: true },
     user_id: { type: String, require: true }
@@ -30,30 +33,25 @@ const configuracao = new mongoose.Schema({
       open_order_limit: { type: String }
     }
   ],
-  candle_size: { type: String },
   strategy: {
-    external_signal: {},
     indicators: {
-      sma: {
+      ema: {
         status: { type: Boolean },
-        period: { type: Number }
+        short_period: { type: Number },
+        long_period: { type: Number }
       },
       macd: {
         status: { type: Boolean },
-        shortPeriod: { type: Number },
-        longPeriod: { type: Number },
-        signalPeriod: { type: Number }
+        short_period: { type: Number },
+        long_period: { type: Number },
+        signal_period: { type: Number }
       },
       stoch: {
         status: { type: Boolean },
-        shortPeriod: { type: Number },
-        longPeriod: { type: Number },
-        signalPeriod: { type: Number }
-      },
-      ema: {
-        status: { type: Boolean },
-        period: { type: Number }
-      },
+        short_period: { type: Number },
+        long_period: { type: Number },
+        signal_eriod: { type: Number }
+      }
     }
   }
 })
