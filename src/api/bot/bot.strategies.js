@@ -4,7 +4,7 @@ const moment = require('moment')
 const order = require('../order/order.service')
 const chalk = require('chalk')
 
-function loadStrategy(config, target_currency, candle) {
+async function loadStrategy(config, target_currency, candle, ordersOpen) {
     const digits = 4
     const sellForIndicator = config.sellForIndicator
     const profit = config.profit
@@ -15,6 +15,10 @@ function loadStrategy(config, target_currency, candle) {
     const low = []
     const close = []
     const volume = []
+    const params = {
+        target_currency: target_currency,
+        action: 'Automatic'
+    }
 
     let signalBUY = false
     let signalSELL = false
@@ -47,8 +51,8 @@ function loadStrategy(config, target_currency, candle) {
     let price = parseFloat(close.slice(-1))
 
     if (config.strategy.indicators.ema.status) {
-        let short = 5//config.strategy.indicators.ema.short_period
-        let long = 20//config.strategy.indicators.ema.long_period
+        let short = config.strategy.indicators.ema.short_period
+        let long = config.strategy.indicators.ema.long_period
         let short_ema = 0
         let long_ema = 0
         tulind.indicators.ema.indicator([close], [short], function (err, result) {
@@ -68,7 +72,7 @@ function loadStrategy(config, target_currency, candle) {
         time = moment().set(timestamp.slice(-1))
         let previousPrice = parseFloat(close.slice(-2))
         const tendencia = {
-            persistence: 4
+            persistence: 0.25
         }
         console.log(chalk.cyan('########## Resultado EMA ##########'))
         console.log(chalk.cyan(`moeda: ${target_currency}`))
@@ -104,13 +108,29 @@ function loadStrategy(config, target_currency, candle) {
         }
     }
 
-    signalBUY = true
+    signalBUY = false
+    //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE COMPRA
     if (signalBUY === true) {
-        const params = {
-            target_currency: target_currency,
-            action: 'Automatic'
-        }
+        console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
         order.orderBuy(config, params)
+    }
+
+    //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE VENDA
+    if (sellForIndicator === true) {
+        if (signalSELL === true) {
+            console.log('estou aqui')
+        }
+
+    } else if (ordersOpen !== null) {
+        for (let i = 0; i <= ordersOpen.length - 1; i++) {
+            if (price >= ordersOpen[i].price + (ordersOpen[i].price * profit)) {
+                console.log(chalk.green('ORDEM DE VENDA CRIADA'))
+                await order.orderSell(config, params, ordersOpen[i])
+                await order.orderUpdateStatus(params, ordersOpen[i])
+            } else if (price <= ordersOpen[i].price - (ordersOpen[i].price * stop)) {
+                console.log(chalk.green('VENDI COM PERDA, NO MEU STOP'))
+            }
+        }
     }
 
 

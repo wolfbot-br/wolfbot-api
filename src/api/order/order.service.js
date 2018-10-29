@@ -3,45 +3,36 @@ const configuracao = require('../../infraestrutura/mongo/models/configuracao.mod
 const order = require('../../infraestrutura/mongo/models/order.model')
 const moment = require('moment')
 const _ = require('lodash')
+const { ObjectId } = require('mongodb')
 
-const ordersOpen = async (params, res) => {
-
+const getOrdersOpen = async (config, params, res) => {
     try {
-        const config = await configuracao.findOne({ 'user.user_id': params.user_id })
-        const parMoedas = `${config.target_currency}/${config.base_currency}`
-
-        let nome_exchange = config.exchange.toLowerCase()
-
-        exchangeCCXT = new ccxt[nome_exchange]()
-        exchangeCCXT.apiKey = config.api_key
-        exchangeCCXT.secret = config.secret
-
-        if (params.time)
-            var time = new Date(params.time).getTime();
-        else
-            time = ''
-
-        ordens = await exchangeCCXT.fetchOpenOrders(
-            symbol = parMoedas,
-            since = time,
-            limit = params.limit,
-            params = {}
-        )
-
-        res.status(200).json({
-            'data': ordens,
-            'status': '200'
+        let orders = await order.find({
+            'user': config.user.user_id,
+            'currency': params.currency,
+            'status': 'open'
         })
+
+        if (params.action != "Automatic") {
+            res.status(200).json({
+                'data': orders,
+                'status': '200'
+            })
+        } else {
+            return orders
+        }
 
     } catch (e) {
-        res.status(400).json({
-            'message': e.message,
-            'status': '400'
-        })
+        if (params.action != "Automatic") {
+            res.status(400).json({
+                'message': e.message,
+                'status': '400'
+            })
+        }
     }
 }
 
-const ordersClose = async (params, res) => {
+const getOrdersClose = async (params, res) => {
 
     try {
         const config = await configuracao.findOne({ 'user.user_id': params.user_id })
@@ -77,53 +68,47 @@ const ordersClose = async (params, res) => {
 
 const orderBuy = async (config, params, res) => {
     try {
+        const time = moment
+        time.locale('pt-br')
         let nome_exchange = config.exchange.toLowerCase()
         exchangeCCXT = new ccxt[nome_exchange]()
         exchangeCCXT.apiKey = config.api_key
         exchangeCCXT.secret = config.secret
-        await exchangeCCXT.loadMarkets()
         pair_currency = `${params.target_currency}/${config.base_currency}`
-        const bids = await exchangeCCXT.fetchOrderBook(pair_currency)
-        const price = _.first(bids.asks)
-        const amount = config.purchase_quantity / price[0]
-        //consulto se tenho saldo da moeda base que utilizarei para comprar outra moeda
-        const total_balance = await exchangeCCXT.fetchBalance()
-        const balance = total_balance[config.base_currency]
-        const purchase_value = Number.parseFloat(price) * Number.parseFloat(amount)
+        const bids = await exchangeCCXT.fetchOrderBook(pair_currency) //busco orderbook de preços
+        const price = _.first(bids.asks) //pego o melhor preço de compra
+        const amount = config.purchase_quantity / price[0] //acho a quantidade que vou comprar
+        const total_balance = await exchangeCCXT.fetchBalance() // vejo se tenho saldo na moeda base
+        const balance = total_balance[config.base_currency] // filtro saldo da moeda base
+        const purchase_value = Number.parseFloat(price) + ((Number.parseFloat(price) * 0.25) / 100)
         let order_buy = {}
-
-
-        const trades = await exchangeCCXT.fetchClosedOrders()
-        console.log(trades)
-
-
 
         // if (purchase_value <= balance.free) {
         //     order_buy = await exchangeCCXT.createLimitBuyOrder(
-        //         pair_currency, // Simbolo da cryptomoeda BTC/USDT
-        //         Number.parseFloat(amount.toFixed(8)), // Montante
-        //         Number.parseFloat(price) // Preço da moeda que será comprada
+        //         pair_currency, // Simbolo do par de moedas a ser comprado
+        //         Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
+        //         Number.parseFloat(price[0]) // Preço da moeda que será comprada
         //     )
         // }
 
-        // let orders = new order({
-        //     date: moment(),
-        //     amount: amount.toFixed(8),
-        //     price: price[0],
-        //     cost: 
-        //     currency: params.target_currency,
-        //     type_operation: order_buy.side,
-        //     action: params.action,
-        //     user: config.user.user_id,
-        //     identifier: order_buy.id,
-        //     status: 'open'
-        // })
+        const orders = new order({
+            date: time().format(),
+            amount: amount.toFixed(8),
+            price: price[0],
+            cost: config.purchase_quantity,
+            currency: params.target_currency,
+            type_operation: 'buy',
+            action: params.action,
+            user: config.user.user_id,
+            identifier: _.random(1, 10000), //order_buy.id,
+            status: 'open'
+        })
 
-        // orders.save(function (err) {
-        //     if (err) {
-        //         throw new Error('Erro!' + err.message);
-        //     }
-        // })
+        orders.save(function (err) {
+            if (err) {
+                throw new Error('Erro!' + err.message);
+            }
+        })
 
         if (params.action != "Automatic") {
             res.status(200).json({
@@ -143,32 +128,41 @@ const orderBuy = async (config, params, res) => {
     }
 }
 
-const orderSell = async (params, res) => {
-
+const orderSell = async (config, params, order_buy, res) => {
     try {
-        const config = await configuracao.findOne({ 'user.user_id': params.user_id })
-
+        const time = moment
+        time.locale('pt-br')
         let nome_exchange = config.exchange.toLowerCase()
-
         exchangeCCXT = new ccxt[nome_exchange]()
         exchangeCCXT.apiKey = config.api_key
         exchangeCCXT.secret = config.secret
+        pair_currency = `${params.target_currency}/${config.base_currency}`
+        const bids = await exchangeCCXT.fetchOrderBook(pair_currency) //busco orderbook de preços
+        const price = _.first(bids.bids) //pego o melhor preço de venda
+        const amount = Number.parseFloat(order_buy.amount) //acho a quantidade que vou vender
+        const total_balance = await exchangeCCXT.fetchBalance() // vejo se tenho saldo na moeda alvo
+        const balance = total_balance[params.target_currency] // filtro saldo da moeda alvo
+        let order_sell = {}
 
-        let order_sell = await exchangeCCXT.createLimitSellOrder(
-            params.symbol, // Simbolo da cryptomoeda BTC/USDT
-            params.amount, // Montante
-            params.price, // Preço da moeda para ser vendida
-        )
+        // if (amount <= balance.free) {
+        //     order_sell = await exchangeCCXT.createLimitSellOrder(
+        //         pair_currency, // Simbolo do par de moedas a ser vendido
+        //         amount, // Montante a ser vendido
+        //         Number.parseFloat(price[0]) // Preço da moeda que será vendida
+        //     )
+        // }
 
-        let orders = new order({
-            date: order_sell.datetime,
-            amount: order_sell.amount,
-            price: order_sell.price,
-            currency: order_sell.symbol,
-            type_operation: params.type_operation,
-            action: order_sell.side,
-            user: config.user.user_name,
-            identifier: order_sell.id
+        const orders = new order({
+            date: time().format(),
+            amount: amount,
+            price: price[0],
+            cost: Number.parseFloat(price[0]) * amount,
+            currency: params.target_currency,
+            type_operation: 'sell',
+            action: params.action,
+            user: config.user.user_id,
+            identifier: _.random(1, 10000),//order_sell.id,
+            status: 'close'
         })
 
         orders.save(function (err) {
@@ -177,7 +171,7 @@ const orderSell = async (params, res) => {
             }
         })
 
-        if (params.type_operation != "Automatic") {
+        if (params.action != "Automatic") {
             res.status(200).json({
                 'data': order_sell,
                 'message': "Order de venda criada com sucesso.",
@@ -186,7 +180,7 @@ const orderSell = async (params, res) => {
         }
 
     } catch (e) {
-        if (params.type_operation != "Automatic") {
+        if (params.action != "Automatic") {
             res.status(400).json({
                 'message': e.message,
                 'status': '400'
@@ -222,10 +216,35 @@ const orderCancel = async (params, res) => {
     }
 }
 
-async function checkBalance() {
+const orderUpdateStatus = async (params, order_buy, res) => {
+    try {
+        console.log(order_buy._id)
+        order.update({ _id: order_buy._id }, { status: "close" },
+            (error) => {
+                if (error) {
+                    return error
+                }
+            }
+        )
 
+        if (params.action != "Automatic") {
+            res.status(200).json({
+                'data': order_sell,
+                'message': "Order de venda criada com sucesso.",
+                'status': '200'
+            })
+        }
+
+    } catch (e) {
+        if (params.action != "Automatic") {
+            res.status(400).json({
+                'message': e.message,
+                'status': '400'
+            })
+        }
+    }
 }
 
 
 
-module.exports = { ordersOpen, ordersClose, orderBuy, orderSell, orderCancel }
+module.exports = { getOrdersOpen, getOrdersClose, orderBuy, orderSell, orderCancel, orderUpdateStatus }

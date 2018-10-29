@@ -4,6 +4,7 @@ const robo = require('set-interval')
 const strategy = require('./bot.strategies')
 const configuracao = require('../../infraestrutura/mongo/models/configuracao.model')
 const _ = require('lodash')
+const order = require('../order/order.service')
 
 async function roboLigado(params) {
   const config = await configuracao.findOne({ 'user.user_id': params.user_id })
@@ -22,10 +23,12 @@ async function acionarMonitoramento(config) {
   let nome_exchange = config.exchange.toLowerCase()
   exchangeCCXT = new ccxt[nome_exchange]()
   let periodo = ''
+  let params = { action: 'Automatic' }
   const unidadeTempo = config.candle_size.substr(-1)
   const unidadeTamanho = Number.parseInt(config.candle_size.substr(0))
   const tamanhoCandle = config.candle_size
   const arrayCurrencies = config.target_currency
+
 
   if (unidadeTempo === 'm') {
     periodo = 'minutes'
@@ -42,7 +45,9 @@ async function acionarMonitoramento(config) {
       for (let i = 0; i <= arrayCurrencies.length - 1; i++) {
         let parMoedas = `${arrayCurrencies[i].currency}/${config.base_currency}`
         let candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.format('x'), limit = 1000)
-        await strategy.loadStrategy(config, arrayCurrencies[i].currency, candle)
+        params.currency = arrayCurrencies[i].currency
+        let ordersOpen = await order.getOrdersOpen(config, params)
+        await strategy.loadStrategy(config, arrayCurrencies[i].currency, candle, ordersOpen)
       }
     }, config.status.interval_check, config.status.key
   )
