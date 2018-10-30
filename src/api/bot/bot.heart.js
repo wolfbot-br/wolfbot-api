@@ -10,7 +10,7 @@ async function roboLigado(params) {
   const config = await configuracao.findOne({ 'user.user_id': params.user_id })
 
   console.log('########## Robo Ligado ##########')
-  acionarMonitoramento(config)
+  acionarMonitoramento(config, params)
 }
 
 function roboDesligado(params) {
@@ -23,7 +23,7 @@ async function acionarMonitoramento(config) {
   let nome_exchange = config.exchange.toLowerCase()
   exchangeCCXT = new ccxt[nome_exchange]()
   let periodo = ''
-  let params = { action: 'Automatic' }
+  let params_order = { action: 'Automatic', user_id: config.user.user_id }
   const unidadeTempo = config.candle_size.substr(-1)
   const unidadeTamanho = Number.parseInt(config.candle_size.substr(0))
   const tamanhoCandle = config.candle_size
@@ -45,9 +45,9 @@ async function acionarMonitoramento(config) {
       for (let i = 0; i <= arrayCurrencies.length - 1; i++) {
         let parMoedas = `${arrayCurrencies[i].currency}/${config.base_currency}`
         let candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.format('x'), limit = 1000)
-        params.currency = arrayCurrencies[i].currency
-        let ordersOpen = await order.getOrdersOpen(config, params)
-        await strategy.loadStrategy(config, arrayCurrencies[i].currency, candle, ordersOpen)
+        params_order.currency = arrayCurrencies[i].currency
+        let ordersOpen = await order.getOrdersOpenByCurrency(params_order)
+        await strategy.loadStrategy(config, params, arrayCurrencies[i].currency, candle, ordersOpen)
       }
     }, config.status.interval_check, config.status.key
   )

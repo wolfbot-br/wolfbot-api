@@ -4,7 +4,7 @@ const moment = require('moment')
 const order = require('../order/order.service')
 const chalk = require('chalk')
 
-async function loadStrategy(config, target_currency, candle, ordersOpen) {
+async function loadStrategy(config, params, target_currency, candle, ordersOpen) {
     const digits = 4
     const sellForIndicator = config.sellForIndicator
     const profit = config.profit
@@ -15,13 +15,15 @@ async function loadStrategy(config, target_currency, candle, ordersOpen) {
     const low = []
     const close = []
     const volume = []
-    const params = {
+    const params_order = {
         target_currency: target_currency,
         action: 'Automatic'
     }
 
     let signalBUY = false
     let signalSELL = false
+    let status_BUY = params.status_buy
+    let status_SELL = params.status_sell
     let time = moment
     time.locale('pt-br')
 
@@ -108,27 +110,29 @@ async function loadStrategy(config, target_currency, candle, ordersOpen) {
         }
     }
 
-    signalBUY = false
     //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE COMPRA
-    if (signalBUY === true) {
-        console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
-        order.orderBuy(config, params)
+    if (status_BUY === true) {
+        if (signalBUY === true) {
+            console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
+            order.orderBuy(config, params_order)
+        }
     }
 
     //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE VENDA
-    if (sellForIndicator === true) {
-        if (signalSELL === true) {
-            console.log('estou aqui')
-        }
-
-    } else if (ordersOpen !== null) {
-        for (let i = 0; i <= ordersOpen.length - 1; i++) {
-            if (price >= ordersOpen[i].price + (ordersOpen[i].price * profit)) {
-                console.log(chalk.green('ORDEM DE VENDA CRIADA'))
-                await order.orderSell(config, params, ordersOpen[i])
-                await order.orderUpdateStatus(params, ordersOpen[i])
-            } else if (price <= ordersOpen[i].price - (ordersOpen[i].price * stop)) {
-                console.log(chalk.green('VENDI COM PERDA, NO MEU STOP'))
+    if (status_SELL === true) {
+        if (sellForIndicator === true) {
+            if (signalSELL === true) {
+                console.log('estou aqui')
+            }
+        } else if (ordersOpen !== null) {
+            for (let i = 0; i <= ordersOpen.length - 1; i++) {
+                if (price >= ordersOpen[i].price + (ordersOpen[i].price * profit)) {
+                    console.log(chalk.green('ORDEM DE VENDA CRIADA'))
+                    await order.orderSell(config, params_order, ordersOpen[i])
+                    await order.orderUpdateStatus(params_order, ordersOpen[i])
+                } else if (price <= ordersOpen[i].price - (ordersOpen[i].price * stop)) {
+                    console.log(chalk.green('VENDI COM PERDA, NO MEU STOP'))
+                }
             }
         }
     }

@@ -3,13 +3,38 @@ const configuracao = require('../../infraestrutura/mongo/models/configuracao.mod
 const order = require('../../infraestrutura/mongo/models/order.model')
 const moment = require('moment')
 const _ = require('lodash')
-const { ObjectId } = require('mongodb')
 
-const getOrdersOpen = async (config, params, res) => {
+const getOrdersOpenByCurrency = async (params, res) => {
     try {
         let orders = await order.find({
-            'user': config.user.user_id,
+            'user': params.user_id,
             'currency': params.currency,
+            'status': 'open'
+        })
+
+        if (params.action != "Automatic") {
+            res.status(200).json({
+                'data': orders,
+                'status': '200'
+            })
+        } else {
+            return orders
+        }
+
+    } catch (e) {
+        if (params.action != "Automatic") {
+            res.status(400).json({
+                'message': e.message,
+                'status': '400'
+            })
+        }
+    }
+}
+
+const getOrdersOpenByUser = async (params, res) => {
+    try {
+        let orders = await order.find({
+            'user': params.user_id,
             'status': 'open'
         })
 
@@ -218,7 +243,6 @@ const orderCancel = async (params, res) => {
 
 const orderUpdateStatus = async (params, order_buy, res) => {
     try {
-        console.log(order_buy._id)
         order.update({ _id: order_buy._id }, { status: "close" },
             (error) => {
                 if (error) {
@@ -245,6 +269,12 @@ const orderUpdateStatus = async (params, order_buy, res) => {
     }
 }
 
-
-
-module.exports = { getOrdersOpen, getOrdersClose, orderBuy, orderSell, orderCancel, orderUpdateStatus }
+module.exports = {
+    getOrdersOpenByCurrency,
+    getOrdersClose,
+    orderBuy,
+    orderSell,
+    orderCancel,
+    orderUpdateStatus,
+    getOrdersOpenByUser
+}

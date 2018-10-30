@@ -6,12 +6,8 @@ const open = (req, res, next) => {
     try {
         params = {
             user_id: req.query.user_id,
-            time: req.query.time,
-            limit: req.query.limite
         }
-
-        validation.dados(params)
-        service.orderAberta(params, res)
+        service.getOrdersOpenByUser(params, res)
     } catch (e) {
         res.status(400).json({
             'message': e.message,
