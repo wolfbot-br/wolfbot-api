@@ -1,221 +1,11 @@
-const randStr = require('randomstring')
-const moment = require('moment')
 const _ = require('lodash')
-const nodemailer = require('nodemailer')
-const smtpTransport = require('nodemailer-smtp-transport')
-const env = require('../../../.env')
-const bcrypt = require('bcrypt')
 const admin = require('firebase-admin')
 const firebase = require('firebase')
 
-const AccountLog = require('../../infraestrutura/mongo/models/account.log.model')
+const dictionary = require('../util/validations.dictionary')
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model')
 
-const sendEmailPasswordRecovery = (usuario, res) => {
-    const hash = randStr.generate(64)
-    const log = new AccountLog({
-        usuario: usuario.email,
-        hash: hash,
-        emailConfirmado: false,
-        dtCriacao: moment().subtract(3, 'hours').format(),
-        dtExpiracao: moment().subtract(2, 'hours').format(),
-        dtVerificacao: moment().subtract(3, 'hours').format(),
-        dtConfirmacao: null,
-        logTipo: 'Recuperação de Senha',
-        pendente: true
-    })
-    log.save(err => {
-        if (err) {
-            return ({
-                errors:
-                {
-                    message: 'Erro ao estabelecer conexão com o mongo'
-                },
-                sucess: false
-            })
-        } else {
-            const $from = env.gmail_account.email
-            const $passwd = env.gmail_account.password
-
-            var transporter = nodemailer.createTransport(
-                smtpTransport({
-                    host: 'smtp.gmail.com',
-                    port: 465,
-                    secure: true,
-                    service: 'Gmail',
-                    auth:
-                    {
-                        user: $from,
-                        pass: $passwd
-                    },
-                    tls: { rejectUnauthorized: false }
-                }))
-            const destinatario = usuario.email
-            var mailOptions = {
-                from: $from,
-                to: destinatario,
-                subject: 'Wolfbot - Recuperação de Senha',
-                html:
-                    `<p style='text-align:center'>Wolfbot</p><br />` +
-                    `<p>Olá, ${usuario.nome}, esqueceu sua senha?</h3>.<br />` +
-                    `<p>Se você gostaria de redefinir sua senha, clique no link abaixo ou copie e cole o link no seu navegador:<br />` +
-                    `<a href = "http://localhost:3000/#/changepassword?parameter=${hash}">Clique aqui para redefinir a senha</a><br/>` +
-                    `Note que este link só pode ser usado uma vez<br />` +
-                    `Se você não deseja redefinir sua senha, ignore esta mensagem e sua senha não será alterada</p >`
-            }
-
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    return ({
-                        errors:
-                        {
-                            message: 'Erro ao enviar o email para redefinição de senha'
-                        },
-                        sucess: false
-                    })
-                } else {
-                    return res.status(200).json({
-                        valid: true
-                    })
-                }
-            })
-        }
-    })
-}
-
-const passwordRecovery = (res, next, email) => {
-    if (email) {
-        Usuario.findOne({ email: email }, (err, usuario) => {
-            if (err) {
-                return sendErrorsFromDB(res, err)
-            } else if (usuario) {
-                sendEmailPasswordRecovery(usuario, res)
-            } else {
-                return res.status(406).json({
-                    success: false,
-                    errors: { message: 'Não existe usuário cadastrado com esse email!' }
-                })
-            }
-        })
-    } else {
-        return res.status(406).json({
-            success: false,
-            errors: { message: 'É necessário informar o email!' }
-        })
-    }
-}
-
-const changePasswordPermition = (res, next, hash) => {
-    if (hash != undefined && hash != null) {
-        findLogChangePassword(hash, res)
-    } else {
-        return res.status(400).json({
-            success: false,
-            errors: [{ message: 'Solicitação Inválida' }]
-        })
-    }
-}
-
-const findLogChangePassword = (ChangePasswordHash, res) => {
-    AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
-        if (error) {
-            return res.status(404).json({
-                success: false,
-                errors: [{ message: 'ChangePasswordHash não se encontra no mongo' }]
-            })
-        }
-        if (!model) {
-            return res.status(404).json({
-                success: false,
-                errors: [{ message: 'Solicitação Inválida' }]
-            })
-        } else {
-            AccountLog.update({ usuario: model.usuario, hash: { $ne: model.hash } }, { pendente: false }, { multi: true },
-                (error) => {
-                    if (error) {
-                        return res.status(400).json({
-                            success: false,
-                            errors: [{ message: 'Erro ao conectar com o mongo!' }]
-                        })
-                    }
-                    AccountLog.update({ hash: model.hash }, { dtVerificacao: moment().subtract(3, 'hours').format() }, { multi: true },
-                        (error) => {
-                            if (error) {
-                                return res.status(400).json({
-                                    success: false,
-                                    errors: [{ message: 'Erro ao conectar com o mongo!' }]
-                                })
-                            }
-                            AccountLog.findOne({ hash: ChangePasswordHash, pendente: true, dtConfirmacao: null, logTipo: 'Recuperação de Senha' }, (error, model) => {
-                                if (error) {
-                                    return res.status(404).json({
-                                        success: false,
-                                        errors: [{ message: 'Erro ao conectar com o mongo!' }]
-                                    })
-                                }
-                                if (model.dtVerificacao > model.dtExpiracao) {
-                                    return res.status(404).json({
-                                        success: false,
-                                        errors: [{ message: 'Não é mais possivel realizar a alteração da senha!' }]
-                                    })
-                                } else {
-                                    return res.status(200).json({
-                                        success: true,
-                                        errors: [],
-                                        hash: model.hash
-                                    })
-                                }
-                            })
-                        }
-                    )
-                }
-            )
-        }
-    })
-}
-
-const updatePassword = (log, password, res) => {
-    const salt = bcrypt.genSaltSync()
-    const password_encripted = bcrypt.hashSync(password, salt)
-    Usuario.update({ email: log.usuario }, { password: password_encripted }, { multi: true },
-        (error, response) => {
-            if (error) {
-                return sendErrorsFromDB(response, err)
-            } else {
-                return res.status(200).json({
-                    success: true,
-                    message: 'Sua senha foi alterada!'
-                })
-            }
-        }
-    )
-}
-
-const changePassword = (res, next, changePasswordHash, password) => {
-    AccountLog.findOne({ hash: changePasswordHash, pendente: true }, (err, log) => {
-        if (err) {
-            return sendErrorsFromDB(res, err)
-        }
-        if (!log) {
-            return res.status(400).json({
-                success: false,
-                errors: [{ message: 'Solicitação Inválida! Envie o email novamente!' }]
-            })
-        } else {
-            AccountLog.update({ usuario: log.usuario, hash: changePasswordHash }, { pendente: false }, { multi: true },
-                (err, response) => {
-                    if (err) {
-                        return sendErrorsFromDB(response, err)
-                    } else {
-                        updatePassword(log, password, res)
-                    }
-                }
-            )
-        }
-    })
-}
-
-// Realiza a ativação da conta do usuário 
+// Realiza a ativação da conta do usuário
 const activeAccount = (res, code) => {
     firebase.auth().checkActionCode(code)
         .then(function (response) {
@@ -226,7 +16,10 @@ const activeAccount = (res, code) => {
                     .then(function (userRecord) {
                         if (userRecord.emailVerified) {
                             return res.status(400).json({
-                                errors: [{ message: 'Email já foi verificado pelo usuário' }]
+                                errors: [{
+                                    message: 'Email já foi verificado pelo usuário',
+                                    code: 'emailIsActive'
+                                }]
                             })
                         }
                         admin.auth().updateUser(userRecord.uid,
@@ -243,7 +36,10 @@ const activeAccount = (res, code) => {
             }
             else {
                 return res.status(400).json({
-                    errors: [{ message: 'Operação Inválida' }]
+                    errors: [{
+                        message: 'Operação Inválida',
+                        code: 'operationIsInvalid'
+                    }]
                 })
             }
         })
@@ -252,7 +48,10 @@ const activeAccount = (res, code) => {
                 case 'auth/invalid-action-code': {
                     return res.status(400).json({
                         errors:
-                            [{ message: 'O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.' }]
+                            [{
+                                message: 'O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.',
+                                code: 'operationIsInvalid'
+                            }]
                     })
                 }
             }
@@ -327,7 +126,7 @@ const getUserByEmail = (email, res) => {
 }
 
 // Cadastro de um novo usuário
-const signup = (res, usuario) => {
+const signup = async (res, usuario) => {
 
     const firebaseUser = {
         email: usuario.email,
@@ -342,7 +141,7 @@ const signup = (res, usuario) => {
                 case 'auth/email-already-in-use':
                     return res.status(400).json({
                         errors: [{
-                            message: 'O Email já está sendo utilizado'
+                            ...dictionary.account.emailIsUsing
                         }]
                     })
                 default:
@@ -356,7 +155,7 @@ const signup = (res, usuario) => {
 }
 
 // Envio do email para ativação da conta 
-const sendEmailActiveAccount = (res) => {
+const sendEmailActiveAccount = async (res) => {
     firebase.auth().currentUser.sendEmailVerification()
         .then(function () {
             return res.status(200).json({}
@@ -371,7 +170,7 @@ const sendEmailActiveAccount = (res) => {
 const login = (res, email, password) => {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(function (currentUser) {
+        .then(function () {
             if (firebase.auth().currentUser.emailVerified) {
                 const usuario = firebase.auth().currentUser.toJSON()
                 return res.status(200).json({
@@ -390,36 +189,35 @@ const login = (res, email, password) => {
             else {
                 return res.status(400).json({
                     errors: [{
-                        message: 'Email não verificado'
+                        ...dictionary.account.emailIsNotActive
                     }]
                 })
             }
-
         })
         .catch(function (error) {
             switch (error.code) {
                 case 'auth/wrong-password':
                     return res.status(400).json({
                         errors: [{
-                            message: 'Email ou senha inválidos!'
+                            ...dictionary.account.loginFailed
                         }]
                     })
                 case 'auth/user-not-found':
                     return res.status(400).json({
                         errors: [{
-                            message: 'Não existe usuário com esse endereço de email'
+                            ...dictionary.account.userIsEmpty
                         }]
                     })
                 case 'auth/invalid-email':
                     return res.status(400).json({
                         errors: [{
-                            message: 'O email informado está inválido'
+                            ...dictionary.account.emailIsInvalid
                         }]
                     })
                 case 'auth/too-many-requests':
                     return res.status(400).json({
                         errors: [{
-                            message: 'Muitas tentativas de login malsucedidas. Por favor, inclua a verificação reCaptcha ou tente novamente mais tarde'
+                            ...dictionary.account.manyRequestsLogin
                         }]
                     })
                 default:
@@ -428,7 +226,7 @@ const login = (res, email, password) => {
         })
 }
 
-// Informações do Usuário Logado (Verificação do Token)
+// Informações do Usuário Logado (Aqui faz a verificação do Token)
 const me = (res, token) => {
     admin.auth().verifyIdToken(token)
         .then(function (decodedToken) {
@@ -448,10 +246,35 @@ const me = (res, token) => {
         })
 }
 
+// Devolve uma resposta para erros do banco de dados 
 const sendErrorsFromDB = (res, dbErrors) => {
     const errors = []
     _.forIn(dbErrors.errors, error => errors.push(error.message))
     return res.status(400).json({ errors })
+}
+
+const sendEmailPasswordRecovery = (usuario, res) => {
+
+};
+
+const passwordRecovery = (res, next, email) => {
+
+}
+
+const changePasswordPermition = (res, next, hash) => {
+
+}
+
+const findLogChangePassword = (ChangePasswordHash, res) => {
+
+}
+
+const updatePassword = (log, password, res) => {
+
+}
+
+const changePassword = (res, next, changePasswordHash, password) => {
+
 }
 
 module.exports =
