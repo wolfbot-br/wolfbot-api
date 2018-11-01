@@ -41,8 +41,8 @@ async function acionarMonitoramento(config) {
   let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
   robo.start(
     async function load() {
-      await sleep(exchangeCCXT.rateLimit) // milliseconds
       for (let i = 0; i <= arrayCurrencies.length - 1; i++) {
+        await sleep(exchangeCCXT.rateLimit) // milliseconds
         let parMoedas = `${arrayCurrencies[i].currency}/${config.base_currency}`
         let candle = await exchangeCCXT.fetchOHLCV(parMoedas, tamanhoCandle, since = tempo.format('x'), limit = 1000)
         params_order.currency = arrayCurrencies[i].currency

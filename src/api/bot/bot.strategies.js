@@ -20,8 +20,11 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
         action: 'Automatic'
     }
 
-    let signalBUY = false
-    let signalSELL = false
+    let signal = []
+    let signalSELL = {
+        ema: false,
+        macd: false
+    }
     let status_BUY = params.status_buy
     let status_SELL = params.status_sell
     let time = moment
@@ -52,6 +55,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
 
     let price = parseFloat(close.slice(-1))
 
+    //############################### INDICADOR EMA ################################
     if (config.strategy.indicators.ema.status) {
         let short = config.strategy.indicators.ema.short_period
         let long = config.strategy.indicators.ema.long_period
@@ -73,7 +77,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
         })
         time = moment().set(timestamp.slice(-1))
         let previousPrice = parseFloat(close.slice(-2))
-        const tendencia = {
+        const trend = {
             persistence: 0.25
         }
         console.log(chalk.cyan('########## Resultado EMA ##########'))
@@ -84,41 +88,231 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
         console.log(chalk.magenta('linha LONG EMA = ' + long_ema.toFixed(digits)))
 
         //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
-        let tendenciaUP = long_ema + tendencia.persistence
-        let tendenciaDOWN = long_ema - tendencia.persistence
+        let trend_UP = long_ema + trend.persistence
+        let trend_DOWN = long_ema - trend.persistence
 
         if (short_ema > long_ema) {
-            if (short_ema < tendenciaUP && price >= previousPrice) {
+            if (short_ema < trend_UP && price >= previousPrice) {
                 console.log(chalk.red('SINAL DE COMPRA!'))
-                signalBUY = true
+                signal.push({
+                    indicator: 'EMA',
+                    buy: true,
+                    sell: false
+                })
             } else {
                 console.log(chalk.yellow('NEUTRO'))
-                signalBUY = false
+                signal.push({
+                    indicator: 'EMA',
+                    buy: false,
+                    sell: false
+                })
             }
         } else if (sellForIndicator === true) {
             if (short_ema < long_ema) {
-                if (short_ema > tendenciaDOWN && price <= previousPrice) {
+                if (short_ema > trend_DOWN && price <= previousPrice) {
                     console.log(chalk.green('SINAL DE VENDA'))
-                    signalSELL = true
+                    signal.push({
+                        indicator: 'EMA',
+                        buy: false,
+                        sell: true
+                    })
                 } else {
                     console.log(chalk.yellow('NEUTRO'))
-                    signalBUY = false
+                    signal.push({
+                        indicator: 'EMA',
+                        buy: false,
+                        sell: false
+                    })
                 }
             }
         } else {
             console.log(chalk.yellow('NEUTRO'))
+            signal.push({
+                indicator: 'EMA',
+                buy: false,
+                sell: false
+            })
         }
     }
 
+
+    console.log(config.strategy.indicators.macd.short_period)
+    console.log(config.strategy.indicators.stoch.k_period)
+    //############################### INDICADOR MACD ################################
+    if (config.strategy.indicators.macd.status) {
+        const shortPeriod = config.strategy.indicators.macd.short_period
+        const longPeriod = config.strategy.indicators.macd.long_period
+        const signalPeriod = config.strategy.indicators.macd.signal_period
+
+        tulind.indicators.macd.indicator([close], [shortPeriod, longPeriod, signalPeriod], function (err, result) {
+            if (err) {
+                console.log(err)
+            } else {
+                const trend = {
+                    up: 0.025,
+                    down: 0.025,
+                    persistence: 1
+                }
+                let time = moment().set(timestamp.slice(-1))
+                let price = parseFloat(close.slice(-1))
+                let previousPrice = parseFloat(close.slice(-2))
+                let macd = parseFloat(result[0].slice(-1))
+                let signal_macd = parseFloat(result[1].slice(-1))
+                let histogram = parseFloat(result[2].slice(-1))
+
+                console.log(chalk.cyan('########## Resultado MACD ##########'))
+                console.log(chalk.cyan(`moeda: ${target_currency}`))
+                console.log(chalk.magenta('Preço = ' + price.toFixed(8) + ' - ' + time.format('DD-MM-YYYY HH:mm')))
+                console.log(chalk.magenta('Preço Anterior = ' + previousPrice.toFixed(8)))
+                console.log(chalk.magenta('linha Sinal = ' + signal_macd.toFixed(digits)))
+                console.log(chalk.magenta('Histograma = ' + histogram.toFixed(digits)))
+
+                //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+                if (macd < 0) {
+                    if (histogram > trend.up && histogram < (trend.up + trend.persistence) && close[i] >= close[i - 1]) {
+                        console.log(chalk.red('SINAL DE COMPRA!'))
+                        signal.push({
+                            indicator: 'MACD',
+                            buy: true,
+                            sell: false
+                        })
+                    } else {
+                        console.log(chalk.yellow('NEUTRO'))
+                        signal.push({
+                            indicator: 'MACD',
+                            buy: false,
+                            sell: false
+                        })
+                    }
+                } else if (sellForIndicator === true) {
+                    if (macd > 0) {
+                        if ((histogram < trend.down && histogram > (trend.down - trend.persistence))) {
+                            console.log(chalk.green('SINAL DE VENDA'))
+                            signal.push({
+                                indicator: 'MACD',
+                                buy: false,
+                                sell: true
+                            })
+                        } else {
+                            console.log(chalk.yellow('NEUTRO'))
+                            signal.push({
+                                indicator: 'MACD',
+                                buy: false,
+                                sell: false
+                            })
+                        }
+                    }
+                } else {
+                    console.log(chalk.yellow('NEUTRO'))
+                    signal.push({
+                        indicator: 'MACD',
+                        buy: false,
+                        sell: false
+                    })
+                }
+            }
+        })
+    }
+
+    //############################### INDICADOR STOCH ################################
+    if (config.strategy.indicators.stoch.status) {
+        const k_period = config.strategy.indicators.stoch.k_period
+        const k_slow_period = config.strategy.indicators.stoch.k_slow_period
+        const d_period = config.strategy.indicators.stoch.d_period
+
+        tulind.indicators.stoch.indicator([high, low, close], [k_period, k_slow_period, d_period], function (err, result) {
+            if (err) {
+                console.log(err)
+            } else {
+                const trend = {
+                    up: 0.025,
+                    down: 0.025,
+                    persistence: 1
+                }
+                let time = moment().set(timestamp.slice(-1))
+                let price = parseFloat(close.slice(-1))
+                let previousPrice = parseFloat(close.slice(-2))
+                let k = parseFloat(result[0].slice(-1))
+                let d = parseFloat(result[1].slice(-1))
+
+                console.log(chalk.cyan('########## Resultado STOCH ##########'))
+                console.log(chalk.cyan(`moeda: ${target_currency}`))
+                console.log(chalk.magenta('Preço = ' + price.toFixed(8) + ' - ' + time.format('DD-MM-YYYY HH:mm')))
+                console.log(chalk.magenta('Preço Anterior = ' + previousPrice.toFixed(8)))
+                console.log(chalk.magenta('linha K = ' + k.toFixed(digits)))
+                console.log(chalk.magenta('linha D = ' + d.toFixed(digits)))
+
+                //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+                if (k > 20) {
+                    if (k > d && k < (trend.up + 20) && close[i] >= close[i - 1]) {
+                        console.log(chalk.red('SINAL DE COMPRA!'))
+                        signal.push({
+                            indicator: 'STOCH',
+                            buy: true,
+                            sell: false
+                        })
+                    } else {
+                        console.log(chalk.yellow('NEUTRO'))
+                        signal.push({
+                            indicator: 'STOCH',
+                            buy: false,
+                            sell: false
+                        })
+                    }
+                } else if (sellForIndicator === true) {
+                    if (k < 80) {
+                        if (k < d && k > (80 - trend.down) && close[i] <= close[i - 1]) {
+                            console.log(chalk.green('SINAL DE VENDA'))
+                            signal.push({
+                                indicator: 'STOCH',
+                                buy: false,
+                                sell: true
+                            })
+                        } else {
+                            console.log(chalk.yellow('NEUTRO'))
+                            signal.push({
+                                indicator: 'STOCH',
+                                buy: false,
+                                sell: false
+                            })
+                        }
+                    }
+                } else {
+                    console.log(chalk.yellow('NEUTRO'))
+                    signal.push({
+                        indicator: 'STOCH',
+                        buy: false,
+                        sell: false
+                    })
+                }
+            }
+        })
+    }
+
+    //############################### INDICADOR CCI ################################
+
+    //############################### INDICADOR BBANDS ################################
+
     //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE COMPRA
     if (status_BUY === true) {
-        if (signalBUY === true) {
+        let contIndicators = signal.length
+        let contSignals = 0
+        for (i in signal) {
+            if (signal[i].buy === true) {
+                contSignals++
+            }
+        }
+
+        console.log(contIndicators)
+        console.log(contSignals)
+        if (contIndicators === contSignals) {
             console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
             order.orderBuy(config, params_order)
         }
     }
 
     //CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE VENDA
+
     if (status_SELL === true) {
         if (sellForIndicator === true) {
             if (signalSELL === true) {
@@ -132,216 +326,12 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                     await order.orderUpdateStatus(params_order, ordersOpen[i])
                 } else if (price <= ordersOpen[i].price - (ordersOpen[i].price * stop)) {
                     console.log(chalk.green('VENDI COM PERDA, NO MEU STOP'))
+                    await order.orderSell(config, params_order, ordersOpen[i])
+                    await order.orderUpdateStatus(params_order, ordersOpen[i])
                 }
             }
         }
     }
-
-
-    //     if (config.macd.status) {
-    //         const short = config.macd.shortPeriod
-    //         const long = config.macd.longPeriod
-    //         const signal = config.macd.signalPeriod
-
-    //         tulind.indicators.macd.indicator([close], [short, long, signal], function (err, result) {
-    //             if (err) {
-    //                 console.log(err)
-    //             } else {
-    //                 let time = moment().set(timestamp.slice(-1))
-    //                 const digits = 4
-    //                 let preco = parseFloat(close.slice(-1))
-    //                 let macd = parseFloat(result[0].slice(-1))
-    //                 let sinal = parseFloat(result[1].slice(-1))
-    //                 let histograma = parseFloat(result[2].slice(-1))
-    //                 let macdiff = macd - sinal
-    //                 const tendencia = {
-    //                     up: 1,
-    //                     down: -1,
-    //                     persistence: 1
-    //                 }
-    //                 console.log(chalk.cyan('########## Resultado MACD ##########'))
-    //                 console.log(chalk.magenta('Preço = ' + preco.toFixed(8) + ' - ' + time.format()))
-    //                 console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
-    //                 console.log(chalk.magenta('linha Sinal = ' + sinal.toFixed(digits)))
-    //                 console.log(chalk.magenta('Histograma = ' + histograma.toFixed(digits)))
-    //                 console.log(chalk.magenta('Diferença MACD / Sinal = ' + macdiff.toFixed(digits)))
-    //                 console.log(chalk.green.inverse('Saldo = ' + saldo))
-
-    //                 // Logica de compra, se macd for menor que zero avalio se a linha de macd esta acima da linha
-    //                 // de sinal, se sim vejo se a tendencia se mantem por um periodo, se sim tenho um sinal de compra
-    //                 if (macd > 0 && macd < sinal) {
-    //                     if (macdiff < tendencia.down && macdiff > (tendencia.down - tendencia.persistence)) {
-    //                         console.log(chalk.green('SINAL DE VENDA'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'macd',
-    //                                 action: 'venda',
-    //                                 price: preco
-    //                             }
-    //                         })
-    //                     } else {
-    //                         console.log(chalk.yellow('NEUTRO'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'macd',
-    //                                 action: 'neutro'
-    //                             }
-    //                         })
-    //                     }
-    //                 } else if (macd < 0 && macd > sinal) {
-    //                     macdiffPositivo = Math.abs(macdiff)
-    //                     if (macdiffPositivo > tendencia.up && macdiffPositivo < (tendencia.up + tendencia.persistence)) {
-    //                         console.log(chalk.red('SINAL DE COMPRA!'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'macd',
-    //                                 action: 'compra',
-    //                                 price: preco
-    //                             }
-    //                         })
-    //                     } else {
-    //                         console.log(chalk.yellow('NEUTRO'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'macd',
-    //                                 action: 'neutro'
-    //                             }
-    //                         })
-    //                     }
-    //                 } else {
-    //                     console.log(chalk.yellow('NEUTRO'))
-    //                     data.push({
-    //                         indicador: {
-    //                             indicador_name: 'macd',
-    //                             action: 'neutro'
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //         })
-    //     }
-
-    //     if (config.stoch.status) {
-    //         const short = config.stoch.shortPeriod
-    //         const long = config.stoch.longPeriod
-    //         const signal = config.stoch.signalPeriod
-
-    //         tulind.indicators.stoch.indicator([high, low, close], [long, short, signal], function (err, result) {
-    //             if (err) {
-    //                 console.log(err)
-    //             } else {
-    //                 let time = moment().set(timestamp.slice(-1))
-    //                 const digits = 0
-    //                 let preco = parseFloat(close.slice(-1))
-    //                 let k = parseFloat(result[0].slice(-1))
-    //                 let d = parseFloat(result[1].slice(-1))
-    //                 const tendencia = {
-    //                     up: 80,
-    //                     down: 20,
-    //                 }
-    //                 console.log(chalk.cyan('########## Resultado STOCH ##########'))
-    //                 console.log(chalk.magenta('Preço = ' + preco.toFixed(8) + ' - ' + time.format()))
-    //                 console.log(chalk.magenta('linha K = ' + k.toFixed(digits)))
-    //                 console.log(chalk.magenta('linha D = ' + d.toFixed(digits)))
-    //                 console.log(chalk.green.inverse('Saldo = ' + saldo))
-
-    //                 if (k.toFixed(digits) > tendencia.up && d.toFixed(digits) > tendencia.up) {
-    //                     if (k.toFixed(digits) == d.toFixed(digits)) {
-    //                         console.log(chalk.green('SINAL DE VENDA'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'stoch',
-    //                                 action: 'venda',
-    //                                 price: preco
-    //                             }
-    //                         })
-    //                     } else {
-    //                         console.log(chalk.green('AREA DE VENDA'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'stoch',
-    //                                 action: 'neutro'
-    //                             }
-    //                         })
-    //                     }
-    //                 } else if (k.toFixed(digits) < tendencia.down && d.toFixed(digits) < tendencia.down) {
-    //                     if (k.toFixed(digits) == d.toFixed(digits)) {
-    //                         console.log(chalk.red('SINAL DE COMPRA'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'stoch',
-    //                                 action: 'compra',
-    //                                 price: preco
-
-    //                             }
-    //                         })
-    //                     } else {
-    //                         console.log(chalk.red('AREA DE COMPRA'))
-    //                         data.push({
-    //                             indicador: {
-    //                                 indicador_name: 'stoch',
-    //                                 action: 'neutro'
-    //                             }
-    //                         })
-    //                     }
-    //                 } else {
-    //                     console.log(chalk.yellow('NEUTRO'))
-    //                     data.push({
-    //                         indicador: {
-    //                             indicador_name: 'stoch',
-    //                             action: 'neutro'
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //         })
-    //     }
-
-    //     var z = 0
-    //     result = lodash.filter(data, function (res) {
-    //         if (res.indicador.action == 'compra') {
-    //             var indicador_ativos = Object.keys(res.indicador).length
-    //             if (indicador_ativos == i) {
-    //                 while (z == 0) {
-    //                     saldo_disponivel = parseFloat(close.slice(-1)) * amount
-    //                     if (saldo > saldo_disponivel) {
-    //                         const order_compra = {
-    //                             type_operation: 'Automatic',
-    //                             symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
-    //                             amount: amount, // Montante
-    //                             price: parseFloat(close.slice(-1)), // Preço de venda
-    //                             type: 'limit', // tipo: limite ou mercado
-    //                             action: 'buy',
-    //                             saldo: saldo,
-    //                             user_id: user
-    //                         }
-    //                         order.comprar(order_compra)
-    //                     }
-    //                     z = 1
-    //                 }
-    //             }
-    //         }
-
-    //         if (res.indicador.action == 'venda') {
-    //             var indicador_ativos = Object.keys(res.indicador).length
-    //             if (indicador_ativos == i) {
-    //                 while (z == 0) {
-    //                     const order_venda = {
-    //                         type_operation: 'Automatic',
-    //                         symbol: parMoedas,// Simbolo da cryptomoeda BTC/USDT
-    //                         amount: amount, // Montante
-    //                         price: parseFloat(close.slice(-1)), // Preço de venda
-    //                         type: 'limit', // tipo: limite ou mercado
-    //                         action: 'sell',
-    //                         saldo: saldo,
-    //                         user_id: user
-    //                     }
-    //                     order.vender(order_venda)
-    //                     z = 1
-    //                 }
-    //             }
-    //         }
-    //     })
 }
 
 module.exports = { loadStrategy }

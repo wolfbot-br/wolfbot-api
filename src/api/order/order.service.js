@@ -100,9 +100,12 @@ const orderBuy = async (config, params, res) => {
         exchangeCCXT.apiKey = config.api_key
         exchangeCCXT.secret = config.secret
         pair_currency = `${params.target_currency}/${config.base_currency}`
+        let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+        await sleep(exchangeCCXT.rateLimit) // milliseconds
         const bids = await exchangeCCXT.fetchOrderBook(pair_currency) //busco orderbook de preços
         const price = _.first(bids.asks) //pego o melhor preço de compra
         const amount = config.purchase_quantity / price[0] //acho a quantidade que vou comprar
+        await sleep(exchangeCCXT.rateLimit) // milliseconds
         const total_balance = await exchangeCCXT.fetchBalance() // vejo se tenho saldo na moeda base
         const balance = total_balance[config.base_currency] // filtro saldo da moeda base
         const purchase_value = Number.parseFloat(price) + ((Number.parseFloat(price) * 0.25) / 100)
@@ -162,9 +165,12 @@ const orderSell = async (config, params, order_buy, res) => {
         exchangeCCXT.apiKey = config.api_key
         exchangeCCXT.secret = config.secret
         pair_currency = `${params.target_currency}/${config.base_currency}`
+        let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+        await sleep(exchangeCCXT.rateLimit) // milliseconds
         const bids = await exchangeCCXT.fetchOrderBook(pair_currency) //busco orderbook de preços
         const price = _.first(bids.bids) //pego o melhor preço de venda
         const amount = Number.parseFloat(order_buy.amount) //acho a quantidade que vou vender
+        await sleep(exchangeCCXT.rateLimit) // milliseconds
         const total_balance = await exchangeCCXT.fetchBalance() // vejo se tenho saldo na moeda alvo
         const balance = total_balance[params.target_currency] // filtro saldo da moeda alvo
         let order_sell = {}
