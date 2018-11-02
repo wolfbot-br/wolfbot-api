@@ -126,15 +126,31 @@ const getUserByEmail = (email, res) => {
 }
 
 // Cadastro de um novo usuário
-const signup = async (res, usuario) => {
+const signup = (res, usuario) => {
 
     const firebaseUser = {
         email: usuario.email,
-        password: usuario.password
+        password: usuario.password,
+        name: usuario.name
     }
     firebase.auth().createUserWithEmailAndPassword(firebaseUser.email, firebaseUser.password)
         .then(function (userRecord) {
-            sendEmailActiveAccount(res, userRecord)
+            const userMongo = createMongoObject(
+                {
+                    ...firebaseUser,
+                    userId: firebase.auth().currentUser.toJSON().uid
+                })
+            try {
+                userMongo.save();
+            } catch (error) {
+                return res.status(400).json({
+                    errors: [{
+                        message: error
+                    }]
+                })
+            }
+            sendEmailActiveAccount(res);
+
         })
         .catch(function (error) {
             switch (error.code) {
@@ -152,6 +168,11 @@ const signup = async (res, usuario) => {
                     })
             }
         })
+}
+
+const createMongoObject = (usuario) => {
+    const user = new Usuario(usuario)
+    return user;
 }
 
 // Envio do email para ativação da conta 
@@ -253,6 +274,7 @@ const sendErrorsFromDB = (res, dbErrors) => {
     return res.status(400).json({ errors })
 }
 
+// Envio do email para recuperação da senha
 const sendEmailPasswordRecovery = (usuario, res) => {
 
 };

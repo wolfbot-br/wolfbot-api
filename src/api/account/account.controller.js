@@ -58,7 +58,7 @@ const me = (req, res) => {
 const signup = async (req, res) => {
 
   const usuario = {
-    nome: req.body.nome || '',
+    name: req.body.nome || '',
     email: req.body.email || '',
     password: req.body.password || '',
     confirm_password: req.body.confirm_password || ''

@@ -14,7 +14,7 @@ const validSignup = usuario => {
   if (usuario.confirm_password !== usuario.password) {
     errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
   }
-  if (!usuario.nome) {
+  if (!usuario.name) {
     errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }));
   }
 
