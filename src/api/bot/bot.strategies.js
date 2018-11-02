@@ -136,8 +136,6 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
     }
 
 
-    console.log(config.strategy.indicators.macd.short_period)
-    console.log(config.strategy.indicators.stoch.k_period)
     //############################### INDICADOR MACD ################################
     if (config.strategy.indicators.macd.status) {
         const shortPeriod = config.strategy.indicators.macd.short_period
@@ -214,13 +212,14 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
         })
     }
 
+    console.log(config.strategy.indicators.stoch.d_period)
+    console.log(config.strategy.indicators.macd.short_period)
     //############################### INDICADOR STOCH ################################
     if (config.strategy.indicators.stoch.status) {
-        const k_period = config.strategy.indicators.stoch.k_period
-        const k_slow_period = config.strategy.indicators.stoch.k_slow_period
-        const d_period = config.strategy.indicators.stoch.d_period
-
-        tulind.indicators.stoch.indicator([high, low, close], [k_period, k_slow_period, d_period], function (err, result) {
+        const kPeriod = config.strategy.indicators.stoch.k_period
+        const kSlowPeriod = config.strategy.indicators.stoch.k_slow_period
+        const dPeriod = config.strategy.indicators.stoch.d_period
+        tulind.indicators.stoch.indicator([high, low, close], [kPeriod, kSlowPeriod, dPeriod], function (err, result) {
             if (err) {
                 console.log(err)
             } else {
