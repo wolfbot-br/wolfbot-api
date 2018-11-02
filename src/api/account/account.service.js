@@ -27,7 +27,18 @@ const activeAccount = (res, code) => {
                                 emailVerified: true
                             })
                             .then(function (user) {
-                                return res.status(200).json(user)
+
+                                Usuario.findOneAndUpdate({ email: response.data.email }, { emailVerified: true })
+                                    .then(() => {
+                                        return res.status(200).json(user)
+                                    })
+                                    .catch((error) => {
+                                        return res.status(500).json({
+                                            errors: [{
+                                                message: error
+                                            }]
+                                        })
+                                    });
                             })
                             .catch(function (error) {
                                 return res.status(400).json(error)
@@ -143,7 +154,7 @@ const signup = (res, usuario) => {
             try {
                 userMongo.save();
             } catch (error) {
-                return res.status(400).json({
+                return res.status(500).json({
                     errors: [{
                         message: error
                     }]
