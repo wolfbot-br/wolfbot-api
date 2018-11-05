@@ -11,6 +11,7 @@ const configuracao = new mongoose.Schema({
   purchase_quantity: { type: Number },
   profit: { type: String },
   stop: { type: Number },
+  sellForIndicator: { type: Boolean },
   open_order_limit: { type: String },
   candle_size: { type: String },
   user: {
@@ -46,11 +47,20 @@ const configuracao = new mongoose.Schema({
         long_period: { type: Number },
         signal_period: { type: Number }
       },
+      cci: {
+        status: { type: Boolean },
+        period: { type: Number }
+      },
+      bbands: {
+        status: { type: Boolean },
+        period: { type: Number },
+        stddev_period: { type: Number }
+      },
       stoch: {
         status: { type: Boolean },
-        short_period: { type: Number },
-        long_period: { type: Number },
-        signal_eriod: { type: Number }
+        k_period: { type: Number },
+        k_slow_period: { type: Number },
+        d_period: { type: Number }
       }
     }
   }
