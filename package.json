@@ -53,6 +53,6 @@
     "standard": "^11.0.1"
   },
   "engines": {
-    "node": ">=8.x.x"
+    "node": "8.10.0"
   }
 }
