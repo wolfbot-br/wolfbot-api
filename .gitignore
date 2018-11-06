@@ -1,8 +1,8 @@
 node_modules
 *.log
-# .env
+.env
 .vscode
 .prettierrc
 .eslintrc.json
-# firebase.development.json
-# firebase.admin.development.json
+firebase.development.json
+firebase.admin.development.json
