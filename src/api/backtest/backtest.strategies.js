@@ -47,6 +47,7 @@ function loadStrategy(config, candle, market) {
     })
   }))
 
+  //############################### INDICADOR EMA ################################
   if (config.indicator.name === 'EMA') {
     const period = config.indicator.ema_period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
@@ -91,6 +92,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
+  //############################### INDICADOR MACD ################################
   if (config.indicator.name === 'MACD') {
     const shortPeriod = config.indicator.macd_short_period
     const longPeriod = config.indicator.macd_long_period
@@ -137,6 +139,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
+  //############################### INDICADOR STOCH ################################
   if (config.indicator.name === 'STOCH') {
     const k_period = config.indicator.stoch_k_period
     const k_slow_period = config.indicator.stoch_k_slow_period
@@ -181,6 +184,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
+  //############################### INDICADOR CCI ################################
   if (config.indicator.name === 'CCI') {
     const period = config.indicator.cci_period
     tulind.indicators.cci.indicator([high, low, close], [period], function (err, result) {
@@ -217,6 +221,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
+  //############################### INDICADOR BBANDS ################################
   if (config.indicator.name === 'BOLLINGER BANDS') {
     const period = config.indicator.bbands_period
     const stddev = config.indicator.bbands_stddev_period
