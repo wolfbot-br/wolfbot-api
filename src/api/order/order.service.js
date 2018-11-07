@@ -111,13 +111,13 @@ const orderBuy = async (config, params, res) => {
         const purchase_value = Number.parseFloat(price) + ((Number.parseFloat(price) * 0.25) / 100)
         let order_buy = {}
 
-        // if (purchase_value <= balance.free) {
-        //     order_buy = await exchangeCCXT.createLimitBuyOrder(
-        //         pair_currency, // Simbolo do par de moedas a ser comprado
-        //         Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
-        //         Number.parseFloat(price[0]) // Preço da moeda que será comprada
-        //     )
-        // }
+        if (purchase_value <= balance.free) {
+            order_buy = await exchangeCCXT.createLimitBuyOrder(
+                pair_currency, // Simbolo do par de moedas a ser comprado
+                Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
+                Number.parseFloat(price[0]) // Preço da moeda que será comprada
+            )
+        }
 
         const orders = new order({
             date: time().format(),
@@ -128,7 +128,7 @@ const orderBuy = async (config, params, res) => {
             type_operation: 'buy',
             action: params.action,
             user: config.user.user_id,
-            identifier: _.random(1, 10000), //order_buy.id,
+            identifier: order_buy.id,
             status: 'open'
         })
 
@@ -175,13 +175,13 @@ const orderSell = async (config, params, order_buy, res) => {
         const balance = total_balance[params.target_currency] // filtro saldo da moeda alvo
         let order_sell = {}
 
-        // if (amount <= balance.free) {
-        //     order_sell = await exchangeCCXT.createLimitSellOrder(
-        //         pair_currency, // Simbolo do par de moedas a ser vendido
-        //         amount, // Montante a ser vendido
-        //         Number.parseFloat(price[0]) // Preço da moeda que será vendida
-        //     )
-        // }
+        if (amount <= balance.free) {
+            order_sell = await exchangeCCXT.createLimitSellOrder(
+                pair_currency, // Simbolo do par de moedas a ser vendido
+                amount, // Montante a ser vendido
+                Number.parseFloat(price[0]) // Preço da moeda que será vendida
+            )
+        }
 
         const orders = new order({
             date: time().format(),
@@ -192,7 +192,7 @@ const orderSell = async (config, params, order_buy, res) => {
             type_operation: 'sell',
             action: params.action,
             user: config.user.user_id,
-            identifier: _.random(1, 10000),//order_sell.id,
+            identifier: order_sell.id,
             status: 'close'
         })
 
