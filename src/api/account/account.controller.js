@@ -50,7 +50,7 @@ const getUserByEmail = (req, res) => {
 
 // Informações do usuário logado (Verificação se o token é válido)
 const me = (req, res) => {
-  const token = req.headers['token']
+  const token = req.headers['authorization']
   accountService.me(res, token)
 }
 
