@@ -5,6 +5,7 @@ const strategy = require('./backtest.strategies')
 
 async function carregarDados(params) {
   exchangeCCXT = new ccxt[params.exchange]()
+  exchange.enableRateLimit = true;
   await exchangeCCXT.loadMarkets()
 
   const pair_currency = `${params.target_currency}/${params.base_currency}`
