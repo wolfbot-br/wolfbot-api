@@ -73,7 +73,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
             }
         })
         const trend = {
-            persistence: 0.25
+            persistence: 1
         }
         console.log(chalk.cyan('########## Resultado EMA ##########'))
         console.log(chalk.cyan(`moeda: ${target_currency}`))
@@ -296,7 +296,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                 console.log(chalk.magenta('linha K = ' + cci.toFixed(digits)))
 
                 //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
-                if (cci > 100 && cci < (trend.up + 100) && price >= previousPrice) {
+                if (cci > 100 && cci < (trend.up + 100 + trend.persistence) && price >= previousPrice) {
                     console.log(chalk.red('SINAL DE COMPRA!'))
                     signal.push({
                         indicator: 'CCI',
@@ -304,7 +304,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                         sell: false
                     })
                 } else if (sellForIndicator === true) {
-                    if (cci < -100 && cci > (trend.up - 100) && price <= previousPrice) {
+                    if (cci < -100 && cci > (trend.up - 100 - trend.persistence) && price <= previousPrice) {
                         console.log(chalk.green('SINAL DE VENDA'))
                         signal.push({
                             indicator: 'CCI',

@@ -8,7 +8,6 @@ module.exports = function (server) {
     const openRoutes = express.Router()
 
     // protectedRoutes.use(auth)
-
     server.use('/order', openRoutes)
 
     openRoutes.get('/open', orderController.open)

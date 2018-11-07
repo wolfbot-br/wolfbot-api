@@ -19,9 +19,9 @@ function roboDesligado(params) {
 }
 
 async function acionarMonitoramento(config) {
-
   let nome_exchange = config.exchange.toLowerCase()
   exchangeCCXT = new ccxt[nome_exchange]()
+  exchangeCCXT.enableRateLimit = true
   let periodo = ''
   let params_order = { action: 'Automatic', user_id: config.user.user_id }
   const unidadeTempo = config.candle_size.substr(-1)
