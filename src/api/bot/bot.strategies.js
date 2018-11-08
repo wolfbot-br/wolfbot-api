@@ -9,6 +9,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
     const sellForIndicator = config.sellForIndicator
     const profit = config.profit
     const stop = config.stop
+    const maxOrdersOpen = config.maxOrdersOpen
     const timestamp = []
     const open = []
     const high = []
@@ -403,8 +404,10 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
             }
         }
         if (contIndicators === contSignals) {
-            console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
-            order.orderBuy(config, params_order)
+            if (maxOrdersOpen <= ordersOpen.length) {
+                console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
+                order.orderBuy(config, params_order)
+            }
         }
     }
 
