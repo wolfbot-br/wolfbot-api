@@ -49,6 +49,7 @@ async function acionarMonitoramento(config) {
         let ordersOpen = await order.getOrdersOpenByCurrency(params_order)
         await strategy.loadStrategy(config, params, arrayCurrencies[i].currency, candle, ordersOpen)
       }
+      console.log('-----------------------------------------------------------------------------')
     }, config.status.interval_check, config.status.key
   )
 }

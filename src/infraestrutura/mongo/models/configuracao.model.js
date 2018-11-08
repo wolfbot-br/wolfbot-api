@@ -12,7 +12,7 @@ const configuracao = new mongoose.Schema({
   profit: { type: String },
   stop: { type: Number },
   sellForIndicator: { type: Boolean },
-  open_order_limit: { type: String },
+  maxOrdersOpen: { type: String },
   candle_size: { type: String },
   user: {
     user_name: { type: String, require: true },

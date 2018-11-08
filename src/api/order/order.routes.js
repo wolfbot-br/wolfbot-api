@@ -5,14 +5,13 @@ module.exports = function (server) {
     const orderController = require('../order/order.controller')
 
     const protectedRoutes = express.Router()
-    const openRoutes = express.Router()
 
     // protectedRoutes.use(auth)
-    server.use('/order', openRoutes)
+    server.use('/api/order', protectedRoutes)
 
-    openRoutes.get('/open', orderController.open)
-    openRoutes.get('/close', orderController.close)
-    openRoutes.post('/buy', orderController.buy)
-    openRoutes.post('/sell', orderController.sell)
-    openRoutes.post('/cancel', orderController.cancel)
+    protectedRoutes.get('/open', orderController.open)
+    protectedRoutes.get('/close', orderController.close)
+    protectedRoutes.post('/buy', orderController.buy)
+    protectedRoutes.post('/sell', orderController.sell)
+    protectedRoutes.post('/cancel', orderController.cancel)
 }

@@ -9,6 +9,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
     const sellForIndicator = config.sellForIndicator
     const profit = config.profit
     const stop = config.stop
+    const maxOrdersOpen = config.maxOrdersOpen
     const timestamp = []
     const open = []
     const high = []
@@ -154,6 +155,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                 console.log(chalk.cyan(`moeda: ${target_currency}`))
                 console.log(chalk.magenta('Preço = ' + price.toFixed(8) + ' - ' + time.format('DD-MM-YYYY HH:mm')))
                 console.log(chalk.magenta('Preço Anterior = ' + previousPrice.toFixed(8)))
+                console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
                 console.log(chalk.magenta('linha Sinal = ' + signal_macd.toFixed(digits)))
                 console.log(chalk.magenta('Histograma = ' + histogram.toFixed(digits)))
 
@@ -402,8 +404,10 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
             }
         }
         if (contIndicators === contSignals) {
-            console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
-            order.orderBuy(config, params_order)
+            if (ordersOpen.length <= maxOrdersOpen) {
+                console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
+                order.orderBuy(config, params_order)
+            }
         }
     }
 
@@ -422,8 +426,8 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                 if (ordersOpen !== null) {
                     for (let i = 0; i <= ordersOpen.length - 1; i++) {
                         console.log(chalk.green('ORDEM DE VENDA CRIADA'))
-                        await order.orderSell(config, params_order, ordersOpen[i])
-                        await order.orderUpdateStatus(params_order, ordersOpen[i])
+                        order.orderSell(config, params_order, ordersOpen[i])
+                        order.orderUpdateStatus(params_order, ordersOpen[i])
                     }
                 }
             }
@@ -431,12 +435,12 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
             for (let i = 0; i <= ordersOpen.length - 1; i++) {
                 if (price >= ordersOpen[i].price + (ordersOpen[i].price * profit)) {
                     console.log(chalk.green('ORDEM DE VENDA CRIADA'))
-                    await order.orderSell(config, params_order, ordersOpen[i])
-                    await order.orderUpdateStatus(params_order, ordersOpen[i])
+                    order.orderSell(config, params_order, ordersOpen[i])
+                    order.orderUpdateStatus(params_order, ordersOpen[i])
                 } else if (price <= ordersOpen[i].price - (ordersOpen[i].price * stop)) {
                     console.log(chalk.green('VENDA COM PERDA, NO STOP'))
-                    await order.orderSell(config, params_order, ordersOpen[i])
-                    await order.orderUpdateStatus(params_order, ordersOpen[i])
+                    order.orderSell(config, params_order, ordersOpen[i])
+                    order.orderUpdateStatus(params_order, ordersOpen[i])
                 }
             }
         }
