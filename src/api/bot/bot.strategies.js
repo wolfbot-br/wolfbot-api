@@ -154,6 +154,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
                 console.log(chalk.cyan(`moeda: ${target_currency}`))
                 console.log(chalk.magenta('Preço = ' + price.toFixed(8) + ' - ' + time.format('DD-MM-YYYY HH:mm')))
                 console.log(chalk.magenta('Preço Anterior = ' + previousPrice.toFixed(8)))
+                console.log(chalk.magenta('linha MACD = ' + macd.toFixed(digits)))
                 console.log(chalk.magenta('linha Sinal = ' + signal_macd.toFixed(digits)))
                 console.log(chalk.magenta('Histograma = ' + histogram.toFixed(digits)))
 

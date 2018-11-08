@@ -7,7 +7,7 @@ module.exports = function (server) {
     const protectedRoutes = express.Router()
 
     // protectedRoutes.use(auth)
-    server.use('/order', protectedRoutes)
+    server.use('/api/order', protectedRoutes)
 
     protectedRoutes.get('/open', orderController.open)
     protectedRoutes.get('/close', orderController.close)
