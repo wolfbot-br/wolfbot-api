@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
-    date: { type: Date, require: true },
+    date: { type: String, require: true },
     amount: { type: Number, require: true },
     price: { type: Number, require: true },
-    action: { type: String, require: true },
+    cost: { type: Number, require: true },
     currency: { type: String, require: true },
-    type_order: { type: String, required: true },
     type_operation: { type: String, required: true },
+    action: { type: String, require: true },
     user: { type: String, required: true },
     identifier: { type: String, required: true },
     status: { type: String, require: true }

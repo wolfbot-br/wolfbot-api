@@ -6,7 +6,7 @@ module.exports = function (server) {
 
   const protectedRoutes = express.Router()
 
-  protectedRoutes.use(auth)
+  //protectedRoutes.use(auth)
   server.use('/api/configuracao', protectedRoutes)
 
   protectedRoutes.get('/carregar', configuracaoController.get)

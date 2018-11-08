@@ -1,6 +1,5 @@
-const env = require('../../.env')
-const accountService = require('../api/account/account.service')
 const admin = require('firebase-admin')
+const firebase = require('firebase')
 
 module.exports = (req, res, next) => {
 
@@ -19,6 +18,7 @@ module.exports = (req, res, next) => {
     // realiza a verificação do Token
     admin.auth().verifyIdToken(token)
       .then(function (decodedToken) {
+        req.user = decodedToken;
         next()
       })
       .catch(function (error) {
