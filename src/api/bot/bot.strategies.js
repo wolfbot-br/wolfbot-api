@@ -404,7 +404,7 @@ async function loadStrategy(config, params, target_currency, candle, ordersOpen)
             }
         }
         if (contIndicators === contSignals) {
-            if (maxOrdersOpen <= ordersOpen.length) {
+            if (ordersOpen.length <= maxOrdersOpen) {
                 console.log(chalk.green('ORDEM DE COMPRA CRIADA'))
                 order.orderBuy(config, params_order)
             }
