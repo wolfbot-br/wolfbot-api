@@ -114,7 +114,6 @@ const orderBuy = async function (config, params, res) {
                 Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
                 Number.parseFloat(price[0]) // Preço da moeda que será comprada
             )
-            console.log(order_buy)
             const orders = new order({
                 date: time().format(),
                 amount: amount.toFixed(8),
