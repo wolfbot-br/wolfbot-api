@@ -1,6 +1,5 @@
 const service = require('./perfil.service');
 
-// Retorna os dados do perfil do usuário
 const profile = async (req, res) => {
 
     const userId = req.user.user_id;
@@ -14,7 +13,13 @@ const updateProfile = async (req, res) => {
     return res.status(200).json(user);
 }
 
+const getCountries = async (req, res) => {
+    const countries = await service.getCountries();
+    return res.status(200).json(countries);
+}
+
 module.exports = {
     profile,
-    updateProfile
+    updateProfile,
+    getCountries
 }

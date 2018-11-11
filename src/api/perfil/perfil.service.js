@@ -1,4 +1,5 @@
 const Usuario = require('../../infraestrutura/mongo/models/usuario.model');
+const Country = require('../../infraestrutura/mongo/models/pais.model');
 
 const getPerfil = async userId => {
 
@@ -23,7 +24,12 @@ const updateProfile = async (userId, user) => {
     return userObj
 }
 
+const getCountries = async (userId, user) => {
+    const countries = await Country.find();
+    return countries;
+}
 module.exports = {
     getPerfil,
-    updateProfile
+    updateProfile,
+    getCountries
 }

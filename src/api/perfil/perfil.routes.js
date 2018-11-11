@@ -10,7 +10,7 @@ module.exports = function (server) {
 
     server.use('/api', protectedRoutes)
 
-    protectedRoutes.get('/profile', perfilController.profile)
-    protectedRoutes.put('/profile', perfilController.updateProfile)
-
+    protectedRoutes.get('/profile', perfilController.profile);
+    protectedRoutes.put('/profile', perfilController.updateProfile);
+    protectedRoutes.get('/countries', perfilController.getCountries);
 }
