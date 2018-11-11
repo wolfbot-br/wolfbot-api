@@ -41,6 +41,7 @@ consign()
   .then('/src/api/bot')
   .then('/src/api/backtest')
   .then('/src/api/order')
+  .then('/src/api/perfil')
   .into(app)
 
 module.exports = app

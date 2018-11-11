@@ -9,8 +9,6 @@ const userSchema = new mongoose.Schema({
   genre: { type: String },
   country: { type: String },
   city: { type: String },
-  phoneNumber: { type: String },
-  TelephoneNumber: { type: String },
   photo: { type: String }
 
 }, {

@@ -149,8 +149,13 @@ const signup = (res, usuario) => {
             const userMongo = createMongoObject(
                 {
                     ...firebaseUser,
-                    userId: firebase.auth().currentUser.toJSON().uid
-                })
+                    userId: firebase.auth().currentUser.toJSON().uid,
+                    genre: '',
+                    country: '',
+                    city: '',
+                    photo: '',
+                    emailVerified: false,
+                });
             try {
                 userMongo.save();
             } catch (error) {
@@ -202,11 +207,14 @@ const sendEmailActiveAccount = async (res) => {
 const login = (res, email, password) => {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(function () {
+        .then(async function () {
             if (firebase.auth().currentUser.emailVerified) {
                 const usuario = firebase.auth().currentUser.toJSON()
+                const user = await Usuario.findOne({ userId: usuario.uid });
                 return res.status(200).json({
                     id: usuario.uid,
+                    name: user.name,
+                    photo: user.photo,
                     email: usuario.email,
                     emailVerificado: usuario.emailVerified,
                     anonimo: usuario.isAnonymous,

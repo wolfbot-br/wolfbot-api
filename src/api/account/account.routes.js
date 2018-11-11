@@ -12,15 +12,11 @@ module.exports = function (server) {
   server.use('/api', protectedRoutes)
   server.use('/account', openRoutes)
 
-  openRoutes.post('/passwordRecovery', accountController.passwordRecovery)
-  openRoutes.post('/changepasswordpermition', accountController.changePasswordPermition)
-  openRoutes.post('/changepassword', accountController.changePassword)
+  protectedRoutes.get('/me', accountController.me)
 
-  // NEW ROUTER FIREBASE
   openRoutes.post('/createtoken', accountController.createToken)
   openRoutes.get('/getuserbyemail', accountController.getUserByEmail)
   openRoutes.post('/login', accountController.login)
   openRoutes.post('/signup', accountController.signup)
-  openRoutes.get('/me', accountController.me)
   openRoutes.get('/active', accountController.activeAccount)
 }
