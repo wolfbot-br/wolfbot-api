@@ -24,12 +24,18 @@ const updateProfile = async (userId, user) => {
     return userObj
 }
 
-const getCountries = async (userId, user) => {
+const getCountries = async () => {
     const countries = await Country.find();
     return countries;
 }
+
+const changePassword = async (userId, input) => {
+    await Usuario.findOneAndUpdate({ userId: userId }, { password: input })
+}
+
 module.exports = {
     getPerfil,
     updateProfile,
-    getCountries
+    getCountries,
+    changePassword
 }

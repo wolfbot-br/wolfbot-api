@@ -1,5 +1,7 @@
 const service = require('./perfil.service');
 
+const profileValidation = require('./perfi.validation');
+
 const profile = async (req, res) => {
 
     const userId = req.user.user_id;
@@ -18,8 +20,22 @@ const getCountries = async (req, res) => {
     return res.status(200).json(countries);
 }
 
+const changePassword = async (req, res) => {
+    const userId = req.user.user_id;
+    const data = req.body;
+    const errors = await profileValidation.validChangePassword(data, userId);
+    if (!errors.length) {
+        await service.changePassword(userId, data.newPassword);
+        return res.status(200).json('Ok');
+    }
+    else {
+        return res.status(400).json({ errors: errors })
+    }
+}
+
 module.exports = {
     profile,
     updateProfile,
-    getCountries
+    getCountries,
+    changePassword
 }

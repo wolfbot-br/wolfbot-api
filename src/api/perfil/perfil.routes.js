@@ -13,4 +13,5 @@ module.exports = function (server) {
     protectedRoutes.get('/profile', perfilController.profile);
     protectedRoutes.put('/profile', perfilController.updateProfile);
     protectedRoutes.get('/countries', perfilController.getCountries);
+    protectedRoutes.put('/changepassword', perfilController.changePassword);
 }
