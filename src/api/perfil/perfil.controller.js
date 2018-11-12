@@ -11,8 +11,12 @@ const profile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     const userId = req.user.user_id;
-    const user = await service.updateProfile(userId, req.body)
-    return res.status(200).json(user);
+    const errors = await profileValidation.validSaveDadosPessoais(req.body);
+    if (!errors.length) {
+        const user = await service.updateProfile(userId, req.body)
+        return res.status(200).json(user);
+    }
+    else return res.status(400).json({ errors: errors })
 }
 
 const getCountries = async (req, res) => {

@@ -32,6 +32,15 @@ const validChangePassword = async (data, userId) => {
     return errors;
 };
 
+const validSaveDadosPessoais = async (data) => {
+    const errors = [];
+    if (!data.name) {
+        errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }));
+    }
+    return errors;
+}
+
 module.exports = {
-    validChangePassword
+    validChangePassword,
+    validSaveDadosPessoais
 }

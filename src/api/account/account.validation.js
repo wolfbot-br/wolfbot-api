@@ -5,6 +5,11 @@ const dictionary = require('../util/validations.dictionary');
 const validSignup = usuario => {
   const errors = [];
 
+  if (!usuario.name || !usuario.email || !usuario.password || !usuario.confirm_password) {
+    errors.push(Object.assign({}, { ...dictionary.account.signupIsEmpty }));
+    return errors;
+  }
+
   if (!usuario.email.match(emailRegex)) {
     errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }));
   }
@@ -14,10 +19,6 @@ const validSignup = usuario => {
   if (usuario.confirm_password !== usuario.password) {
     errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
   }
-  if (!usuario.name) {
-    errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }));
-  }
-
   return errors;
 };
 

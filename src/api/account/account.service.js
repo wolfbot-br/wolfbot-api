@@ -245,7 +245,7 @@ const login = (res, email, password) => {
                 case 'auth/user-not-found':
                     return res.status(400).json({
                         errors: [{
-                            ...dictionary.account.userIsEmpty
+                            ...dictionary.account.loginFailed
                         }]
                     })
                 case 'auth/invalid-email':
@@ -257,7 +257,7 @@ const login = (res, email, password) => {
                 case 'auth/too-many-requests':
                     return res.status(400).json({
                         errors: [{
-                            ...dictionary.account.manyRequestsLogin
+                            ...dictionary.account.loginFailed
                         }]
                     })
                 default:
