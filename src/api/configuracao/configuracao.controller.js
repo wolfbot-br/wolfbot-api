@@ -34,54 +34,19 @@ const get = (req, res, next) => {
 
 // Método que salva uma configuração no banco de dados
 const post = (req, res, next) => {
-  let ex = {
-    exchange: req.body.exchange || '',
-    apiKey: req.body.api_key || '',
-    secret: req.body.secret || '',
-    user: {
-      user_name: req.body.user.user_name || '',
-      user_id: req.body.user.user_id || ''
-    },
-    status: {
-      status_bot: req.body.status.status_bot || false,
-      status_buy: req.body.status.status_buy || false,
-      status_sell: req.body.status.status_sell || false,
-      key: req.body.status.key || '',
-      interval_check: req.body.status.interval_check || 30000
-    },
-    target_currency: req.body.target_currency || [],
-    candle_size: req.body.candle_size || '30m',
-    strategy: {
-      external_signal: {},
-      indicators: {
-        sma: {
-          status: req.body.strategy.indicators.sma.status || false,
-          period: req.body.strategy.indicators.sma.period || 9
-        },
-        macd: {
-          status: req.body.strategy.indicators.macd.status || false,
-          shortPeriod: req.body.strategy.indicators.macd.shortPeriod || 12,
-          longPeriod: req.body.strategy.indicators.macd.longPeriod || 26,
-          signalPeriod: req.body.strategy.indicators.macd.signalPeriod || 9
-        },
-        rsi: {
-          status: req.body.strategy.indicators.rsi.status || false,
-          period: req.body.strategy.indicators.sma.period || 9
-        }
-      }
-    }
-  }
+  const json = JSON.stringify(req.body)
+  const config = JSON.parse(json)
 
   const nova_configuracao = new configuracao({
-    exchange: ex.exchange,
-    api_key: ex.apiKey,
-    secret: ex.secret,
-    user: ex.user,
-    status: ex.status,
-    base_currency: ex.base_currency,
-    target_currency: ex.target_currency,
-    candle_size: ex.candle_size,
-    strategy: ex.strategy
+    exchange: config.exchange,
+    api_key: config.apiKey,
+    secret: config.secret,
+    user: config.user,
+    status: config.status,
+    base_currency: config.base_currency,
+    target_currency: config.target_currency,
+    candle_size: config.candle_size,
+    strategy: config.strategy
   })
 
   nova_configuracao.save(err => {
