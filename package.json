@@ -1,14 +1,13 @@
 {
-  "name": "wofbot-backend",
+  "name": "wofbot-api",
   "version": "1.0.0",
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon src/app.js",
     "pm2": "pm2 start src/app.js",
     "start": "node src/app.js",
-    "format": "prettier --write '**/*.{js,jsx}'",
-    "postinstall": "npm prune"
+    "format": "prettier --write '**/*.{js,jsx}'"
   },
   "repository": {
     "type": "git",

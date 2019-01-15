@@ -9,10 +9,10 @@ const configuracao = new mongoose.Schema({
   ],
   base_currency: { type: String },
   purchase_quantity: { type: Number },
-  profit: { type: String },
+  profit: { type: Number },
   stop: { type: Number },
   sellForIndicator: { type: Boolean },
-  maxOrdersOpen: { type: String },
+  maxOrdersOpen: { type: Number },
   candle_size: { type: String },
   user: {
     user_name: { type: String, require: true },
@@ -25,15 +25,6 @@ const configuracao = new mongoose.Schema({
     key: { type: String },
     interval_check: { type: Number }
   },
-  target_currency: [
-    {
-      currency: { type: String },
-      base_currency: { type: String },
-      profit: { type: String },
-      amount: { type: String },
-      open_order_limit: { type: String }
-    }
-  ],
   strategy: {
     indicators: {
       ema: {
