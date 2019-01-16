@@ -1,65 +1,63 @@
-const emailRegex = /\S+@\S+\.\S+/;
-const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/;
-const dictionary = require('../util/validations.dictionary');
+const emailRegex = /\S+@\S+\.\S+/
+const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/
+const dictionary = require('../util/validations.dictionary')
 
 const validSignup = usuario => {
-  const errors = [];
+  const errors = []
 
   if (!usuario.email.match(emailRegex)) {
-    errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }));
+    errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }))
   }
   if (!usuario.password.match(passwordRegex)) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordIsInvalid }));
+    errors.push(Object.assign({}, { ...dictionary.account.passwordIsInvalid }))
   }
   if (usuario.confirm_password !== usuario.password) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
+    errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }))
   }
   if (!usuario.nome) {
-    errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }));
+    errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }))
   }
 
-  return errors;
-};
+  return errors
+}
 
 const validLogin = (email, password) => {
-  const errors = [];
+  const errors = []
 
   if (!email) {
-    errors.push(Object.assign({}, { ...dictionary.account.emailIsEmpty }));
-  }
-
-  else if (!email.match(emailRegex)) {
-    errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }));
+    errors.push(Object.assign({}, { ...dictionary.account.emailIsEmpty }))
+  } else if (!email.match(emailRegex)) {
+    errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }))
   };
 
   if (!password) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
+    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }))
   };
 
-  return errors;
-};
+  return errors
+}
 
 const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
-  const errors = [];
+  const errors = []
   if (changePasswordHash == '' || changePasswordHash == null || changePasswordHash == undefined) {
-    errors.push(Object.assign({}, { message: 'Solicitação Inválida.' }));
-    return errors;
+    errors.push(Object.assign({}, { message: 'Solicitação Inválida.' }))
+    return errors
   };
   if (password == '' || password == undefined) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
+    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }))
   };
   if (passwordConfirm == '' || passwordConfirm == undefined) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordConfirmIsEmpty }));
-    return errors;
+    errors.push(Object.assign({}, { ...dictionary.account.passwordConfirmIsEmpty }))
+    return errors
   }
   if (password != passwordConfirm) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
-    return errors;
+    errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }))
+    return errors
   }
   if (!password.match(passwordRegex)) {
-    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
+    errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }))
   }
-  return errors;
+  return errors
 }
 
 module.exports = {

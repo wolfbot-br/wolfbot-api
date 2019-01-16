@@ -39,13 +39,18 @@ const post = (req, res, next) => {
 
   const nova_configuracao = new configuracao({
     exchange: config.exchange,
-    api_key: config.apiKey,
+    api_key: config.api_key,
     secret: config.secret,
+    target_currency: config.target_currency,
+    base_currency: config.base_currency,
+    purchase_quantity: config.purchase_quantity,
+    profit: config.profit,
+    stop: config.stop,
+    sellForIndicator: config.sellForIndicator,
+    maxOrdersOpen: config.maxOrdersOpen,
+    candle_size: config.candle_size,
     user: config.user,
     status: config.status,
-    base_currency: config.base_currency,
-    target_currency: config.target_currency,
-    candle_size: config.candle_size,
     strategy: config.strategy
   })
 

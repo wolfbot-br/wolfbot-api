@@ -227,12 +227,11 @@ const fetchTicker = async (req, res, next) => {
 const fetchBalance = async (req, res, next) => {
   try {
     params = {
-      id_usuario: req.query.id_usuario,
-      exchange: req.query.exchange //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
+      user_id: req.query.user_id
     }
 
-    if (params.id_usuario) {
-      const config = await configuracao.findOne({ 'user.user_id': params.id_usuario });
+    if (params.user_id) {
+      const config = await configuracao.findOne({ 'user.user_id': params.user_id })
       let nome_exchange = config.exchange.toLowerCase()
       const exchangeCCXT = new ccxt[nome_exchange]()
       exchangeCCXT.apiKey = config.api_key

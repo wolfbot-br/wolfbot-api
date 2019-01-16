@@ -29,9 +29,7 @@ const changePassword = (req, res, next) => {
   }
 }
 
-
-
-// Ativa a conta do usuário 
+// Ativa a conta do usuário
 const activeAccount = (req, res) => {
   const code = req.headers['code']
   if (!code) {
@@ -56,41 +54,38 @@ const me = (req, res) => {
 
 // Cadastro de um novo usuário
 const signup = async (req, res) => {
-
   const usuario = {
     nome: req.body.nome || '',
     email: req.body.email || '',
     password: req.body.password || '',
     confirm_password: req.body.confirm_password || ''
-  };
+  }
 
-  const errors = await accountValidation.validSignup(usuario);
+  const errors = await accountValidation.validSignup(usuario)
 
-  if (errors.length) res.status(406).json({ errors });
-  else await accountService.signup(res, usuario);
-};
+  if (errors.length) res.status(406).json({ errors })
+  else await accountService.signup(res, usuario)
+}
 
-// Cria um novo token para um usuário 
+// Cria um novo token para um usuário
 const createToken = (req, res) => {
   const email = req.body.email || ''
   const password = req.body.password || ''
   const errors = accountValidation.validLogin(email, password)
   if (errors.length > 0) {
     res.status(406).json({ errors })
-  }
-  else {
+  } else {
     accountService.createToken(email, password, res)
   }
 }
 
-// Login por email e senha de um usuário 
+// Login por email e senha de um usuário
 const login = (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
   const errors = accountValidation.validLogin(email, password)
   if (errors.length) {
     res.status(406).json({ errors })
-  }
-  else {
+  } else {
     accountService.login(res, email, password)
   }
 }

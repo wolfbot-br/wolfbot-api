@@ -3,7 +3,7 @@ const moment = require('moment')
 const configuracao = require('../../infraestrutura/mongo/models/backtest.configuracao.model')
 const strategy = require('./backtest.strategies')
 
-async function carregarDados(params) {
+async function carregarDados (params) {
   exchangeCCXT = new ccxt[params.exchange]()
   await exchangeCCXT.loadMarkets()
 

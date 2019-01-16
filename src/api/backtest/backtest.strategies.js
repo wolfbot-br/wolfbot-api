@@ -2,8 +2,7 @@ const lodash = require('lodash')
 const tulind = require('tulind')
 const moment = require('moment')
 
-function loadStrategy(config, candle, market) {
-
+function loadStrategy (config, candle, market) {
   const ordersBuy = []
   const ordersSell = []
   const sellForIndicator = config.sellForIndicator
@@ -47,7 +46,7 @@ function loadStrategy(config, candle, market) {
     })
   }))
 
-  //############################### INDICADOR EMA ################################
+  // ############################### INDICADOR EMA ################################
   if (config.indicator.name === 'EMA') {
     const period = config.indicator.ema_period
     tulind.indicators.ema.indicator([close], [period], function (err, result) {
@@ -62,8 +61,7 @@ function loadStrategy(config, candle, market) {
         }
         let cont2 = 0
 
-
-        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
         for (let i = period - 1; i <= close.length - 1; i++) {
           let ema = parseFloat(arrayEMA[cont2])
           let tendenciaUP = ema + tendencia.up
@@ -92,7 +90,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  //############################### INDICADOR MACD ################################
+  // ############################### INDICADOR MACD ################################
   if (config.indicator.name === 'MACD') {
     const shortPeriod = config.indicator.macd_short_period
     const longPeriod = config.indicator.macd_long_period
@@ -111,7 +109,7 @@ function loadStrategy(config, candle, market) {
         }
         let cont2 = 0
 
-        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
         for (let i = longPeriod + 1; i <= candle.length - 1; i++) {
           let macd = parseFloat(arrayMacd[cont2])
           let histograma = parseFloat(arrayHistograma[cont2])
@@ -139,7 +137,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  //############################### INDICADOR STOCH ################################
+  // ############################### INDICADOR STOCH ################################
   if (config.indicator.name === 'STOCH') {
     const k_period = config.indicator.stoch_k_period
     const k_slow_period = config.indicator.stoch_k_slow_period
@@ -152,11 +150,11 @@ function loadStrategy(config, candle, market) {
         const arrayD = result[1]
         const tendencia = {
           up: 5,
-          down: 5,
+          down: 5
         }
         let cont2 = 0
 
-        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
         for (let i = k_period + 1; i <= candle.length - 1; i++) {
           let k = parseFloat(arrayK[cont2])
           let d = parseFloat(arrayD[cont2])
@@ -184,7 +182,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  //############################### INDICADOR CCI ################################
+  // ############################### INDICADOR CCI ################################
   if (config.indicator.name === 'CCI') {
     const period = config.indicator.cci_period
     tulind.indicators.cci.indicator([high, low, close], [period], function (err, result) {
@@ -194,11 +192,11 @@ function loadStrategy(config, candle, market) {
         const arrayCCI = result[0]
         const tendencia = {
           up: 5,
-          down: -5,
+          down: -5
         }
         let cont2 = 0
 
-        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
         for (let i = period + 1; i <= candle.length - 1; i++) {
           let cci = parseFloat(arrayCCI[cont2])
           cont2++
@@ -221,7 +219,7 @@ function loadStrategy(config, candle, market) {
     })
   }
 
-  //############################### INDICADOR BBANDS ################################
+  // ############################### INDICADOR BBANDS ################################
   if (config.indicator.name === 'BOLLINGER BANDS') {
     const period = config.indicator.bbands_period
     const stddev = config.indicator.bbands_stddev_period
@@ -234,11 +232,11 @@ function loadStrategy(config, candle, market) {
         const arrayBBANDS_upper = result[2]
         const tendencia = {
           up: 5,
-          down: 5,
+          down: 5
         }
         let cont2 = 0
 
-        //LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
+        // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
         for (let i = period + 1; i <= candle.length - 1; i++) {
           let lower = parseFloat(arrayBBANDS_lower[cont2])
           let middle = parseFloat(arrayBBANDS_middle[cont2])
