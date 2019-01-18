@@ -1,12 +1,12 @@
 {
-  "name": "wofbot-api",
+  "name": "wolfbot-api",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/app.js",
+  "main": "./src/server.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
-    "pm2": "pm2 start src/app.js",
-    "start": "node src/app.js",
+    "dev": "nodemon src/server.js",
+    "pm2": "pm2 start src/server.js",
+    "start": "node src/server.js",
     "format": "prettier --write '**/*.{js,jsx}'"
   },
   "repository": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/tcc-bot/wofbot-backend.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Alysson Andrade, Celso Fernandes, Vinícius Rocha",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/tcc-bot/wofbot-backend/issues"
@@ -26,9 +26,7 @@
     "ccxt": "^1.14.301",
     "chalk": "^2.4.1",
     "consign": "^0.1.6",
-    "dotenv-safe": "^6.0.0",
     "express": "^4.16.3",
-    "express-query-int": "^1.0.1",
     "firebase": "^5.5.4",
     "firebase-admin": "^6.0.0",
     "helmet": "^3.13.0",
@@ -36,22 +34,13 @@
     "lodash": "^4.17.5",
     "moment": "^2.22.2",
     "mongoose": "^4.13.12",
-    "mongoose-paginate": "^5.0.3",
-    "node-restful": "^0.2.6",
-    "nodemailer": "^4.6.7",
-    "nodemailer-smtp-transport": "^2.7.4",
-    "npm": "^6.4.1",
-    "randomstring": "^1.1.5",
-    "redis": "^2.8.0",
     "set-interval": "^2.0.3",
-    "setinterval": "^0.2.0",
     "tulind": "^0.8.12"
   },
   "devDependencies": {
     "nodemon": "^1.17.3",
     "pm2": "^3.0.3",
-    "prettier": "^1.12.1",
-    "standard": "^11.0.1"
+    "prettier": "^1.12.1"
   },
   "engines": {
     "node": "8.10.0"
