@@ -4,16 +4,25 @@
   "description": "",
   "main": "./src/server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "nodenv -e nodemon -- --exec",
     "pm2": "pm2 start src/server.js",
-    "start": "node src/server.js",
-    "format": "prettier --write '**/*.{js,jsx}'"
+    "start": "nodenv ./dist/api/server.js",
+    "build": "babel .src -d ./dist --source-maps"
+  },
+  "nodemonConfig": {
+    "exec": "babel-node ./src/api/server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tcc-bot/wofbot-backend.git"
   },
-  "keywords": [],
+  "keywords": [
+    "bitcoin",
+    "trade",
+    "bot-trader",
+    "bot",
+    "wolfbot"
+  ],
   "author": "Alysson Andrade, Celso Fernandes, Vinícius Rocha",
   "license": "ISC",
   "bugs": {
@@ -38,6 +47,18 @@
     "tulind": "^0.8.12"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/plugin-proposal-do-expressions": "^7.2.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.2.0",
+    "@babel/preset-env": "^7.2.3",
+    "babel-eslint": "^10.0.1",
+    "dotenv": "^6.2.0",
+    "eslint": "^5.12.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "node-env-run": "^3.0.2",
     "nodemon": "^1.17.3",
     "pm2": "^3.0.3",
     "prettier": "^1.12.1"
