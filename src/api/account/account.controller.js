@@ -12,6 +12,7 @@ const passwordRecovery = (req, res, next) => {
 const changePasswordPermition = (req, res, next) => {
   const hash = req.body.changepasswordhash
   accountService.changePasswordPermition(res, next, hash)
+  console.log('teste')
 }
 
 const changePassword = (req, res, next) => {
