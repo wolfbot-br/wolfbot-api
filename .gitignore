@@ -6,3 +6,4 @@ node_modules
 .eslintrc.json
 firebase.development.json
 firebase.admin.development.json
+~
