@@ -1,26 +1,27 @@
-const Historico from('../../infraestrutura/mongo/models/historico.model')
+import _ from 'lodash';
+import Historico from '../database/mongo/models/historico.model';
 
 const sendErrorsFromDB = (res, dbErrors) => {
-  const errors = []
-  _.forIn(dbErrors.errors, error => errors.push(error.message))
-  return res.status(400).json({ errors })
-}
+    const errors = [];
+    _.forIn(dbErrors.errors, (error) => errors.push(error.message));
+    return res.status(400).json({ errors });
+};
 
 const historicos = (res, usuario) => {
-  Historico.find({ usuario: usuario.email }, (err, historicos) => {
-    if (err) {
-      return sendErrorsFromDB(res, err)
-    }
-    return res.status(200).send({
-      page: 1,
-      limit: 10,
-      total: historicos.length,
-      data: historicos,
-      errors: []
-    })
-  })
-}
+    Historico.find({ usuario: usuario.email }, (err, historicos) => {
+        if (err) {
+            return sendErrorsFromDB(res, err);
+        }
+        return res.status(200).send({
+            page: 1,
+            limit: 10,
+            total: historicos.length,
+            data: historicos,
+            errors: [],
+        });
+    });
+};
 
-export default  {
-  historicos
-}
+export default {
+    historicos,
+};

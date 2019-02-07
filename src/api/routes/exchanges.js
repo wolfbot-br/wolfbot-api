@@ -5,7 +5,7 @@ import controller from '../controllers/exchanges';
 export default function(server) {
     const protectedRoutes = express.Router();
 
-    //protectedRoutes.use(auth)
+    // protectedRoutes.use(auth)
     server.use('/api/exchanges', protectedRoutes);
 
     // PUBLIC METHODS
