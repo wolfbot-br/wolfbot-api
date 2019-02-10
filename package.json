@@ -1,59 +1,72 @@
 {
-  "name": "wofbot-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./src/app.js",
-  "scripts": {
-    "dev": "nodemon src/app.js",
-    "pm2": "pm2 start src/app.js",
-    "start": "node src/app.js",
-    "format": "prettier --write '**/*.{js,jsx}'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tcc-bot/wofbot-backend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tcc-bot/wofbot-backend/issues"
-  },
-  "homepage": "https://github.com/tcc-bot/wofbot-backend#readme",
-  "dependencies": {
-    "bcrypt": "1.0.2",
-    "body-parser": "^1.18.2",
-    "ccxt": "^1.14.301",
-    "chalk": "^2.4.1",
-    "consign": "^0.1.6",
-    "dotenv-safe": "^6.0.0",
-    "express": "^4.16.3",
-    "express-query-int": "^1.0.1",
-    "firebase": "^5.5.4",
-    "firebase-admin": "^6.0.0",
-    "helmet": "^3.13.0",
-    "jsonwebtoken": "^7.3.0",
-    "lodash": "^4.17.5",
-    "moment": "^2.22.2",
-    "mongoose": "^4.13.12",
-    "mongoose-paginate": "^5.0.3",
-    "node-restful": "^0.2.6",
-    "nodemailer": "^4.6.7",
-    "nodemailer-smtp-transport": "^2.7.4",
-    "npm": "^6.4.1",
-    "randomstring": "^1.1.5",
-    "redis": "^2.8.0",
-    "set-interval": "^2.0.3",
-    "setinterval": "^0.2.0",
-    "tulind": "^0.8.12"
-  },
-  "devDependencies": {
-    "nodemon": "^1.17.3",
-    "pm2": "^3.0.3",
-    "prettier": "^1.12.1",
-    "standard": "^11.0.1"
-  },
-  "engines": {
-    "node": "8.10.0"
-  }
+    "name": "wolfbot-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./src/server.js",
+    "scripts": {
+        "dev": "nodenv -e nodemon -- --exec",
+        "pm2": "pm2 start src/server.js",
+        "start": "nodenv ./dist/api/server.js",
+        "build": "babel .src -d ./dist --source-maps"
+    },
+    "nodemonConfig": {
+        "exec": "babel-node ./src/api/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tcc-bot/wofbot-backend.git"
+    },
+    "keywords": [
+        "bitcoin",
+        "trade",
+        "bot-trader",
+        "bot",
+        "wolfbot"
+    ],
+    "author": "Alysson Andrade, Celso Fernandes, Vinícius Rocha",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tcc-bot/wofbot-backend/issues"
+    },
+    "homepage": "https://github.com/tcc-bot/wofbot-backend#readme",
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "ccxt": "^1.14.301",
+        "chalk": "^2.4.1",
+        "consign": "^0.1.6",
+        "express": "^4.16.3",
+        "firebase": "^5.5.4",
+        "firebase-admin": "^6.0.0",
+        "helmet": "^3.13.0",
+        "jsonwebtoken": "^7.3.0",
+        "lodash": "^4.17.5",
+        "moment": "^2.22.2",
+        "mongoose": "^4.13.12",
+        "set-interval": "^2.0.3",
+        "tulind": "^0.8.12"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.2.3",
+        "@babel/core": "^7.2.2",
+        "@babel/node": "^7.2.2",
+        "@babel/plugin-proposal-do-expressions": "^7.2.0",
+        "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+        "@babel/plugin-proposal-pipeline-operator": "^7.2.0",
+        "@babel/preset-env": "^7.2.3",
+        "babel-eslint": "^10.0.1",
+        "dotenv": "^6.2.0",
+        "eslint": "^5.12.0",
+        "eslint-config-airbnb-base": "^13.1.0",
+        "eslint-config-prettier": "^4.0.0",
+        "eslint-plugin-import": "^2.16.0",
+        "eslint-plugin-prettier": "^3.0.1",
+        "node-env-run": "^3.0.2",
+        "nodemon": "^1.17.3",
+        "pm2": "^3.0.3",
+        "prettier": "^1.12.1",
+        "pretty-quick": "^1.10.0"
+    },
+    "engines": {
+        "node": "8.10.0"
+    }
 }
