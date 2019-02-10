@@ -6,12 +6,14 @@ import admin from 'firebase-admin';
 import firebase from 'firebase';
 import chalk from 'chalk';
 
+import mongoose from './database/mongo';
 import adminAccount from './certificates/firebase.admin.development.json';
 import firebaseAccount from './certificates/firebase.development.json';
 import config from './config';
 import allowCors from './middlewares/cors';
 
 const app = express();
+mongoose.createConnection();
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,18 +36,18 @@ admin.initializeApp({
 firebase.initializeApp(firebaseConfig);
 
 consign()
-    .include('/api/database')
-    .then('/api/routes')
-    .then('/api/controllers')
-    .then('/api/validators')
-    .then('/api/services')
-    .then('/api/certificates')
-    .then('/api/config')
-    .then('/api/middleware')
+    .include('src/api/database')
+    .then('src/api/routes')
+    .then('src/api/controllers')
+    .then('src/api/validators')
+    .then('src/api/services')
+    .then('src/api/certificates')
+    .then('src/api/config')
+    .then('src/api/middlewares')
     .into(app);
 
 app.listen(config.port, () =>
-    console.log(`\n API: ${chalk.blue('Wofboot')}
-    Running on port ${chalk.blue(config.port)}
-    Environment: ${chalk.blue(config.environment)}`)
+    console.log(`\n API: ${chalk.blue('Wolfbot API')}
+ Running on port: ${chalk.blue(config.port)} 
+ Environment: ${chalk.blue(config.environment)}`)
 );

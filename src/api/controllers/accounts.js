@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import bcrypt from 'bcrypt';
 
 import validator from '../validators/account.validation';
 import service from '../services/account.service';
@@ -18,11 +17,15 @@ const changePassword = (req, res, next) => {
     const password = req.body.password;
     const passwordConfirm = req.body.passwordConfirm;
     const changePasswordHash = req.body.changePasswordHash;
-    let errors = validator.changePasswordValidation(password, passwordConfirm, changePasswordHash);
+    const errors = validator.changePasswordValidation(
+        password,
+        passwordConfirm,
+        changePasswordHash
+    );
     if (errors.length > 0) {
         return res.status(400).json({
             success: false,
-            errors: errors,
+            errors,
         });
     }
     service.changePassword(res, next, changePasswordHash, password);
@@ -30,7 +33,7 @@ const changePassword = (req, res, next) => {
 
 // Ativa a conta do usuário
 const activeAccount = (req, res) => {
-    const code = req.headers['code'];
+    const code = req.headers.code;
     if (!code) {
         return res.status(400).json({
             errors: [{ message: '"code" na requisição é obrigatório' }],
@@ -41,13 +44,13 @@ const activeAccount = (req, res) => {
 
 // Busca as informações do usuário pelo email
 const getUserByEmail = (req, res) => {
-    const email = req.headers['email'];
+    const email = req.headers.email;
     service.getUserByEmail(email, res);
 };
 
 // Informações do usuário logado (Verificação se o token é válido)
 const me = (req, res) => {
-    const token = req.headers['authorization'];
+    const token = req.headers.authorization;
     service.me(res, token);
 };
 

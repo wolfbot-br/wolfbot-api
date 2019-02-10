@@ -5,9 +5,6 @@ export default {
     environment: env.NODE_ENV || 'production',
 
     mongo: {
-        connection: 'mongo',
-        database: '',
-        username: '',
-        password: '',
+        connection: `${env.MONGO_CONNECTION}/${env.MONGO_DATABASE}`,
     },
 };
