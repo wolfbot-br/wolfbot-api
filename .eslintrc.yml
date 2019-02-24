@@ -1,7 +1,7 @@
 env:
     node: true
     es6: true
-extends: [airbnb-base, 'plugin:prettier/recommended']
+extends: [airbnb-base, "plugin:prettier/recommended"]
 plugins: [import]
 parser: babel-eslint
 parserOptions:
@@ -9,6 +9,9 @@ parserOptions:
     allowImportExportEverywhere: false
     parser: optionalChaining
     codeFrame: false
+
+# 0 = Desativa a Regra, 1 = Ativa a regra como um aviso, 2 = Ativa a regra como um erro
+
 rules:
     arrow-body-style: [2, as-needed]
     arrow-spacing: 2
@@ -39,7 +42,7 @@ rules:
     no-new-object: 0
     prefer-promise-reject-errors: 2
     prefer-rest-params: 2
-    quotes: [2, single]
+    quotes: [2, double]
     require-await: 2
     semi: [2, always]
     linebreak-style: 0

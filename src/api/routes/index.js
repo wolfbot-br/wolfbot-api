@@ -1,12 +1,8 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/index';
+import express from "express";
+import controller from "../controllers/index";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+export default (server) => {
     const openRoutes = express.Router();
-
-    server.use('/', openRoutes);
-
-    openRoutes.get('/', controller.index);
-}
+    server.use("/api", openRoutes);
+    openRoutes.get("/index", controller.index);
+};

@@ -1,5 +1,9 @@
-const index = async (req, res, next) => {
-    res.send('<h1 style="text-align:center;">WolfBot - API</h1>');
-};
+import config from "../config";
+
+const index = (req, res, next) =>
+    res.status(200).json({
+        application: "Wolfbot API",
+        environment: config.environment,
+    });
 
 export default { index };
