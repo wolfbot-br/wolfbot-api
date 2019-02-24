@@ -1,41 +1,30 @@
-import _ from 'lodash';
+import _ from "lodash";
 
-import Configuration from '../database/mongo/models/configuracao.model';
-
-// Método generico que irá tratar erros de banco de dados
-const sendErrorsFromDB = (res, dbErrors) => {
-    const errors = [];
-    _.forIn(dbErrors.errors, (error) => errors.push(error.message));
-    return res.status(400).json({ errors });
-};
+import Configuration from "../database/mongo/models/configuracao.model";
 
 // Método que retorna uma configuração salva no banco
-const get = (req, res, next) => {
-    const user_id = req.query.user_id;
+const get = (ctx) => {
+    const { user_id } = ctx.request.params;
 
-    Configuration.findOne({ 'user.user_id': user_id }, (err, configuracao) => {
-        if (err) {
-            return sendErrorsFromDB(res, err);
-        }
+    Configuration.findOne({ "user.user_id": user_id }, (err, configuracao) => {
         if (configuracao == null) {
-            res.status(200).json({
+            return ctx.ok({
                 configuracao: {},
-                message: 'Configuração não cadastrada!',
-                status: '406',
-            });
-        } else {
-            res.status(200).json({
-                configuracao,
-                message: 'Configuração recuperada com sucesso!',
-                status: '200',
+                message: "Configuração não cadastrada!",
+                status: "406",
             });
         }
+        return ctx.ok({
+            configuracao,
+            message: "Configuração recuperada com sucesso!",
+            status: "200",
+        });
     });
 };
 
 // Método que salva uma configuração no banco de dados
-const post = (req, res, next) => {
-    const json = JSON.stringify(req.body);
+const post = (ctx) => {
+    const json = JSON.stringify(ctx.request.body);
     const config = JSON.parse(json);
 
     const nova_configuracao = new Configuration({
@@ -52,30 +41,25 @@ const post = (req, res, next) => {
 
     nova_configuracao.save((err) => {
         if (err) {
-            res.status(500).json({
-                message: 'Não foi possível cadastrar uma nova configuração!',
-                status: '500',
-            });
-        } else {
-            res.status(201).json({
-                message: 'Configuração cadastrada com sucesso!',
-                status: '201',
+            return ctx.internalServerError({
+                message: "Não foi possível cadastrar uma nova configuração!",
+                status: "500",
             });
         }
+        return ctx.created({
+            message: "Configuração cadastrada com sucesso!",
+            status: "201",
+        });
     });
 };
 
 /* Método que retorna altera uma informação da exchange
     @params : nome, id
 */
-const put = (req, res, next) => {
-    res.send({ message: 'Não implementado ainda' });
-};
+const put = (ctx) => ctx.ok({ message: "Não implementado ainda" });
 
 /* Método que exclui uma exchange */
-const exclusao = (req, res, next) => {
-    res.send({ message: 'Não implementado ainda' });
-};
+const exclusao = (ctx) => ctx.ok({ message: "Não implementado ainda" });
 
 export default {
     get,

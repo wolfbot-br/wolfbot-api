@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const backtestConfiguracao = new mongoose.Schema({
     name: { type: String },
@@ -36,7 +36,7 @@ const backtestConfiguracao = new mongoose.Schema({
 });
 
 export default mongoose.model(
-    'backtest-configuracao',
+    "backtest-configuracao",
     backtestConfiguracao,
-    'backtest-configuracao'
+    "backtest-configuracao"
 );

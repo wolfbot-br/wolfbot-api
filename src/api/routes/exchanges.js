@@ -1,28 +1,87 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/exchanges';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import exchanges from "../controllers/exchanges";
 
-    // protectedRoutes.use(auth)
-    server.use('/api/exchanges', protectedRoutes);
+const router = Router();
 
-    // PUBLIC METHODS
-    protectedRoutes.get('/loadExchanges', controller.loadExchanges);
-    protectedRoutes.get('/structure', controller.structure);
-    protectedRoutes.get('/symbols', controller.symbols);
-    protectedRoutes.get('/currencies', controller.currencies);
-    protectedRoutes.get('/loadmarkets', controller.loadMarkets);
-    protectedRoutes.get('/getMarketStructureBySimbol', controller.getMarketStructureBySimbol);
-    protectedRoutes.get('/getMarketIdBySimbol', controller.getMarketIdBySimbol);
-    protectedRoutes.get('/fetchOrderBookBySymbol', controller.fetchOrderBookBySymbol);
-    protectedRoutes.get('/ticker', controller.fetchTicker);
-    protectedRoutes.get('/tickers', controller.fetchTickers);
+router.prefix("/exchanges");
 
-    // PRIVATE METHODS
-    protectedRoutes.get('/saldo', controller.fetchBalance);
-    protectedRoutes.post('/buy', controller.orderBuy);
-    protectedRoutes.post('/sell', controller.orderSell);
-    protectedRoutes.get('/openOrdens', controller.openOrders);
-}
+router.route([
+    {
+        method: "GET",
+        path: "/loadExchanges",
+        handler: [exchanges.loadExchanges],
+    },
+    {
+        method: "GET",
+        path: "/structure",
+        handler: [exchanges.structure],
+    },
+    {
+        method: "GET",
+        path: "/symbols",
+        handler: [exchanges.symbols],
+    },
+    {
+        method: "GET",
+        path: "/currencies",
+        handler: [exchanges.currencies],
+    },
+    {
+        method: "GET",
+        path: "/loadmarkets",
+        handler: [exchanges.loadMarkets],
+    },
+    {
+        method: "GET",
+        path: "/getMarketStructureBySimbol",
+        handler: [exchanges.getMarketStructureBySimbol],
+    },
+    {
+        method: "GET",
+        path: "/getMarketIdBySimbol",
+        handler: [exchanges.getMarketIdBySimbol],
+    },
+    {
+        method: "GET",
+        path: "/fetchOrderBookBySymbol",
+        handler: [exchanges.fetchOrderBookBySymbol],
+    },
+    {
+        method: "GET",
+        path: "/ticker",
+        handler: [exchanges.fetchTicker],
+    },
+    {
+        method: "GET",
+        path: "/tickers",
+        handler: [exchanges.fetchTickers],
+    },
+    {
+        method: "GET",
+        path: "/saldo",
+        handler: [exchanges.fetchBalance],
+    },
+    {
+        method: "POST",
+        path: "/buy",
+        handler: [exchanges.orderBuy],
+    },
+    {
+        method: "POST",
+        path: "/sell",
+        handler: [exchanges.orderSell],
+    },
+    {
+        method: "POST",
+        path: "/buy",
+        handler: [exchanges.orderBuy],
+    },
+    {
+        method: "GET",
+        path: "/openOrdens",
+        handler: [exchanges.openOrders],
+    },
+]);
+
+export default router;

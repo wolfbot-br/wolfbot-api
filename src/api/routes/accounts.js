@@ -1,25 +1,57 @@
-import express from "express";
-import auth from "../middlewares/auth";
-import controller from "../controllers/accounts";
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
-    const openRoutes = express.Router();
+import accounts from "../controllers/accounts";
 
-    protectedRoutes.use(auth);
+const router = Router();
 
-    server.use("/api", protectedRoutes);
-    server.use("/account", openRoutes);
+router.prefix("/account");
 
-    openRoutes.post("/passwordRecovery", controller.passwordRecovery);
-    openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
-    openRoutes.post("/changepassword", controller.changePassword);
+router.route([
+    {
+        method: "POST",
+        path: "/passwordRecovery",
+        handler: [accounts.passwordRecovery],
+    },
+    {
+        method: "POST",
+        path: "/changepasswordpermition",
+        handler: [accounts.changePasswordPermition],
+    },
+    {
+        method: "POST",
+        path: "/changepassword",
+        handler: [accounts.changePassword],
+    },
+    {
+        method: "POST",
+        path: "/createtoken",
+        handler: [accounts.createToken],
+    },
+    {
+        method: "GET",
+        path: "/getuserbyemail",
+        handler: [accounts.getUserByEmail],
+    },
+    {
+        method: "POST",
+        path: "/login",
+        handler: [accounts.login],
+    },
+    {
+        method: "POST",
+        path: "/signup",
+        handler: [accounts.signup],
+    },
+    {
+        method: "GET",
+        path: "/me",
+        handler: [accounts.me],
+    },
+    {
+        method: "GET",
+        path: "/active",
+        handler: [accounts.activeAccount],
+    },
+]);
 
-    // NEW ROUTER FIREBASE
-    openRoutes.post("/createtoken", controller.createToken);
-    openRoutes.get("/getuserbyemail", controller.getUserByEmail);
-    openRoutes.post("/login", controller.login);
-    openRoutes.post("/signup", controller.signup);
-    openRoutes.get("/me", controller.me);
-    openRoutes.get("/active", controller.activeAccount);
-}
+export default router;

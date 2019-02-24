@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import backtestConfiguration from '../../database/mongo/models/backtest.configuracao.model';
+import _ from "lodash";
+import backtestConfiguration from "../../database/mongo/models/backtest.configuracao.model";
 
 // Método generico que irá tratar erros de banco de dados
 const sendErrorsFromDB = (res, dbErrors) => {
@@ -10,49 +10,48 @@ const sendErrorsFromDB = (res, dbErrors) => {
 
 // Método que retorna uma configuração salva no banco
 const get = (req, res, next) => {
-    const user_id = req.query.user_id;
+    const { user_id } = req.query;
 
-    backtestConfiguration.findOne({ 'user.user_id': user_id }, (err, configuracao) => {
+    backtestConfiguration.findOne({ "user.user_id": user_id }, (err, configuracao) => {
         if (err) {
             return sendErrorsFromDB(res, err);
+        }
+        if (configuracao == null) {
+            res.status(200).json({
+                configuracao: {},
+                message: "Configuração não cadastrada!",
+                status: "406",
+            });
         } else {
-            if (configuracao == null) {
-                res.status(200).json({
-                    configuracao: {},
-                    message: 'Configuração não cadastrada!',
-                    status: '406',
-                });
-            } else {
-                res.status(200).json({
-                    configuracao,
-                    message: 'Configuração recuperada com sucesso!',
-                    status: '200',
-                });
-            }
+            res.status(200).json({
+                configuracao,
+                message: "Configuração recuperada com sucesso!",
+                status: "200",
+            });
         }
     });
 };
 
 // Método que salva uma configuração no banco de dados
 const post = (req, res, next) => {
-    let ex = {
-        exchange: req.body.exchange || '',
-        apiKey: req.body.api_key || '',
-        secret: req.body.secret || '',
+    const ex = {
+        exchange: req.body.exchange || "",
+        apiKey: req.body.api_key || "",
+        secret: req.body.secret || "",
         user: {
-            user_name: req.body.user.user_name || '',
-            user_id: req.body.user.user_id || '',
+            user_name: req.body.user.user_name || "",
+            user_id: req.body.user.user_id || "",
         },
         status: {
             status_bot: req.body.status.status_bot || false,
             status_buy: req.body.status.status_buy || false,
             status_sell: req.body.status.status_sell || false,
-            key: req.body.status.key || '',
+            key: req.body.status.key || "",
             interval_check: req.body.status.interval_check || 30000,
         },
-        base_currency: req.body.base_currency || '',
-        target_currency: req.body.target_currency || '',
-        candle_size: req.body.candle_size || '30m',
+        base_currency: req.body.base_currency || "",
+        target_currency: req.body.target_currency || "",
+        candle_size: req.body.candle_size || "30m",
         strategy: {
             external_signal: {},
             indicators: {
@@ -89,13 +88,13 @@ const post = (req, res, next) => {
     nova_configuracao.save((err) => {
         if (err) {
             res.status(500).json({
-                message: 'Não foi possível cadastrar uma nova configuração!',
-                status: '500',
+                message: "Não foi possível cadastrar uma nova configuração!",
+                status: "500",
             });
         } else {
             res.status(201).json({
-                message: 'Configuração cadastrada com sucesso!',
-                status: '201',
+                message: "Configuração cadastrada com sucesso!",
+                status: "201",
             });
         }
     });
@@ -105,12 +104,12 @@ const post = (req, res, next) => {
     @params : nome, id
 */
 const put = (req, res, next) => {
-    res.send({ message: 'Não implementado ainda' });
+    res.send({ message: "Não implementado ainda" });
 };
 
 /* Método que exclui uma exchange */
 const exclusao = (req, res, next) => {
-    res.send({ message: 'Não implementado ainda' });
+    res.send({ message: "Não implementado ainda" });
 };
 
 export default {

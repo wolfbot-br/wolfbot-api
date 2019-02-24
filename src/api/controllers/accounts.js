@@ -1,42 +1,12 @@
-import _ from 'lodash';
-
-import validator from '../validators/account.validation';
-import service from '../services/account.service';
-
-const passwordRecovery = (req, res, next) => {
-    const email = req.body.email;
-    service.passwordRecovery(res, next, email);
-};
-
-const changePasswordPermition = (req, res, next) => {
-    const hash = req.body.changepasswordhash;
-    service.changePasswordPermition(res, next, hash);
-};
-
-const changePassword = (req, res, next) => {
-    const password = req.body.password;
-    const passwordConfirm = req.body.passwordConfirm;
-    const changePasswordHash = req.body.changePasswordHash;
-    const errors = validator.changePasswordValidation(
-        password,
-        passwordConfirm,
-        changePasswordHash
-    );
-    if (errors.length > 0) {
-        return res.status(400).json({
-            success: false,
-            errors,
-        });
-    }
-    service.changePassword(res, next, changePasswordHash, password);
-};
+import _ from "lodash";
+import service from "../services/accounts";
 
 // Ativa a conta do usuário
 const activeAccount = (req, res) => {
-    const code = req.headers.code;
+    const { code } = req.headers;
     if (!code) {
         return res.status(400).json({
-            errors: [{ message: '"code" na requisição é obrigatório' }],
+            errors: [{ message: "code na requisição é obrigatório" }],
         });
     }
     service.activeAccount(res, code);
@@ -44,7 +14,7 @@ const activeAccount = (req, res) => {
 
 // Busca as informações do usuário pelo email
 const getUserByEmail = (req, res) => {
-    const email = req.headers.email;
+    const { email } = req.headers;
     service.getUserByEmail(email, res);
 };
 
@@ -57,10 +27,10 @@ const me = (req, res) => {
 // Cadastro de um novo usuário
 const signup = async (req, res) => {
     const usuario = {
-        nome: req.body.nome || '',
-        email: req.body.email || '',
-        password: req.body.password || '',
-        confirm_password: req.body.confirm_password || '',
+        nome: req.body.nome || "",
+        email: req.body.email || "",
+        password: req.body.password || "",
+        confirm_password: req.body.confirm_password || "",
     };
 
     const errors = await validator.validSignup(usuario);
@@ -71,8 +41,8 @@ const signup = async (req, res) => {
 
 // Cria um novo token para um usuário
 const createToken = (req, res) => {
-    const email = req.body.email || '';
-    const password = req.body.password || '';
+    const email = req.body.email || "";
+    const password = req.body.password || "";
     const errors = validator.validLogin(email, password);
     if (errors.length > 0) {
         res.status(406).json({ errors });

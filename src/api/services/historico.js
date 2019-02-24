@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import Historico from '../database/mongo/models/historico.model';
+import _ from "lodash";
+import Historico from "../database/mongo/models/historico.model";
 
 const sendErrorsFromDB = (res, dbErrors) => {
     const errors = [];

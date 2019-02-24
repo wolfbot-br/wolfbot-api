@@ -1,12 +1,15 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/backtest';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import backtest from "../controllers/backtest";
 
-    // protectedRoutes.use(auth);
-    server.use('/api', protectedRoutes);
+const router = Router();
 
-    protectedRoutes.post('/backtest/testarConfiguracao', controller.testarConfiguracao);
-}
+router.prefix("/backtest");
+
+router.route({
+    method: "POST",
+    path: "/testarConfiguracao",
+    handler: [backtest.testarConfiguracao],
+});
+
+export default router;

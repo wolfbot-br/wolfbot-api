@@ -1,27 +1,27 @@
-import bodyParser from "body-parser";
-import express from "express";
-import consign from "consign";
-import helmet from "helmet";
 import admin from "firebase-admin";
 import firebase from "firebase";
 import chalk from "chalk";
+import Koa from "koa";
+import respond from "koa-respond";
+import bodyParser from "koa-bodyparser";
+import logger from "koa-logger";
 
 import mongoose from "./database/mongo";
 import adminAccount from "./certificates/firebase.admin.development.json";
 import firebaseAccount from "./certificates/firebase.development.json";
 import config from "./config";
-import allowCors from "./middlewares/cors";
+import routes from "./routes";
 
-const app = express();
+const app = new Koa();
 mongoose.createConnection();
 
 // middlewares
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(allowCors);
-app.use(helmet());
+app.use(bodyParser());
+app.use(logger());
+app.use(respond());
+app.use(routes);
 
-// firebase
+// firebase integration
 const firebaseConfig = {
     apiKey: firebaseAccount.apiKey,
     authDomain: firebaseAccount.authDomain,
@@ -34,18 +34,6 @@ admin.initializeApp({
 });
 
 firebase.initializeApp(firebaseConfig);
-
-consign()
-    .include("src/api/database")
-    .then("src/api/routes")
-    .then("src/api/controllers")
-    .then("src/api/validators")
-    .then("src/api/services")
-    .then("src/api/certificates")
-    .then("src/api/config")
-    .then("src/api/middlewares")
-    .then("src/api/util")
-    .into(app);
 
 app.listen(Number(config.port), () =>
     console.log(`\n API: ${chalk.blue("Wolfbot API")}

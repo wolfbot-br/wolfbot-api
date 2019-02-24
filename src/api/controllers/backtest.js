@@ -1,31 +1,24 @@
-import backtest from '../services/backtest/backtest.service';
+import backtest from "../services/backtest/backtest.heart";
 
-const testarConfiguracao = async (req, res, next) => {
-    try {
-        params = {
-            exchange: req.body.exchange,
-            indicator: req.body.indicator,
-            profit: req.body.profit,
-            stop: req.body.stop,
-            sellForIndicator: req.body.sellForIndicator,
-            base_currency: req.body.base_currency,
-            target_currency: req.body.target_currency,
-            candle_size: req.body.candle_size,
-            date: req.body.date,
-        };
+const testarConfiguracao = async (ctx) => {
+    const params = {
+        exchange: ctx.request.body.exchange,
+        indicator: ctx.request.body.indicator,
+        profit: ctx.request.body.profit,
+        stop: ctx.request.body.stop,
+        sellForIndicator: ctx.request.body.sellForIndicator,
+        base_currency: ctx.request.body.base_currency,
+        target_currency: ctx.request.body.target_currency,
+        candle_size: ctx.request.body.candle_size,
+        date: ctx.request.body.date,
+    };
 
-        backtest.carregarDados(params).then(function(resp) {
-            res.status(200).json({
-                data: resp,
-                status: '200',
-            });
-        });
-    } catch (e) {
-        res.status(400).json({
-            message: e.message,
-            status: '400',
-        });
-    }
+    const response = await backtest.carregarDados(params);
+
+    return ctx.ok({
+        data: response,
+        status: 200,
+    });
 };
 
 export default { testarConfiguracao };

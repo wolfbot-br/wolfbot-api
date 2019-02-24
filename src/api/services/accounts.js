@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import admin from 'firebase-admin';
-import firebase from 'firebase';
+import _ from "lodash";
+import admin from "firebase-admin";
+import firebase from "firebase";
 
-import dictionary from '../validators/validations.dictionary';
-import Usuario from '../database/mongo/models/usuario.model';
+import dictionary from "../validators/validations.dictionary";
+import Usuario from "../database/mongo/models/usuario.model";
 
 // Realiza a ativação da conta do usuário
 const activeAccount = (res, code) => {
@@ -11,7 +11,7 @@ const activeAccount = (res, code) => {
         .auth()
         .checkActionCode(code)
         .then(function(response) {
-            if (response.operation === 'VERIFY_EMAIL') {
+            if (response.operation === "VERIFY_EMAIL") {
                 const usuario = response.data.email;
                 admin
                     .auth()
@@ -21,8 +21,8 @@ const activeAccount = (res, code) => {
                             return res.status(400).json({
                                 errors: [
                                     {
-                                        message: 'Email já foi verificado pelo usuário',
-                                        code: 'emailIsActive',
+                                        message: "Email já foi verificado pelo usuário",
+                                        code: "emailIsActive",
                                     },
                                 ],
                             });
@@ -43,8 +43,8 @@ const activeAccount = (res, code) => {
                 return res.status(400).json({
                     errors: [
                         {
-                            message: 'Operação Inválida',
-                            code: 'operationIsInvalid',
+                            message: "Operação Inválida",
+                            code: "operationIsInvalid",
                         },
                     ],
                 });
@@ -52,13 +52,13 @@ const activeAccount = (res, code) => {
         })
         .catch(function(error) {
             switch (error.code) {
-                case 'auth/invalid-action-code': {
+                case "auth/invalid-action-code": {
                     return res.status(400).json({
                         errors: [
                             {
                                 message:
-                                    'O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.',
-                                code: 'operationIsInvalid',
+                                    "O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.",
+                                code: "operationIsInvalid",
                             },
                         ],
                     });
@@ -87,39 +87,38 @@ const createToken = (email, password, res) => {
                     ultimoLogin: usuario.lastLoginAt,
                     criado: usuario.createdAt,
                 });
-            } else {
-                return res.status(400).json({
-                    errors: [
-                        {
-                            message: 'Email não verificado pelo usuário',
-                        },
-                    ],
-                });
             }
+            return res.status(400).json({
+                errors: [
+                    {
+                        message: "Email não verificado pelo usuário",
+                    },
+                ],
+            });
         })
         .catch(function(error) {
             switch (error.code) {
-                case 'auth/wrong-password':
+                case "auth/wrong-password":
                     return res.status(400).json({
                         errors: [
                             {
-                                message: 'Senha do usuário está Inválida',
+                                message: "Senha do usuário está Inválida",
                             },
                         ],
                     });
-                case 'auth/user-not-found':
+                case "auth/user-not-found":
                     return res.status(400).json({
                         errors: [
                             {
-                                message: 'Não existe usuário com esse endereço de email',
+                                message: "Não existe usuário com esse endereço de email",
                             },
                         ],
                     });
-                case 'auth/invalid-email':
+                case "auth/invalid-email":
                     return res.status(400).json({
                         errors: [
                             {
-                                message: 'O email informado está inválido',
+                                message: "O email informado está inválido",
                             },
                         ],
                     });
@@ -139,7 +138,7 @@ const getUserByEmail = (email, res) => {
         })
         .catch(function(error) {
             return res.status(400).json({
-                error: error,
+                error,
             });
         });
 };
@@ -158,7 +157,7 @@ const signup = async (res, usuario) => {
         })
         .catch(function(error) {
             switch (error.code) {
-                case 'auth/email-already-in-use':
+                case "auth/email-already-in-use":
                     return res.status(400).json({
                         errors: [
                             {
@@ -211,19 +210,18 @@ const login = (res, email, password) => {
                     ultimoLogin: usuario.lastLoginAt,
                     criado: usuario.createdAt,
                 });
-            } else {
-                return res.status(400).json({
-                    errors: [
-                        {
-                            ...dictionary.account.emailIsNotActive,
-                        },
-                    ],
-                });
             }
+            return res.status(400).json({
+                errors: [
+                    {
+                        ...dictionary.account.emailIsNotActive,
+                    },
+                ],
+            });
         })
         .catch(function(error) {
             switch (error.code) {
-                case 'auth/wrong-password':
+                case "auth/wrong-password":
                     return res.status(400).json({
                         errors: [
                             {
@@ -231,7 +229,7 @@ const login = (res, email, password) => {
                             },
                         ],
                     });
-                case 'auth/user-not-found':
+                case "auth/user-not-found":
                     return res.status(400).json({
                         errors: [
                             {
@@ -239,7 +237,7 @@ const login = (res, email, password) => {
                             },
                         ],
                     });
-                case 'auth/invalid-email':
+                case "auth/invalid-email":
                     return res.status(400).json({
                         errors: [
                             {
@@ -247,7 +245,7 @@ const login = (res, email, password) => {
                             },
                         ],
                     });
-                case 'auth/too-many-requests':
+                case "auth/too-many-requests":
                     return res.status(400).json({
                         errors: [
                             {
@@ -271,11 +269,11 @@ const me = (res, token) => {
         })
         .catch(function(error) {
             switch (error.code) {
-                case 'auth/argument-error':
+                case "auth/argument-error":
                     return res.status(400).json({
                         errors: [
                             {
-                                message: 'Token Inválido',
+                                message: "Token Inválido",
                             },
                         ],
                     });
@@ -292,29 +290,11 @@ const sendErrorsFromDB = (res, dbErrors) => {
     return res.status(400).json({ errors });
 };
 
-const sendEmailPasswordRecovery = (usuario, res) => {};
-
-const passwordRecovery = (res, next, email) => {};
-
-const changePasswordPermition = (res, next, hash) => {};
-
-const findLogChangePassword = (ChangePasswordHash, res) => {};
-
-const updatePassword = (log, password, res) => {};
-
-const changePassword = (res, next, changePasswordHash, password) => {};
-
 export default {
-    changePasswordPermition,
-    passwordRecovery,
-    sendEmailPasswordRecovery,
-    findLogChangePassword,
-    updatePassword,
     signup,
     login,
     me,
     createToken,
-    changePassword,
     activeAccount,
     getUserByEmail,
 };

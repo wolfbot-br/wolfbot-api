@@ -1,41 +1,35 @@
-import ccxt from 'ccxt';
+import ccxt from "ccxt";
 import Configuracao from '../database/mongo/models/configuracao.model';
 import validator from '../validators/exchanges.validation';
-import service from '../services/util.service';
+import service from '../services/util';
 
 // # PUBLIC METHODS /
 
 // Método que retorna todas as exchanges que bot trabalha
-const loadExchanges = (req, res, next) => {
+const loadExchanges = (ctx) => {
     const exchanges = ccxt.exchanges;
     const dataExchanges = exchanges.map(function(e) {
         return { value: e, label: e };
     });
 
-    res.status(200).json({
+    return ctx.ok({
         data: dataExchanges,
         status: '200',
     });
 };
 
-const structure = async (req, res, next) => {
-    try {
-        params = {
-            exchange: req.query.exchange,
+const structure = async (ctx) => {
+
+        const params = {
+            exchange: ctx.request.params.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        res.status(200).json({
+        const exchange = service.selecionarExchange(params.exchange);
+        return ctx.ok({
             data: exchange,
         });
-    } catch (e) {
-        res.status(400).json({
-            message: e.message,
-            status: '400',
-        });
-    }
 };
-
+/// CONTINUAR DAQUI 
 const currencies = async (req, res, next) => {
     try {
         params = {

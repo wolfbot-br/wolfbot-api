@@ -1,8 +1,17 @@
-import express from "express";
-import controller from "../controllers/index";
+import compose from "koa-compose";
 
-export default (server) => {
-    const openRoutes = express.Router();
-    server.use("/api", openRoutes);
-    openRoutes.get("/index", controller.index);
-};
+import homeRouter from "./home";
+import accountRouter from "./accounts";
+import backtestRouter from "./backtest";
+import botRouter from "./bot";
+import configurationRouter from "./configuration";
+import exchangesRouter from "./exchanges";
+
+export default compose([
+    homeRouter.middleware(),
+    accountRouter.middleware(),
+    backtestRouter.middleware(),
+    botRouter.middleware(),
+    configurationRouter.middleware(),
+    exchangesRouter.middleware(),
+]);

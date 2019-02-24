@@ -1,15 +1,32 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/configuration';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import configuracao from "../controllers/configuration";
 
-    // protectedRoutes.use(auth)
-    server.use('/api/configuracao', protectedRoutes);
+const router = Router();
 
-    protectedRoutes.get('/carregar', controller.get);
-    protectedRoutes.post('/salvar', controller.post);
-    protectedRoutes.put('/alterar', controller.put);
-    protectedRoutes.delete('/deletar', controller.exclusao);
-}
+router.prefix("/configuracao");
+
+router.route([
+    {
+        method: "GET",
+        path: "/carregar",
+        handler: [configuracao.get],
+    },
+    {
+        method: "POST",
+        path: "/salvar",
+        handler: [configuracao.post],
+    },
+    {
+        method: "PUT",
+        path: "/alterar",
+        handler: [configuracao.put],
+    },
+    {
+        method: "DELETE",
+        path: "/alterar",
+        handler: [configuracao.exclusao],
+    },
+]);
+
+export default router;

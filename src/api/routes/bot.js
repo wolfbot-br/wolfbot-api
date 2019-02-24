@@ -1,12 +1,15 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/bot';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import bot from "../controllers/bot";
 
-    // protectedRoutes.use(auth)
-    server.use('/bot', protectedRoutes);
+const router = Router();
 
-    protectedRoutes.post('/acionarRobo', controller.acionarRobo);
-}
+router.prefix("/bot");
+
+router.route({
+    method: "POST",
+    path: "/acionarRobo",
+    handler: [bot.acionarRobo],
+});
+
+export default router;
