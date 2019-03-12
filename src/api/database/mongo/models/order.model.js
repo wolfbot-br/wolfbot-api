@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
     date: { type: String, from: true },
@@ -13,4 +13,4 @@ const orderSchema = new mongoose.Schema({
     status: { type: String, from: true },
 });
 
-export default mongoose.model('order', orderSchema);
+export default mongoose.model("order", orderSchema);

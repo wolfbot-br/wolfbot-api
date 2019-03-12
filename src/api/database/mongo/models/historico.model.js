@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const historicoSchema = new mongoose.Schema({
     dataOperacao: { type: Date, from: true },
@@ -10,4 +10,4 @@ const historicoSchema = new mongoose.Schema({
     usuario: { type: String, fromd: true },
 });
 
-export default mongoose.model('historicos', historicoSchema);
+export default mongoose.model("historicos", historicoSchema);

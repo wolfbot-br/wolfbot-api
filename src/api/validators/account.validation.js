@@ -1,4 +1,4 @@
-import dictionary from './validations.dictionary';
+import dictionary from "./validations.dictionary";
 
 const emailRegex = /\S+@\S+\.\S+/;
 const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/;
@@ -41,17 +41,17 @@ const validLogin = (email, password) => {
 const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
     const errors = [];
     if (
-        changePasswordHash === '' ||
+        changePasswordHash === "" ||
         changePasswordHash == null ||
         changePasswordHash === undefined
     ) {
-        errors.push(Object.assign({}, { message: 'Solicitação Inválida.' }));
+        errors.push(Object.assign({}, { message: "Solicitação Inválida." }));
         return errors;
     }
-    if (password === '' || password === undefined) {
+    if (password === "" || password === undefined) {
         errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
     }
-    if (passwordConfirm === '' || passwordConfirm === undefined) {
+    if (passwordConfirm === "" || passwordConfirm === undefined) {
         errors.push(Object.assign({}, { ...dictionary.account.passwordConfirmIsEmpty }));
         return errors;
     }

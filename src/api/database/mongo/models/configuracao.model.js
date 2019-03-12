@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const configuracao = new mongoose.Schema({
     exchange: { type: String },
@@ -55,4 +55,4 @@ const configuracao = new mongoose.Schema({
     },
 });
 
-export default mongoose.model('configuracao', configuracao, 'configuracao');
+export default mongoose.model("configuracao", configuracao, "configuracao");

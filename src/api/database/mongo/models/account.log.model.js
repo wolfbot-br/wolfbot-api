@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const accountLogSchema = new mongoose.Schema({
     usuario: { type: String, from: true },
@@ -12,4 +12,4 @@ const accountLogSchema = new mongoose.Schema({
     pendente: { type: Boolean, default: true },
 });
 
-export default mongoose.model('account-logs', accountLogSchema);
+export default mongoose.model("account-logs", accountLogSchema);

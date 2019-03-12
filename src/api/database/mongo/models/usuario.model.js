@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     nome: { type: String, from: true },
@@ -9,4 +9,4 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model('usuario', userSchema);
+export default mongoose.model("usuario", userSchema);
