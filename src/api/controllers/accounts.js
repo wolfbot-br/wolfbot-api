@@ -67,9 +67,6 @@ export default {
     createToken,
     signup,
     me,
-    passwordRecovery,
-    changePasswordPermition,
-    changePassword,
     activeAccount,
     getUserByEmail,
 };

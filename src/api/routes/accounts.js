@@ -9,21 +9,6 @@ router.prefix("/account");
 router.route([
     {
         method: "POST",
-        path: "/passwordRecovery",
-        handler: [accounts.passwordRecovery],
-    },
-    {
-        method: "POST",
-        path: "/changepasswordpermition",
-        handler: [accounts.changePasswordPermition],
-    },
-    {
-        method: "POST",
-        path: "/changepassword",
-        handler: [accounts.changePassword],
-    },
-    {
-        method: "POST",
         path: "/createtoken",
         handler: [accounts.createToken],
     },

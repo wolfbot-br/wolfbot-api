@@ -1,50 +1,49 @@
 import ccxt from "ccxt";
-import Configuracao from '../database/mongo/models/configuracao.model';
-import validator from '../validators/exchanges.validation';
-import service from '../services/util';
+import Configuracao from "../database/mongo/models/configuracao.model";
+import validator from "../validators/exchanges.validation";
+import service from "../services/util";
 
 // # PUBLIC METHODS /
 
 // Método que retorna todas as exchanges que bot trabalha
 const loadExchanges = (ctx) => {
-    const exchanges = ccxt.exchanges;
+    const { exchanges } = ccxt;
     const dataExchanges = exchanges.map(function(e) {
         return { value: e, label: e };
     });
 
     return ctx.ok({
         data: dataExchanges,
-        status: '200',
+        status: "200",
     });
 };
 
 const structure = async (ctx) => {
+    const params = {
+        exchange: ctx.request.params.exchange,
+    };
 
-        const params = {
-            exchange: ctx.request.params.exchange,
-        };
-
-        const exchange = service.selecionarExchange(params.exchange);
-        return ctx.ok({
-            data: exchange,
-        });
+    const exchange = service.selecionarExchange(params.exchange);
+    return ctx.ok({
+        data: exchange,
+    });
 };
-/// CONTINUAR DAQUI 
+// / CONTINUAR DAQUI
 const currencies = async (req, res, next) => {
     try {
         params = {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let currencies = await exchange.fetchCurrencies();
+        const exchange = service.selecionarExchange(params.exchange);
+        const currencies = await exchange.fetchCurrencies();
         res.status(200).json({
             data: currencies,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -55,15 +54,15 @@ const loadMarkets = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let markets = await exchange.loadMarkets(true);
+        const exchange = service.selecionarExchange(params.exchange);
+        const markets = await exchange.loadMarkets(true);
         res.status(200).json({
             data: markets,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -75,9 +74,9 @@ const symbols = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let markets = await exchange.loadMarkets(true);
-        let symbols = exchange.symbols;
+        const exchange = service.selecionarExchange(params.exchange);
+        const markets = await exchange.loadMarkets(true);
+        const { symbols } = exchange;
 
         res.status(200).json({
             data: symbols,
@@ -85,7 +84,7 @@ const symbols = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -96,14 +95,14 @@ const getMarketStructureBySimbol = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
-        let markets = await exchange.loadMarkets(true);
+        const exchange = service.selecionarExchange(params.exchange);
+        const Base = req.headers.base || "";
+        const Quote = req.headers.quote || "";
+        const markets = await exchange.loadMarkets(true);
 
         symbol = `${Base}/${Quote}`;
 
-        let marketsStructure = exchange.market(symbol);
+        const marketsStructure = exchange.market(symbol);
 
         res.status(200).json({
             data: marketsStructure,
@@ -111,7 +110,7 @@ const getMarketStructureBySimbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -122,14 +121,14 @@ const getMarketIdBySimbol = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
-        let markets = await exchange.loadMarkets(true);
+        const exchange = service.selecionarExchange(params.exchange);
+        const Base = req.headers.base || "";
+        const Quote = req.headers.quote || "";
+        const markets = await exchange.loadMarkets(true);
 
         marketSymbol = `${Base}/${Quote}`;
 
-        let marketsId = exchange.marketId(marketSymbol);
+        const marketsId = exchange.marketId(marketSymbol);
 
         res.status(200).json({
             data: marketsId,
@@ -137,7 +136,7 @@ const getMarketIdBySimbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -148,13 +147,13 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
+        const exchange = service.selecionarExchange(params.exchange);
+        const Base = req.headers.base || "";
+        const Quote = req.headers.quote || "";
 
         marketSymbol = `${Base}/${Quote}`;
 
-        let orderBook = await exchange.fetchOrderBook(marketSymbol);
+        const orderBook = await exchange.fetchOrderBook(marketSymbol);
 
         res.status(200).json({
             data: orderBook,
@@ -162,7 +161,7 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -174,15 +173,15 @@ const fetchTickers = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let tickers = await exchange.fetchTickers();
+        const exchange = service.selecionarExchange(params.exchange);
+        const tickers = await exchange.fetchTickers();
         res.status(200).json({
             data: tickers,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -197,13 +196,13 @@ const fetchTicker = async (req, res, next) => {
 
         if (!params.symbol) {
             res.status(400).json({
-                msg: 'Simbolo incorreto',
-                status: '500',
+                msg: "Simbolo incorreto",
+                status: "500",
             });
         }
 
-        let exchange = service.selecionarExchange(params.exchange);
-        let ticker = await exchange.fetchTicker(params.symbol);
+        const exchange = service.selecionarExchange(params.exchange);
+        const ticker = await exchange.fetchTicker(params.symbol);
 
         res.status(200).json({
             data: ticker,
@@ -211,7 +210,7 @@ const fetchTicker = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -222,17 +221,17 @@ const fetchBalance = async (req, res, next) => {
     try {
         params = {
             id_usuario: req.query.id_usuario,
-            exchange: req.query.exchange, //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
+            exchange: req.query.exchange, // LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
         };
 
         if (params.id_usuario) {
-            const config = await Configuracao.findOne({ 'user.user_id': params.id_usuario });
-            let nome_exchange = config.exchange.toLowerCase();
+            const config = await Configuracao.findOne({ "user.user_id": params.id_usuario });
+            const nome_exchange = config.exchange.toLowerCase();
             const exchangeCCXT = new ccxt[nome_exchange]();
             exchangeCCXT.apiKey = config.api_key;
             exchangeCCXT.secret = config.secret;
 
-            let saldo = await exchangeCCXT.fetchBalance();
+            const saldo = await exchangeCCXT.fetchBalance();
             res.status(200).json({
                 data: saldo,
             });
@@ -240,7 +239,7 @@ const fetchBalance = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -248,7 +247,7 @@ const fetchBalance = async (req, res, next) => {
 const orderBuy = async (req, res, next) => {
     try {
         if (!req.body.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -261,14 +260,14 @@ const orderBuy = async (req, res, next) => {
             exchange: req.body.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
+        const exchange = service.selecionarExchange(params.exchange);
         validator.validarDados(params);
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -280,18 +279,18 @@ const orderBuy = async (req, res, next) => {
             params.simbolo, // Simbolo da cryptomoeda BTC/USDT
             params.montante, // Montante
             params.preco, // Preço de venda
-            { ' tipo ': params.tipo } // tipo: limite ou mercado
+            { " tipo ": params.tipo } // tipo: limite ou mercado
         );
 
         res.status(200).json({
             data: order,
-            message: 'Ordem de compra realizada com sucesso.',
+            message: "Ordem de compra realizada com sucesso.",
             status: 200,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -299,7 +298,7 @@ const orderBuy = async (req, res, next) => {
 const orderSell = async (req, res, next) => {
     try {
         if (!req.body.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -312,14 +311,14 @@ const orderSell = async (req, res, next) => {
             exchange: req.body.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
+        const exchange = service.selecionarExchange(params.exchange);
         validator.validarDados(params);
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -331,18 +330,18 @@ const orderSell = async (req, res, next) => {
             params.simbolo, // Simbolo da cryptomoeda BTC/USDT
             params.montante, // Montante
             params.preco, // Preço de venda
-            { ' tipo ': params.tipo } // tipo: limite ou mercado
+            { " tipo ": params.tipo } // tipo: limite ou mercado
         );
 
         res.status(200).json({
             data: order,
-            message: 'Ordem de venda realizada com sucesso..',
+            message: "Ordem de venda realizada com sucesso..",
             status: 200,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -350,7 +349,7 @@ const orderSell = async (req, res, next) => {
 const openOrders = async (req, res, next) => {
     try {
         if (!req.query.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -362,14 +361,14 @@ const openOrders = async (req, res, next) => {
             exchange: req.query.exchange,
         };
 
-        let exchange = service.selecionarExchange(params.exchange);
+        const exchange = service.selecionarExchange(params.exchange);
         validator.validarDados(params);
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -391,7 +390,7 @@ const openOrders = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };

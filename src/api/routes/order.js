@@ -1,15 +1,37 @@
-import express from "express";
-import controller from "../controllers/order";
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import order from "../controllers/order";
 
-    // protectedRoutes.use(auth)
-    server.use("/api/order", protectedRoutes);
+const router = Router();
 
-    protectedRoutes.get("/open", controller.open);
-    protectedRoutes.get("/close", controller.close);
-    protectedRoutes.post("/buy", controller.buy);
-    protectedRoutes.post("/sell", controller.sell);
-    protectedRoutes.post("/cancel", controller.cancel);
-}
+router.prefix("/order");
+
+router.route([
+    {
+        method: "GET",
+        path: "/open",
+        handler: [order.open],
+    },
+    {
+        method: "CLOSE",
+        path: "/close",
+        handler: [order.close],
+    },
+    {
+        method: "POST",
+        path: "/buy",
+        handler: [order.buy],
+    },
+    {
+        method: "sell",
+        path: "/sell",
+        handler: [order.sell],
+    },
+    {
+        method: "cancel",
+        path: "/cancel",
+        handler: [order.cancel],
+    },
+]);
+
+export default router;

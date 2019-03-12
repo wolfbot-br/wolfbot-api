@@ -1,16 +1,17 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/util';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
-    const openRoutes = express.Router();
+import util from "../controllers/util";
 
-    protectedRoutes.use(auth);
+const router = Router();
 
-    server.use('/api', protectedRoutes);
+router.prefix("/util");
 
-    server.use('/util', openRoutes);
+router.route([
+    {
+        method: "GET",
+        path: "/exchanges/all",
+        handler: [util.listAllExchanges],
+    },
+]);
 
-    openRoutes.get('/exchanges/all', controller.listAllExchanges);
-}
+export default router;

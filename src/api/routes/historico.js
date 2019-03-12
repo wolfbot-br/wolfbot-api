@@ -1,12 +1,17 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/historico';
+import Router from "koa-joi-router";
 
-export default function(server) {
-    const protectedRoutes = express.Router();
+import historico from "../controllers/historico";
 
-    protectedRoutes.use(auth);
-    server.use('/api', protectedRoutes);
+const router = Router();
 
-    protectedRoutes.get('/historicos', controller.historicos);
-}
+router.prefix("/historicos");
+
+router.route([
+    {
+        method: "GET",
+        path: "/",
+        handler: [historico.historicos],
+    },
+]);
+
+export default router;
