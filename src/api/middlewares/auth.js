@@ -1,7 +1,7 @@
-import admin from "firebase-admin";
-import firebase from "firebase";
+const admin = require("firebase-admin");
+const firebase = require("firebase");
 
-export default (req, res, next) => {
+module.exports = (req, res, next) => {
     // caso seja um método "OPTIONS" segue o fluxo normal da requisição
     if (req.method === "OPTIONS") {
         next();

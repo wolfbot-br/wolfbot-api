@@ -1,20 +1,20 @@
-import ccxt from 'ccxt';
-import _ from 'lodash';
-import moment from 'moment';
-import robo from 'set-interval';
-import strategy from './bot.strategies';
-import configuracao from '../../database/mongo/models/configuracao.model';
-import order from '../order.service';
+const ccxt = require("ccxt");
+const _ = require("lodash");
+const moment = require("moment");
+const robo = require("set-interval");
+const strategy = require("./bot.strategies");
+const configuracao = require("../../database/mongo/models/configuracao.model");
+const order = require("../order.service");
 
 async function roboLigado(params) {
-    const config = await configuracao.findOne({ 'user.user_id': params.user_id });
+    const config = await configuracao.findOne({ "user.user_id": params.user_id });
 
-    console.log('########## Robo Ligado ##########');
+    console.log("########## Robo Ligado ##########");
     acionarMonitoramento(config, params);
 }
 
 function roboDesligado(params) {
-    console.log('########## Robo Desligado ##########');
+    console.log("########## Robo Desligado ##########");
     robo.clear(params.key);
 }
 
@@ -22,19 +22,19 @@ async function acionarMonitoramento(config) {
     let nome_exchange = config.exchange.toLowerCase();
     exchangeCCXT = new ccxt[nome_exchange]();
     exchangeCCXT.enableRateLimit = true;
-    let periodo = '';
-    let params_order = { action: 'Automatic', user_id: config.user.user_id };
+    let periodo = "";
+    let params_order = { action: "Automatic", user_id: config.user.user_id };
     const unidadeTempo = config.candle_size.substr(-1);
     const unidadeTamanho = Number.parseInt(config.candle_size.substr(0));
     const tamanhoCandle = config.candle_size;
     const arrayCurrencies = config.target_currency;
 
-    if (unidadeTempo === 'm') {
-        periodo = 'minutes';
-    } else if (unidadeTempo === 'h') {
-        periodo = 'hours';
+    if (unidadeTempo === "m") {
+        periodo = "minutes";
+    } else if (unidadeTempo === "h") {
+        periodo = "hours";
     } else {
-        periodo = 'days';
+        periodo = "days";
     }
     const tempo = moment().subtract(100 * unidadeTamanho, periodo);
     let sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -46,7 +46,7 @@ async function acionarMonitoramento(config) {
                 let candle = await exchangeCCXT.fetchOHLCV(
                     parMoedas,
                     tamanhoCandle,
-                    (since = tempo.format('x')),
+                    (since = tempo.format("x")),
                     (limit = 1000)
                 );
                 params_order.currency = arrayCurrencies[i].currency;
@@ -60,7 +60,7 @@ async function acionarMonitoramento(config) {
                 );
             }
             console.log(
-                '-----------------------------------------------------------------------------'
+                "-----------------------------------------------------------------------------"
             );
         },
         config.status.interval_check,
@@ -68,4 +68,4 @@ async function acionarMonitoramento(config) {
     );
 }
 
-export default { roboLigado, roboDesligado };
+module.exports = { roboLigado, roboDesligado };

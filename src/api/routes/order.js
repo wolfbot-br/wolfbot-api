@@ -1,7 +1,7 @@
-import express from "express";
-import controller from "../controllers/order";
+const express = require("express");
+const controller = require("../controllers/order");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
 
     // protectedRoutes.use(auth)
@@ -12,4 +12,4 @@ export default function(server) {
     protectedRoutes.post("/buy", controller.buy);
     protectedRoutes.post("/sell", controller.sell);
     protectedRoutes.post("/cancel", controller.cancel);
-}
+};

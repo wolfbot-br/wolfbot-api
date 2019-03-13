@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const historicoSchema = new mongoose.Schema({
-    dataOperacao: { type: Date, from: true },
-    quantidade: { type: Number, from: true },
-    custo: { type: Number, from: true },
-    acao: { type: String, from: true },
-    moeda: { type: String, from: true },
+    dataOperacao: { type: Date, require: true },
+    quantidade: { type: Number, require: true },
+    custo: { type: Number, require: true },
+    acao: { type: String, require: true },
+    moeda: { type: String, require: true },
     tipoOperacao: { type: String, fromd: true },
     usuario: { type: String, fromd: true },
 });
 
-export default mongoose.model('historicos', historicoSchema);
+module.exports = mongoose.model("historicos", historicoSchema);

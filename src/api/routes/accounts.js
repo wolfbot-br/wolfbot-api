@@ -1,8 +1,8 @@
-import express from "express";
-import auth from "../middlewares/auth";
-import controller from "../controllers/accounts";
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/accounts");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
     const openRoutes = express.Router();
 

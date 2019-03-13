@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import Historico from '../database/mongo/models/historico.model';
+const _ = require("lodash");
+const Historico = require("../database/mongo/models/historico.model");
 
 const sendErrorsFromDB = (res, dbErrors) => {
     const errors = [];
@@ -22,6 +22,6 @@ const historicos = (res, usuario) => {
     });
 };
 
-export default {
+module.exports = {
     historicos,
 };

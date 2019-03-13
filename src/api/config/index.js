@@ -1,6 +1,6 @@
 const { env } = process;
 
-export default {
+module.exports = {
     port: env.PORT,
     environment: env.NODE_ENV || "production",
 

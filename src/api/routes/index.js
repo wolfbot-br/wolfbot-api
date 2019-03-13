@@ -1,7 +1,7 @@
-import express from "express";
-import controller from "../controllers/index";
+const express = require("express");
+const controller = require("../controllers/index");
 
-export default (server) => {
+module.exports = (server) => {
     const openRoutes = express.Router();
     server.use("/api", openRoutes);
     openRoutes.get("/index", controller.index);

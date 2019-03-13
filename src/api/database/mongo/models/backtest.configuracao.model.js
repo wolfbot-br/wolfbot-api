@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const backtestConfiguracao = new mongoose.Schema({
     name: { type: String },
@@ -6,8 +6,8 @@ const backtestConfiguracao = new mongoose.Schema({
     api_key: { type: String },
     secret: { type: String },
     user: {
-        user_name: { type: String, from: true },
-        user_id: { type: String, from: true },
+        user_name: { type: String, require: true },
+        user_id: { type: String, require: true },
     },
     base_currency: { type: String },
     target_currency: { type: String },
@@ -35,8 +35,8 @@ const backtestConfiguracao = new mongoose.Schema({
     },
 });
 
-export default mongoose.model(
-    'backtest-configuracao',
+module.exports = mongoose.model(
+    "backtest-configuracao",
     backtestConfiguracao,
-    'backtest-configuracao'
+    "backtest-configuracao"
 );

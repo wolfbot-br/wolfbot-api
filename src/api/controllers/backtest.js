@@ -1,4 +1,4 @@
-import backtest from '../services/backtest/backtest.service';
+const backtest = require("../services/backtest/backtest.service");
 
 const testarConfiguracao = async (req, res, next) => {
     try {
@@ -17,15 +17,15 @@ const testarConfiguracao = async (req, res, next) => {
         backtest.carregarDados(params).then(function(resp) {
             res.status(200).json({
                 data: resp,
-                status: '200',
+                status: "200",
             });
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
 
-export default { testarConfiguracao };
+module.exports = { testarConfiguracao };

@@ -1,28 +1,28 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/exchanges';
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/exchanges");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
 
     // protectedRoutes.use(auth)
-    server.use('/api/exchanges', protectedRoutes);
+    server.use("/api/exchanges", protectedRoutes);
 
     // PUBLIC METHODS
-    protectedRoutes.get('/loadExchanges', controller.loadExchanges);
-    protectedRoutes.get('/structure', controller.structure);
-    protectedRoutes.get('/symbols', controller.symbols);
-    protectedRoutes.get('/currencies', controller.currencies);
-    protectedRoutes.get('/loadmarkets', controller.loadMarkets);
-    protectedRoutes.get('/getMarketStructureBySimbol', controller.getMarketStructureBySimbol);
-    protectedRoutes.get('/getMarketIdBySimbol', controller.getMarketIdBySimbol);
-    protectedRoutes.get('/fetchOrderBookBySymbol', controller.fetchOrderBookBySymbol);
-    protectedRoutes.get('/ticker', controller.fetchTicker);
-    protectedRoutes.get('/tickers', controller.fetchTickers);
+    protectedRoutes.get("/loadExchanges", controller.loadExchanges);
+    protectedRoutes.get("/structure", controller.structure);
+    protectedRoutes.get("/symbols", controller.symbols);
+    protectedRoutes.get("/currencies", controller.currencies);
+    protectedRoutes.get("/loadmarkets", controller.loadMarkets);
+    protectedRoutes.get("/getMarketStructureBySimbol", controller.getMarketStructureBySimbol);
+    protectedRoutes.get("/getMarketIdBySimbol", controller.getMarketIdBySimbol);
+    protectedRoutes.get("/fetchOrderBookBySymbol", controller.fetchOrderBookBySymbol);
+    protectedRoutes.get("/ticker", controller.fetchTicker);
+    protectedRoutes.get("/tickers", controller.fetchTickers);
 
     // PRIVATE METHODS
-    protectedRoutes.get('/saldo', controller.fetchBalance);
-    protectedRoutes.post('/buy', controller.orderBuy);
-    protectedRoutes.post('/sell', controller.orderSell);
-    protectedRoutes.get('/openOrdens', controller.openOrders);
+    protectedRoutes.get("/saldo", controller.fetchBalance);
+    protectedRoutes.post("/buy", controller.orderBuy);
+    protectedRoutes.post("/sell", controller.orderSell);
+    protectedRoutes.get("/openOrdens", controller.openOrders);
 }

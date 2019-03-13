@@ -1,16 +1,16 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
-    date: { type: String, from: true },
-    amount: { type: Number, from: true },
-    price: { type: Number, from: true },
-    cost: { type: Number, from: true },
-    currency: { type: String, from: true },
+    date: { type: String, require: true },
+    amount: { type: Number, require: true },
+    price: { type: Number, require: true },
+    cost: { type: Number, require: true },
+    currency: { type: String, require: true },
     type_operation: { type: String, fromd: true },
-    action: { type: String, from: true },
+    action: { type: String, require: true },
     user: { type: String, fromd: true },
     identifier: { type: String, fromd: true },
-    status: { type: String, from: true },
+    status: { type: String, require: true },
 });
 
-export default mongoose.model('order', orderSchema);
+module.exports = mongoose.model("order", orderSchema);

@@ -1,4 +1,4 @@
-import bot from '../services/bot/bot.heart';
+const bot = require("../services/bot/bot.heart");
 
 // requisição que aciona ou desliga o robo
 const acionarRobo = async (req, res, next) => {
@@ -14,22 +14,22 @@ const acionarRobo = async (req, res, next) => {
         if (params.status_bot) {
             bot.roboLigado(params);
             res.status(200).json({
-                message: 'Robo Ligado',
-                status: '200',
+                message: "Robo Ligado",
+                status: "200",
             });
         } else {
             bot.roboDesligado(params);
             res.status(200).json({
-                message: 'Robo Desligado',
-                status: '200',
+                message: "Robo Desligado",
+                status: "200",
             });
         }
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
 
-export default { acionarRobo };
+module.exports = { acionarRobo };

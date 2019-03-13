@@ -1,30 +1,30 @@
-import ccxt from 'ccxt';
-import moment from 'moment';
-import _ from 'lodash';
-import configuracao from '../database/mongo/models/configuracao.model';
-import order from '../database/mongo/models/order.model';
+const ccxt = require("ccxt");
+const moment = require("moment");
+const _ = require("lodash");
+const configuracao = require("../database/mongo/models/configuracao.model");
+const order = require("../database/mongo/models/order.model");
 
 const getOrdersOpenByCurrency = async (params, res) => {
     try {
         let orders = await order.find({
             user: params.user_id,
             currency: params.currency,
-            status: 'open',
+            status: "open",
         });
 
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(200).json({
                 data: orders,
-                status: '200',
+                status: "200",
             });
         } else {
             return orders;
         }
     } catch (e) {
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(400).json({
                 message: e.message,
-                status: '400',
+                status: "400",
             });
         }
     }
@@ -34,22 +34,22 @@ const getOrdersOpenByUser = async (params, res) => {
     try {
         let orders = await order.find({
             user: params.user_id,
-            status: 'open',
+            status: "open",
         });
 
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(200).json({
                 data: orders,
-                status: '200',
+                status: "200",
             });
         } else {
             return orders;
         }
     } catch (e) {
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(400).json({
                 message: e.message,
-                status: '400',
+                status: "400",
             });
         }
     }
@@ -57,7 +57,7 @@ const getOrdersOpenByUser = async (params, res) => {
 
 const getOrdersClose = async (params, res) => {
     try {
-        const config = await configuracao.findOne({ 'user.user_id': params.user_id });
+        const config = await configuracao.findOne({ "user.user_id": params.user_id });
         const parMoedas = `${config.target_currency}/${config.base_currency}`;
 
         let nome_exchange = config.exchange.toLowerCase();
@@ -66,7 +66,7 @@ const getOrdersClose = async (params, res) => {
         exchangeCCXT.apiKey = config.api_key;
         exchangeCCXT.secret = config.secret;
 
-        const tempo = moment().subtract(365, 'days');
+        const tempo = moment().subtract(365, "days");
 
         ordens = await exchangeCCXT.fetchClosedOrders(
             (symbol = parMoedas),
@@ -77,12 +77,12 @@ const getOrdersClose = async (params, res) => {
 
         res.status(200).json({
             data: ordens,
-            status: '200',
+            status: "200",
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -90,7 +90,7 @@ const getOrdersClose = async (params, res) => {
 const orderBuy = async function(config, params, res) {
     try {
         const time = moment;
-        time.locale('pt-br');
+        time.locale("pt-br");
         let nome_exchange = config.exchange.toLowerCase();
         exchangeCCXT = new ccxt[nome_exchange]();
         exchangeCCXT.apiKey = config.api_key;
@@ -116,34 +116,34 @@ const orderBuy = async function(config, params, res) {
                 price: price[0],
                 cost: config.purchase_quantity,
                 currency: params.target_currency,
-                type_operation: 'buy',
+                type_operation: "buy",
                 action: params.action,
                 user: config.user.user_id,
                 identifier: order_buy.id,
-                status: 'open',
+                status: "open",
             });
 
             orders.save(function(err) {
                 if (err) {
-                    throw new Error('Erro!' + err.message);
+                    throw new Error("Erro!" + err.message);
                 }
             });
         }
 
-        if (params.action !== 'Automatic') {
+        if (params.action !== "Automatic") {
             res.status(200).json({
                 data: ordens,
-                message: 'Order de compra criada com sucesso.',
-                status: '200',
+                message: "Order de compra criada com sucesso.",
+                status: "200",
             });
         } else {
             return order_buy;
         }
     } catch (e) {
-        if (params.action !== 'Automatic') {
+        if (params.action !== "Automatic") {
             res.status(400).json({
                 message: e.message,
-                status: '400',
+                status: "400",
             });
         } else {
             return e;
@@ -154,7 +154,7 @@ const orderBuy = async function(config, params, res) {
 const orderSell = async function(config, params, order_buy, res) {
     try {
         const time = moment;
-        time.locale('pt-br');
+        time.locale("pt-br");
         let nome_exchange = config.exchange.toLowerCase();
         exchangeCCXT = new ccxt[nome_exchange]();
         exchangeCCXT.apiKey = config.api_key;
@@ -179,32 +179,32 @@ const orderSell = async function(config, params, order_buy, res) {
                 price: price[0],
                 cost: Number.parseFloat(price[0]) * amount,
                 currency: params.target_currency,
-                type_operation: 'sell',
+                type_operation: "sell",
                 action: params.action,
                 user: config.user.user_id,
                 identifier: order_sell.id,
-                status: 'close',
+                status: "close",
             });
 
             orders.save(function(err) {
                 if (err) {
-                    throw new Error('Erro!' + err.message);
+                    throw new Error("Erro!" + err.message);
                 }
             });
         }
 
-        if (params.action !== 'Automatic') {
+        if (params.action !== "Automatic") {
             res.status(200).json({
                 data: order_sell,
-                message: 'Order de venda criada com sucesso.',
-                status: '200',
+                message: "Order de venda criada com sucesso.",
+                status: "200",
             });
         }
     } catch (e) {
-        if (params.action !== 'Automatic') {
+        if (params.action !== "Automatic") {
             res.status(400).json({
                 message: e.message,
-                status: '400',
+                status: "400",
             });
         }
     }
@@ -212,7 +212,7 @@ const orderSell = async function(config, params, order_buy, res) {
 
 const orderCancel = async function(params, res) {
     try {
-        const config = configuracao.findOne({ 'user.user_id': params.user_id });
+        const config = configuracao.findOne({ "user.user_id": params.user_id });
         let nome_exchange = config.exchange.toLowerCase();
 
         const orders = order.findOne({ identifier: params.identifier });
@@ -224,43 +224,43 @@ const orderCancel = async function(params, res) {
         await exchangeCCXT.cancelOrder(orders.identifier);
 
         res.status(200).json({
-            message: 'Order cancelada com sucesso.',
-            status: '200',
+            message: "Order cancelada com sucesso.",
+            status: "200",
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
 
 const orderUpdateStatus = function(params, order_buy, res) {
     try {
-        order.update({ _id: order_buy._id }, { status: 'close' }, (error) => {
+        order.update({ _id: order_buy._id }, { status: "close" }, (error) => {
             if (error) {
                 return error;
             }
         });
 
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(200).json({
                 data: order_sell,
-                message: 'Order de venda criada com sucesso.',
-                status: '200',
+                message: "Order de venda criada com sucesso.",
+                status: "200",
             });
         }
     } catch (e) {
-        if (params.action != 'Automatic') {
+        if (params.action != "Automatic") {
             res.status(400).json({
                 message: e.message,
-                status: '400',
+                status: "400",
             });
         }
     }
 };
 
-export default {
+module.exports = {
     getOrdersOpenByCurrency,
     getOrdersClose,
     orderBuy,

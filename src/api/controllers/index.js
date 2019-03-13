@@ -1,4 +1,4 @@
-import config from "../config";
+const config = require("../config");
 
 const index = (req, res, next) =>
     res.status(200).json({
@@ -6,4 +6,4 @@ const index = (req, res, next) =>
         environment: config.environment,
     });
 
-export default { index };
+module.exports = { index };

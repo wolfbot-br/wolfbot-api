@@ -1,12 +1,12 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/bot';
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/bot");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
 
     // protectedRoutes.use(auth)
-    server.use('/bot', protectedRoutes);
+    server.use("/bot", protectedRoutes);
 
-    protectedRoutes.post('/acionarRobo', controller.acionarRobo);
+    protectedRoutes.post("/acionarRobo", controller.acionarRobo);
 }

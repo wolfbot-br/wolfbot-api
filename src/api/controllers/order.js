@@ -1,5 +1,5 @@
-import validation from '../validators/order.validation';
-import service from '../services/order.service';
+const validation = require("../validators/order.validation");
+const service = require("../services/order.service");
 
 const open = (req, res, next) => {
     try {
@@ -10,7 +10,7 @@ const open = (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -28,7 +28,7 @@ const close = (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -51,7 +51,7 @@ const buy = (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -74,7 +74,7 @@ const sell = (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -90,12 +90,12 @@ const cancel = (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
 
-export default {
+module.exports = {
     open,
     close,
     buy,

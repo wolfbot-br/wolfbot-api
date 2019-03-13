@@ -1,16 +1,12 @@
-import bodyParser from "body-parser";
-import express from "express";
-import consign from "consign";
-import helmet from "helmet";
-import admin from "firebase-admin";
-import firebase from "firebase";
-import chalk from "chalk";
+const bodyParser = require("body-parser");
+const express = require("express");
+const consign = require("consign");
+const helmet = require("helmet");
+const chalk = require("chalk");
 
-import mongoose from "./database/mongo";
-import adminAccount from "./certificates/firebase.admin.development.json";
-import firebaseAccount from "./certificates/firebase.development.json";
-import config from "./config";
-import allowCors from "./middlewares/cors";
+const mongoose = require("./database/mongo");
+const config = require("./config");
+const allowCors = require("./middlewares/cors");
 
 const app = express();
 mongoose.createConnection();
@@ -21,20 +17,6 @@ app.use(bodyParser.json());
 app.use(allowCors);
 app.use(helmet());
 
-// firebase
-const firebaseConfig = {
-    apiKey: firebaseAccount.apiKey,
-    authDomain: firebaseAccount.authDomain,
-    databaseURL: firebaseAccount.databaseURL,
-};
-
-admin.initializeApp({
-    credential: admin.credential.cert(adminAccount),
-    databaseURL: "https://wolfbot-development-firebase.firebaseio.com",
-});
-
-firebase.initializeApp(firebaseConfig);
-
 consign()
     .include("src/api/database")
     .then("src/api/routes")
@@ -43,7 +25,6 @@ consign()
     .then("src/api/services")
     .then("src/api/certificates")
     .then("src/api/config")
-    .then("src/api/middlewares")
     .then("src/api/util")
     .into(app);
 

@@ -1,7 +1,7 @@
-import ccxt from 'ccxt';
-import moment from 'moment';
-import configuracao from '../../database/mongo/models/backtest.configuracao.model';
-import strategy from './backtest.strategies';
+const ccxt = require("ccxt");
+const moment = require("moment");
+const configuracao = require("../../database/mongo/models/backtest.configuracao.model");
+const strategy = require("./backtest.strategies");
 
 async function carregarDados(params) {
     exchangeCCXT = new ccxt[params.exchange]();
@@ -15,7 +15,7 @@ async function carregarDados(params) {
 
     let time = moment(params.date);
 
-    const candle = await exchangeCCXT.fetchOHLCV(pair_currency, candle_size, time.format('x'));
+    const candle = await exchangeCCXT.fetchOHLCV(pair_currency, candle_size, time.format("x"));
     const result = await strategy.loadStrategy(configIndicators, candle, market);
 
     return {
@@ -23,4 +23,4 @@ async function carregarDados(params) {
     };
 }
 
-export default { carregarDados };
+module.exports = { carregarDados };

@@ -1,12 +1,12 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/backtest';
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/backtest");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
 
-    // protectedRoutes.use(auth);
-    server.use('/api', protectedRoutes);
+    protectedRoutes.use(auth);
+    server.use("/api", protectedRoutes);
 
-    protectedRoutes.post('/backtest/testarConfiguracao', controller.testarConfiguracao);
-}
+    protectedRoutes.post("/backtest/testarConfiguracao", controller.testarConfiguracao);
+};

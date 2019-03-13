@@ -1,12 +1,12 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/historico';
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/historico");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
 
     protectedRoutes.use(auth);
-    server.use('/api', protectedRoutes);
+    server.use("/api", protectedRoutes);
 
-    protectedRoutes.get('/historicos', controller.historicos);
+    protectedRoutes.get("/historicos", controller.historicos);
 }

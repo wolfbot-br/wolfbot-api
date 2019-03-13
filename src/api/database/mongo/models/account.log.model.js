@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const accountLogSchema = new mongoose.Schema({
-    usuario: { type: String, from: true },
-    hash: { type: String, from: true },
-    emailConfirmado: { type: Boolean, from: true },
-    dtCriacao: { type: Date, from: true },
+    usuario: { type: String, require: true },
+    hash: { type: String, require: true },
+    emailConfirmado: { type: Boolean, require: true },
+    dtCriacao: { type: Date, require: true },
     dtExpiracao: { type: Date, default: null },
     dtVerificacao: { type: Date, fromd: true },
     dtConfirmacao: { type: Date, default: null },
@@ -12,4 +12,4 @@ const accountLogSchema = new mongoose.Schema({
     pendente: { type: Boolean, default: true },
 });
 
-export default mongoose.model('account-logs', accountLogSchema);
+module.exports = mongoose.model("account-logs", accountLogSchema);

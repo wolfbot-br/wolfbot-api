@@ -1,9 +1,9 @@
-import service from '../services/historico.service';
+const service = require("../services/historico.service");
 
 const historicos = (req, res, next) => {
     service.historicos(res, req.user);
 };
 
-export default {
+module.exports = {
     historicos,
 };

@@ -1,7 +1,7 @@
-import ccxt from 'ccxt';
-import Configuracao from '../database/mongo/models/configuracao.model';
-import validator from '../validators/exchanges.validation';
-import service from '../services/util.service';
+const ccxt = require("ccxt");
+const Configuracao = require("../database/mongo/models/configuracao.model");
+const validator = require("../validators/exchanges.validation");
+const service = require("../services/util.service");
 
 // # PUBLIC METHODS /
 
@@ -14,7 +14,7 @@ const loadExchanges = (req, res, next) => {
 
     res.status(200).json({
         data: dataExchanges,
-        status: '200',
+        status: "200",
     });
 };
 
@@ -31,7 +31,7 @@ const structure = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -50,7 +50,7 @@ const currencies = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -69,7 +69,7 @@ const loadMarkets = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -91,7 +91,7 @@ const symbols = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -103,8 +103,8 @@ const getMarketStructureBySimbol = async (req, res, next) => {
         };
 
         let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
+        let Base = req.headers.base || "";
+        let Quote = req.headers.quote || "";
         let markets = await exchange.loadMarkets(true);
 
         symbol = `${Base}/${Quote}`;
@@ -117,7 +117,7 @@ const getMarketStructureBySimbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -129,8 +129,8 @@ const getMarketIdBySimbol = async (req, res, next) => {
         };
 
         let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
+        let Base = req.headers.base || "";
+        let Quote = req.headers.quote || "";
         let markets = await exchange.loadMarkets(true);
 
         marketSymbol = `${Base}/${Quote}`;
@@ -143,7 +143,7 @@ const getMarketIdBySimbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -155,8 +155,8 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
         };
 
         let exchange = service.selecionarExchange(params.exchange);
-        let Base = req.headers.base || '';
-        let Quote = req.headers.quote || '';
+        let Base = req.headers.base || "";
+        let Quote = req.headers.quote || "";
 
         marketSymbol = `${Base}/${Quote}`;
 
@@ -168,7 +168,7 @@ const fetchOrderBookBySymbol = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -188,7 +188,7 @@ const fetchTickers = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -203,8 +203,8 @@ const fetchTicker = async (req, res, next) => {
 
         if (!params.symbol) {
             res.status(400).json({
-                msg: 'Simbolo incorreto',
-                status: '500',
+                msg: "Simbolo incorreto",
+                status: "500",
             });
         }
 
@@ -217,7 +217,7 @@ const fetchTicker = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -232,7 +232,7 @@ const fetchBalance = async (req, res, next) => {
         };
 
         if (params.id_usuario) {
-            const config = await Configuracao.findOne({ 'user.user_id': params.id_usuario });
+            const config = await Configuracao.findOne({ "user.user_id": params.id_usuario });
             let nome_exchange = config.exchange.toLowerCase();
             const exchangeCCXT = new ccxt[nome_exchange]();
             exchangeCCXT.apiKey = config.api_key;
@@ -246,7 +246,7 @@ const fetchBalance = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -254,7 +254,7 @@ const fetchBalance = async (req, res, next) => {
 const orderBuy = async (req, res, next) => {
     try {
         if (!req.body.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -272,9 +272,9 @@ const orderBuy = async (req, res, next) => {
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -286,18 +286,18 @@ const orderBuy = async (req, res, next) => {
             params.simbolo, // Simbolo da cryptomoeda BTC/USDT
             params.montante, // Montante
             params.preco, // Preço de venda
-            { ' tipo ': params.tipo } // tipo: limite ou mercado
+            { " tipo ": params.tipo } // tipo: limite ou mercado
         );
 
         res.status(200).json({
             data: order,
-            message: 'Ordem de compra realizada com sucesso.',
+            message: "Ordem de compra realizada com sucesso.",
             status: 200,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -305,7 +305,7 @@ const orderBuy = async (req, res, next) => {
 const orderSell = async (req, res, next) => {
     try {
         if (!req.body.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -323,9 +323,9 @@ const orderSell = async (req, res, next) => {
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -337,18 +337,18 @@ const orderSell = async (req, res, next) => {
             params.simbolo, // Simbolo da cryptomoeda BTC/USDT
             params.montante, // Montante
             params.preco, // Preço de venda
-            { ' tipo ': params.tipo } // tipo: limite ou mercado
+            { " tipo ": params.tipo } // tipo: limite ou mercado
         );
 
         res.status(200).json({
             data: order,
-            message: 'Ordem de venda realizada com sucesso..',
+            message: "Ordem de venda realizada com sucesso..",
             status: 200,
         });
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
@@ -356,7 +356,7 @@ const orderSell = async (req, res, next) => {
 const openOrders = async (req, res, next) => {
     try {
         if (!req.query.simbolo) {
-            throw new Error('Informe o simbolo');
+            throw new Error("Informe o simbolo");
         }
 
         params = {
@@ -373,9 +373,9 @@ const openOrders = async (req, res, next) => {
 
         // Um dos melhores jeitos de fazer um select
         const credenciais = await Configuracao.findOne({
-            'usuario.id_usuario': params.id_usuario,
+            "usuario.id_usuario": params.id_usuario,
         }).where({
-            'exchange.id_exchange': params.id_exchange,
+            "exchange.id_exchange": params.id_exchange,
         });
 
         validator.validarRequisitosExchange(credenciais);
@@ -397,12 +397,12 @@ const openOrders = async (req, res, next) => {
     } catch (e) {
         res.status(400).json({
             message: e.message,
-            status: '400',
+            status: "400",
         });
     }
 };
 
-export default {
+module.exports = {
     loadExchanges,
     loadMarkets,
     getMarketStructureBySimbol,

@@ -2,7 +2,7 @@ env:
     node: true
     es6: true
 extends: [airbnb-base, "plugin:prettier/recommended"]
-plugins: [import]
+plugins: [const]
 parser: babel-eslint
 parserOptions:
     sourceType: module

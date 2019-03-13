@@ -1,16 +1,16 @@
-import express from 'express';
-import auth from '../middlewares/auth';
-import controller from '../controllers/util';
+const express = require("express");
+const auth = require("../middlewares/auth");
+const controller = require("../controllers/util");
 
-export default function(server) {
+module.exports = function(server) {
     const protectedRoutes = express.Router();
     const openRoutes = express.Router();
 
     protectedRoutes.use(auth);
 
-    server.use('/api', protectedRoutes);
+    server.use("/api", protectedRoutes);
 
-    server.use('/util', openRoutes);
+    server.use("/util", openRoutes);
 
-    openRoutes.get('/exchanges/all', controller.listAllExchanges);
+    openRoutes.get("/exchanges/all", controller.listAllExchanges);
 }

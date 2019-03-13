@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    nome: { type: String, from: true },
-    userName: { type: String, from: true },
-    password: { type: String, from: true, select: true, min: 6, max: 12 },
-    email: { type: String, unique: true, from: true, lowercase: true },
-    telefone: { type: Number, from: false },
+    nome: { type: String, require: true },
+    userName: { type: String, require: true },
+    password: { type: String, require: true, select: true, min: 6, max: 12 },
+    email: { type: String, unique: true, require: true, lowercase: true },
+    telefone: { type: Number, require: false },
     createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model('usuario', userSchema);
+module.exports = mongoose.model("usuario", userSchema);

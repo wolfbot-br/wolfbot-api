@@ -1,6 +1,6 @@
-import lodash from 'lodash';
-import tulind from 'tulind';
-import moment from 'moment';
+const lodash = require("lodash");
+const tulind = require("tulind");
+const moment = require("moment");
 
 function loadStrategy(config, candle, market) {
     const ordersBuy = [];
@@ -21,7 +21,7 @@ function loadStrategy(config, candle, market) {
     let numberOrdersBuy = 0;
     let numberOrdersSell = 0;
     let time = moment;
-    time.locale('pt-br');
+    time.locale("pt-br");
 
     lodash.flatten(
         candle.map(function(value) {
@@ -49,7 +49,7 @@ function loadStrategy(config, candle, market) {
     );
 
     //############################### INDICADOR EMA ################################
-    if (config.indicator.name === 'EMA') {
+    if (config.indicator.name === "EMA") {
         const period = config.indicator.ema_period;
         tulind.indicators.ema.indicator([close], [period], function(err, result) {
             if (err) {
@@ -77,7 +77,7 @@ function loadStrategy(config, candle, market) {
                         ) {
                             signalBUY.push({
                                 candle: i,
-                                indicator: 'EMA',
+                                indicator: "EMA",
                             });
                         }
                     } else if (close[i] > ema) {
@@ -88,7 +88,7 @@ function loadStrategy(config, candle, market) {
                             if (sellForIndicator === true) {
                                 signalSELL.push({
                                     candle: i,
-                                    indicator: 'EMA',
+                                    indicator: "EMA",
                                 });
                             }
                         }
@@ -99,7 +99,7 @@ function loadStrategy(config, candle, market) {
     }
 
     //############################### INDICADOR MACD ################################
-    if (config.indicator.name === 'MACD') {
+    if (config.indicator.name === "MACD") {
         const shortPeriod = config.indicator.macd_short_period;
         const longPeriod = config.indicator.macd_long_period;
         const signalPeriod = config.indicator.macd_signal_period;
@@ -134,7 +134,7 @@ function loadStrategy(config, candle, market) {
                         ) {
                             signalBUY.push({
                                 candle: i,
-                                indicator: 'MACD',
+                                indicator: "MACD",
                             });
                         }
                     } else if (macd > 0) {
@@ -145,7 +145,7 @@ function loadStrategy(config, candle, market) {
                             if (sellForIndicator === true) {
                                 signalSELL.push({
                                     candle: i,
-                                    indicator: 'MACD',
+                                    indicator: "MACD",
                                 });
                             }
                         }
@@ -156,7 +156,7 @@ function loadStrategy(config, candle, market) {
     }
 
     //############################### INDICADOR STOCH ################################
-    if (config.indicator.name === 'STOCH') {
+    if (config.indicator.name === "STOCH") {
         const k_period = config.indicator.stoch_k_period;
         const k_slow_period = config.indicator.stoch_k_slow_period;
         const d_period = config.indicator.stoch_d_period;
@@ -185,7 +185,7 @@ function loadStrategy(config, candle, market) {
                             if (k > d && k < tendencia.up + 20 && close[i] >= close[i - 1]) {
                                 signalBUY.push({
                                     candle: i,
-                                    indicator: 'STOCH',
+                                    indicator: "STOCH",
                                 });
                             }
                         } else if (k < 80) {
@@ -193,7 +193,7 @@ function loadStrategy(config, candle, market) {
                                 if (sellForIndicator === true) {
                                     signalSELL.push({
                                         candle: i,
-                                        indicator: 'STOCH',
+                                        indicator: "STOCH",
                                     });
                                 }
                             }
@@ -205,7 +205,7 @@ function loadStrategy(config, candle, market) {
     }
 
     //############################### INDICADOR CCI ################################
-    if (config.indicator.name === 'CCI') {
+    if (config.indicator.name === "CCI") {
         const period = config.indicator.cci_period;
         tulind.indicators.cci.indicator([high, low, close], [period], function(err, result) {
             if (err) {
@@ -226,13 +226,13 @@ function loadStrategy(config, candle, market) {
                     if (cci > 100 && cci < tendencia.up + 100 && close[i] >= close[i - 1]) {
                         signalBUY.push({
                             candle: i,
-                            indicator: 'STOCH',
+                            indicator: "STOCH",
                         });
                     } else if (cci < -100 && cci > tendencia.up - 100 && close[i] <= close[i - 1]) {
                         if (sellForIndicator === true) {
                             signalSELL.push({
                                 candle: i,
-                                indicator: 'STOCH',
+                                indicator: "STOCH",
                             });
                         }
                     }
@@ -242,7 +242,7 @@ function loadStrategy(config, candle, market) {
     }
 
     //############################### INDICADOR BBANDS ################################
-    if (config.indicator.name === 'BOLLINGER BANDS') {
+    if (config.indicator.name === "BOLLINGER BANDS") {
         const period = config.indicator.bbands_period;
         const stddev = config.indicator.bbands_stddev_period;
         tulind.indicators.bbands.indicator([close], [period, stddev], function(err, result) {
@@ -272,7 +272,7 @@ function loadStrategy(config, candle, market) {
                     ) {
                         signalBUY.push({
                             candle: i,
-                            indicator: 'STOCH',
+                            indicator: "STOCH",
                         });
                     } else if (
                         close[i] >= upper &&
@@ -282,7 +282,7 @@ function loadStrategy(config, candle, market) {
                         if (sellForIndicator === true) {
                             signalSELL.push({
                                 candle: i,
-                                indicator: 'STOCH',
+                                indicator: "STOCH",
                             });
                         }
                     }
@@ -298,11 +298,11 @@ function loadStrategy(config, candle, market) {
                 let time = moment(candle[i][0]);
                 ordersBuy.push({
                     candle: i,
-                    tipoOrdem: 'COMPRA',
-                    status: 'aberta',
+                    tipoOrdem: "COMPRA",
+                    status: "aberta",
                     precoComprado: preco,
                     close: close[i],
-                    horaCompra: time.format('DD-MM-YYYY HH:mm'),
+                    horaCompra: time.format("DD-MM-YYYY HH:mm"),
                     target: profit,
                     ordemCompraNumero: ++numberOrdersBuy,
                 });
@@ -310,15 +310,15 @@ function loadStrategy(config, candle, market) {
         }
         if (sellForIndicator === true) {
             for (let k = 0; k <= ordersBuy.length - 1; k++) {
-                if (ordersBuy[k].status === 'aberta') {
+                if (ordersBuy[k].status === "aberta") {
                     for (let x = 0; x <= signalSELL.length - 1; x++) {
                         if (signalSELL[x].candle === i) {
                             let preco = parseFloat(candle[i][4]);
                             let time = moment(candle[i][0]);
                             ordersSell.push({
                                 candle: i,
-                                tipoOrdem: 'VENDA',
-                                status: 'fechada',
+                                tipoOrdem: "VENDA",
+                                status: "fechada",
                                 precoComprado: ordersBuy[k].precoComprado,
                                 horaCompra: ordersBuy[k].horaCompra,
                                 precoVendido: preco,
@@ -332,7 +332,7 @@ function loadStrategy(config, candle, market) {
                                         ordersBuy[k].precoComprado -
                                         preco * (2 * parseFloat(fee))) /
                                     preco,
-                                horaVenda: time.format('DD-MM-YYYY HH:mm'),
+                                horaVenda: time.format("DD-MM-YYYY HH:mm"),
                                 ordemVendaNumero: ++numberOrdersSell,
                             });
                         }
@@ -341,15 +341,15 @@ function loadStrategy(config, candle, market) {
             }
         } else {
             for (let x = 0; x <= ordersBuy.length - 1; x++) {
-                if (ordersBuy[x].status === 'aberta') {
+                if (ordersBuy[x].status === "aberta") {
                     let preco = parseFloat(candle[i][4]);
                     let time = moment(candle[i][0]);
                     if (preco >= ordersBuy[x].precoComprado + ordersBuy[x].precoComprado * profit) {
-                        ordersBuy[x].status = 'fechada';
+                        ordersBuy[x].status = "fechada";
                         ordersSell.push({
                             candle: i,
-                            tipoOrdem: 'VENDA',
-                            status: 'fechada',
+                            tipoOrdem: "VENDA",
+                            status: "fechada",
                             precoComprado: ordersBuy[x].precoComprado,
                             horaCompra: ordersBuy[x].horaCompra,
                             precoVendido: preco,
@@ -361,18 +361,18 @@ function loadStrategy(config, candle, market) {
                                     ordersBuy[x].precoComprado -
                                     preco * (2 * parseFloat(fee))) /
                                 preco,
-                            horaVenda: time.format('DD-MM-YYYY HH:mm'),
+                            horaVenda: time.format("DD-MM-YYYY HH:mm"),
                             ordemVendaNumero: ++numberOrdersSell,
                         });
                     } else if (
                         preco <=
                         ordersBuy[x].precoComprado - ordersBuy[x].precoComprado * stop
                     ) {
-                        ordersBuy[x].status = 'fechada';
+                        ordersBuy[x].status = "fechada";
                         ordersSell.push({
                             candle: i,
-                            tipoOrdem: 'VENDA',
-                            status: 'fechada',
+                            tipoOrdem: "VENDA",
+                            status: "fechada",
                             precoComprado: ordersBuy[x].precoComprado,
                             horaCompra: ordersBuy[x].horaCompra,
                             precoVendido: preco,
@@ -384,7 +384,7 @@ function loadStrategy(config, candle, market) {
                                     ordersBuy[x].precoComprado -
                                     preco * (2 * parseFloat(fee))) /
                                 preco,
-                            horaVenda: time.format('DD-MM-YYYY HH:mm'),
+                            horaVenda: time.format("DD-MM-YYYY HH:mm"),
                             ordemVendaNumero: ++numberOrdersSell,
                         });
                     }
@@ -408,4 +408,4 @@ function loadStrategy(config, candle, market) {
     };
 }
 
-export default { loadStrategy };
+module.exports = { loadStrategy };

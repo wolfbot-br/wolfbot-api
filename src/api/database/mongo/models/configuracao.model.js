@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const configuracao = new mongoose.Schema({
     exchange: { type: String },
@@ -13,8 +13,8 @@ const configuracao = new mongoose.Schema({
     maxOrdersOpen: { type: Number },
     candle_size: { type: String },
     user: {
-        user_name: { type: String, from: true },
-        user_id: { type: String, from: true },
+        user_name: { type: String, require: true },
+        user_id: { type: String, require: true },
     },
     status: {
         status_bot: { type: Boolean },
@@ -55,4 +55,4 @@ const configuracao = new mongoose.Schema({
     },
 });
 
-export default mongoose.model('configuracao', configuracao, 'configuracao');
+module.exports = mongoose.model("configuracao", configuracao, "configuracao");
