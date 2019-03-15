@@ -19,13 +19,9 @@ app.use(helmet());
 
 consign()
     .include("src/api/database")
-    .then("src/api/routes")
-    .then("src/api/controllers")
-    .then("src/api/validators")
-    .then("src/api/services")
     .then("src/api/certificates")
+    .then("src/api/modules")
     .then("src/api/config")
-    .then("src/api/util")
     .into(app);
 
 app.listen(Number(config.port), () =>
