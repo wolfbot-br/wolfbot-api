@@ -1,4 +1,4 @@
-const dictionary = require("../utils/validationsDictionary");
+const dictionary = require("../../utils/dictionaries/accountDictionary");
 
 const emailRegex = /\S+@\S+\.\S+/;
 const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/;

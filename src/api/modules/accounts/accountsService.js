@@ -2,7 +2,7 @@ const _ = require("lodash");
 const admin = require("firebase-admin");
 const firebase = require("firebase");
 
-const dictionary = require("../utils/validationsDictionary");
+const dictionary = require("../../utils/dictionaries/accountDictionary");
 const User = require("../../models/userModel");
 const applicationFunctions = require("../../utils/functions/application");
 

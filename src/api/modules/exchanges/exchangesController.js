@@ -1,7 +1,7 @@
 const ccxt = require("ccxt");
 const Configuracao = require("../../models/configurationModel");
 const validator = require("./exchangesValidation");
-const service = require("../utils/utilsService");
+const service = require("../../utils/functions/exchanges");
 
 // # PUBLIC METHODS /
 
