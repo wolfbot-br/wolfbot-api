@@ -6,7 +6,7 @@ const chalk = require("chalk");
 const firebase = require("firebase");
 const admin = require("firebase-admin");
 
-const adminFirebaseAccount = require("");
+const adminFirebaseAccount = require("./certificates/firebase-admin-production.json");
 const mongoose = require("./database/mongo");
 const config = require("./config");
 const allowCors = require("./middlewares/cors");
