@@ -11,15 +11,14 @@ module.exports = function(server) {
     server.use("/api", protectedRoutes);
     server.use("/account", openRoutes);
 
+    openRoutes.post("/signup", controller.signup);
+
     openRoutes.post("/passwordRecovery", controller.passwordRecovery);
     openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
     openRoutes.post("/changepassword", controller.changePassword);
-
-    // NEW ROUTER FIREBASE
     openRoutes.post("/createtoken", controller.createToken);
     openRoutes.get("/getuserbyemail", controller.getUserByEmail);
     openRoutes.post("/login", controller.login);
-    openRoutes.post("/signup", controller.signup);
     openRoutes.get("/me", controller.me);
     openRoutes.get("/active", controller.activeAccount);
 };

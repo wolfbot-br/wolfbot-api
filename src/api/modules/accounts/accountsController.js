@@ -3,6 +3,16 @@ const _ = require("lodash");
 const validator = require("./accountsValidation");
 const service = require("./accountsService");
 
+const signup = async (req, res) => {
+    const { name, email, password, passwordConfirm } = req.body;
+
+    const errors = await validator.validSignup({ name, email, password, passwordConfirm });
+
+    return errors.length
+        ? res.status(400).json({ errors })
+        : service.signup(res, { name, email, password });
+};
+
 const passwordRecovery = (req, res, next) => {
     const email = req.body.email;
     service.passwordRecovery(res, next, email);
@@ -52,21 +62,6 @@ const getUserByEmail = (req, res) => {
 const me = (req, res) => {
     const token = req.headers.authorization;
     service.me(res, token);
-};
-
-// Cadastro de um novo usuário
-const signup = async (req, res) => {
-    const usuario = {
-        nome: req.body.nome || "",
-        email: req.body.email || "",
-        password: req.body.password || "",
-        confirm_password: req.body.confirm_password || "",
-    };
-
-    const errors = await validator.validSignup(usuario);
-
-    if (errors.length) res.status(406).json({ errors });
-    else await service.signup(res, usuario);
 };
 
 // Cria um novo token para um usuário

@@ -3,21 +3,17 @@ const dictionary = require("../utils/validationsDictionary");
 const emailRegex = /\S+@\S+\.\S+/;
 const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/;
 
-const validSignup = (usuario) => {
+const validSignup = (user) => {
     const errors = [];
 
-    if (!usuario.email.match(emailRegex)) {
-        errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }));
-    }
-    if (!usuario.password.match(passwordRegex)) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordIsInvalid }));
-    }
-    if (usuario.confirm_password !== usuario.password) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
-    }
-    if (!usuario.nome) {
-        errors.push(Object.assign({}, { ...dictionary.account.nameIsEmpty }));
-    }
+    if (!user.email.match(emailRegex)) errors.push(dictionary.account.emailIsInvalid);
+
+    if (!user.password.match(passwordRegex)) errors.push(dictionary.account.passwordIsInvalid);
+
+    if (user.passwordConfirm !== user.password)
+        errors.push(dictionary.account.passwordDiferentIsConfirm);
+
+    if (!user.name) errors.push(dictionary.account.nameIsEmpty);
 
     return errors;
 };

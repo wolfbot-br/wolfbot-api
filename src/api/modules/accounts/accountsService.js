@@ -3,7 +3,25 @@ const admin = require("firebase-admin");
 const firebase = require("firebase");
 
 const dictionary = require("../utils/validationsDictionary");
-const Usuario = require("../../models/userModel");
+const User = require("../../models/userModel");
+const applicationFunctions = require("../../utils/functions/application");
+
+const signup = async (res, user) => {
+    const { name, email, password } = user;
+
+    try {
+        const userCreated = await firebase.auth().createUserWithEmailAndPassword(email, password);
+
+        const userMongo = new User({ name, email, password });
+
+        await userMongo.save();
+        await userCreated.user.sendEmailVerification();
+
+        return res.status(201).json();
+    } catch (error) {
+        applicationFunctions.constructionErrorMessage(res, error);
+    }
+};
 
 // Realiza a ativação da conta do usuário
 const activeAccount = (res, code) => {
@@ -141,53 +159,6 @@ const getUserByEmail = (email, res) => {
             return res.status(400).json({
                 error: error,
             });
-        });
-};
-
-// Cadastro de um novo usuário
-const signup = async (res, usuario) => {
-    const firebaseUser = {
-        email: usuario.email,
-        password: usuario.password,
-    };
-    firebase
-        .auth()
-        .createUserWithEmailAndPassword(firebaseUser.email, firebaseUser.password)
-        .then(function(userRecord) {
-            sendEmailActiveAccount(res, userRecord);
-        })
-        .catch(function(error) {
-            switch (error.code) {
-                case "auth/email-already-in-use":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                ...dictionary.account.emailIsUsing,
-                            },
-                        ],
-                    });
-                default:
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message: error,
-                            },
-                        ],
-                    });
-            }
-        });
-};
-
-// Envio do email para ativação da conta
-const sendEmailActiveAccount = async (res) => {
-    firebase
-        .auth()
-        .currentUser.sendEmailVerification()
-        .then(function() {
-            return res.status(200).json({});
-        })
-        .catch(function(error) {
-            return res.status(400).json(error);
         });
 };
 
