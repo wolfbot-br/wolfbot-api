@@ -13,6 +13,16 @@ const signup = async (req, res) => {
         : service.signup(res, { name, email, password });
 };
 
+const activeAccount = async (req, res) => {
+    const { code } = req.headers;
+    if (!code) {
+        return res.status(400).json({
+            errors: [{ message: '"code" na requisição é obrigatório' }],
+        });
+    }
+    await service.activeAccount(res, code);
+};
+
 const passwordRecovery = (req, res, next) => {
     const email = req.body.email;
     service.passwordRecovery(res, next, email);
@@ -39,17 +49,6 @@ const changePassword = (req, res, next) => {
         });
     }
     service.changePassword(res, next, changePasswordHash, password);
-};
-
-// Ativa a conta do usuário
-const activeAccount = (req, res) => {
-    const code = req.headers.code;
-    if (!code) {
-        return res.status(400).json({
-            errors: [{ message: '"code" na requisição é obrigatório' }],
-        });
-    }
-    service.activeAccount(res, code);
 };
 
 // Busca as informações do usuário pelo email

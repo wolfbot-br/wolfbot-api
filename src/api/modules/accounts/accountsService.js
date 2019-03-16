@@ -4,7 +4,10 @@ const firebase = require("firebase");
 
 const dictionary = require("../../utils/dictionaries/accountDictionary");
 const User = require("../../models/userModel");
+const AccountLog = require("../../models/accountsLogModel");
 const applicationFunctions = require("../../utils/functions/application");
+const dateFunctions = require("../../utils/functions/dates");
+const enumerator = require("../../utils/enumerators/accounts");
 
 const signup = async (res, user) => {
     const { name, email, password } = user;
@@ -12,91 +15,60 @@ const signup = async (res, user) => {
     try {
         const userCreated = await firebase.auth().createUserWithEmailAndPassword(email, password);
 
-        const userMongo = new User({ name, email, password });
+        const userMongo = await new User({ name, email, password }).save();
 
-        await userMongo.save();
-        await userCreated.user.sendEmailVerification();
+        const log = new AccountLog({
+            user: userMongo._id,
+            verifiedEmail: false,
+            expirationDate: dateFunctions.createMomentDate().add(1, "days"),
+            verificationDate: dateFunctions.createMomentDate(),
+            logType: enumerator.accountLogTypes.emailActivation,
+            pending: true,
+        });
+
+        await Promise.all([userCreated.user.sendEmailVerification(), log.save()]);
 
         return res.status(201).json();
     } catch (error) {
+        console.error(error);
         applicationFunctions.constructionErrorMessage(res, error);
     }
-};
-
-const activeeAccount = (res, code) => {
-    firebase
-        .auth()
-        .checkActionCode(code)
-        .then(function(response) {
-            if (response.operation === "VERIFY_EMAIL") {
-                const usuario = response.data.email;
-                admin
-                    .auth()
-                    .getUserByEmail(usuario)
-                    .then(function(userRecord) {
-                        if (userRecord.emailVerified) {
-                            return res.status(400).json({
-                                errors: [
-                                    {
-                                        message: "Email já foi verificado pelo usuário",
-                                        code: "emailIsActive",
-                                    },
-                                ],
-                            });
-                        }
-                        admin
-                            .auth()
-                            .updateUser(userRecord.uid, {
-                                emailVerified: true,
-                            })
-                            .then(function(user) {
-                                return res.status(200).json(user);
-                            })
-                            .catch(function(error) {
-                                return res.status(400).json(error);
-                            });
-                    });
-            } else {
-                return res.status(400).json({
-                    errors: [
-                        {
-                            message: "Operação Inválida",
-                            code: "operationIsInvalid",
-                        },
-                    ],
-                });
-            }
-        })
-        .catch(function(error) {
-            switch (error.code) {
-                case "auth/invalid-action-code": {
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message:
-                                    "O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.",
-                                code: "operationIsInvalid",
-                            },
-                        ],
-                    });
-                }
-            }
-        });
 };
 
 const activeAccount = async (res, code) => {
     try {
         const resultActiveAccount = await firebase.auth().checkActionCode(code);
+
         if (resultActiveAccount.operation === "VERIFY_EMAIL") {
             const { email } = resultActiveAccount.data;
+
             const firebaseUser = await admin.auth().getUserByEmail(email);
-            console.log(firebaseUser);
+            const log = await AccountLog.findOne({
+                user: firebaseUser._id,
+                logType: enumerator.accountLogTypes.emailActivation,
+                pending: true,
+            })
+                .sort({
+                    createdAt: -1,
+                })
+                .lean();
+
+            if (firebaseUser.emailVerified)
+                return applicationFunctions.constructionErrorMessage(res, {
+                    code: "auth/email-is-active",
+                });
+
+            if (!log.length) {
+                // validar se o log está expirado e então não ativar a conta
+            }
+            await admin.auth().updateUser(firebaseUser.uid, { emailVerified: true });
+
             return res.status(200).json({});
         } else {
             return res.status(400).json({});
         }
     } catch (error) {
-        applicationFunctions.constructionErrorMessage(res, error);
+        return applicationFunctions.constructionErrorMessage(res, error);
     }
 };
 

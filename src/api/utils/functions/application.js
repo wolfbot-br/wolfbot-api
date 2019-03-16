@@ -20,6 +20,11 @@ const constructionErrorMessage = (res, error) => {
                 errors: [dictionary.account.activeAccountCodeIsInvalid],
             });
         }
+        case "auth/email-is-active": {
+            return res.status(400).json({
+                errors: [dictionary.account.emailIsActive],
+            });
+        }
         default:
             return res.status(400).json({
                 errors: [error],
