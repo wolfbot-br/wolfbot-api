@@ -4,7 +4,9 @@ const consign = require("consign");
 const helmet = require("helmet");
 const chalk = require("chalk");
 const firebase = require("firebase");
+const admin = require("firebase-admin");
 
+const adminFirebaseAccount = require("");
 const mongoose = require("./database/mongo");
 const config = require("./config");
 const allowCors = require("./middlewares/cors");
@@ -13,6 +15,11 @@ const app = express();
 mongoose.createConnection();
 
 firebase.initializeApp(config.firebase);
+
+admin.initializeApp({
+    credential: admin.credential.cert(adminFirebaseAccount),
+    databaseURL: config.firebase.databaseURL,
+});
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));

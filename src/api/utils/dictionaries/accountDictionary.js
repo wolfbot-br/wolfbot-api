@@ -32,5 +32,10 @@ module.exports = {
                 "Muitas tentativas de login malsucedidas.Por favor, inclua a verificação reCaptcha ou tente novamente mais tarde.",
             code: "manyRequestsLogin",
         },
+        activeAccountCodeIsInvalid: {
+            message:
+                "O código de ação é inválido. Isso pode acontecer se o código estiver mal informado, expirado ou já tiver sido usado.",
+            code: "operationIsInvalid",
+        },
     },
 };

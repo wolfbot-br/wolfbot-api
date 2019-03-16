@@ -12,8 +12,6 @@ const signup = async (res, user) => {
     try {
         const userCreated = await firebase.auth().createUserWithEmailAndPassword(email, password);
 
-        console.log(userCreated);
-
         const userMongo = new User({ name, email, password });
 
         await userMongo.save();
@@ -25,8 +23,7 @@ const signup = async (res, user) => {
     }
 };
 
-// Realiza a ativação da conta do usuário
-const activeAccount = (res, code) => {
+const activeeAccount = (res, code) => {
     firebase
         .auth()
         .checkActionCode(code)
@@ -85,6 +82,22 @@ const activeAccount = (res, code) => {
                 }
             }
         });
+};
+
+const activeAccount = async (res, code) => {
+    try {
+        const resultActiveAccount = await firebase.auth().checkActionCode(code);
+        if (resultActiveAccount.operation === "VERIFY_EMAIL") {
+            const { email } = resultActiveAccount.data;
+            const firebaseUser = await admin.auth().getUserByEmail(email);
+            console.log(firebaseUser);
+            return res.status(200).json({});
+        } else {
+            return res.status(400).json({});
+        }
+    } catch (error) {
+        applicationFunctions.constructionErrorMessage(res, error);
+    }
 };
 
 // Cria um token para o usuário

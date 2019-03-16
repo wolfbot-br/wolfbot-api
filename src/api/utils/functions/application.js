@@ -15,6 +15,11 @@ const constructionErrorMessage = (res, error) => {
             return res.status(400).json({
                 errors: [dictionary.account.emailIsUsing],
             });
+        case "auth/invalid-action-code": {
+            return res.status(400).json({
+                errors: [dictionary.account.activeAccountCodeIsInvalid],
+            });
+        }
         default:
             return res.status(400).json({
                 errors: [error],

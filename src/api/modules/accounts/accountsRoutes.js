@@ -12,6 +12,7 @@ module.exports = function(server) {
     server.use("/account", openRoutes);
 
     openRoutes.post("/signup", controller.signup);
+    openRoutes.get("/active", controller.activeAccount);
 
     openRoutes.post("/passwordRecovery", controller.passwordRecovery);
     openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
@@ -20,5 +21,4 @@ module.exports = function(server) {
     openRoutes.get("/getuserbyemail", controller.getUserByEmail);
     openRoutes.post("/login", controller.login);
     openRoutes.get("/me", controller.me);
-    openRoutes.get("/active", controller.activeAccount);
 };
