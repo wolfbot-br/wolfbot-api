@@ -12,6 +12,8 @@ const signup = async (res, user) => {
     try {
         const userCreated = await firebase.auth().createUserWithEmailAndPassword(email, password);
 
+        console.log(userCreated);
+
         const userMongo = new User({ name, email, password });
 
         await userMongo.save();

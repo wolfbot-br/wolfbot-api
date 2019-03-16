@@ -6,11 +6,18 @@ const passwordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/;
 const validSignup = (user) => {
     const errors = [];
 
-    if (!user.email.match(emailRegex)) errors.push(dictionary.account.emailIsInvalid);
+    if (!user.email) errors.push(dictionary.account.emailIsEmpty);
 
-    if (!user.password.match(passwordRegex)) errors.push(dictionary.account.passwordIsInvalid);
+    if (user.email && !user.email.match(emailRegex)) errors.push(dictionary.account.emailIsInvalid);
 
-    if (user.passwordConfirm !== user.password)
+    if (!user.password) errors.push(dictionary.account.passwordIsEmpty);
+
+    if (user.password && !user.password.match(passwordRegex))
+        errors.push(dictionary.account.passwordIsInvalid);
+
+    if (!user.passwordConfirm) errors.push(dictionary.account.passwordConfirmIsEmpty);
+
+    if (user.password && user.passwordConfirm && user.passwordConfirm !== user.password)
         errors.push(dictionary.account.passwordDiferentIsConfirm);
 
     if (!user.name) errors.push(dictionary.account.nameIsEmpty);

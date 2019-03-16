@@ -1,3 +1,5 @@
+const dictionary = require("../dictionaries/accountDictionary");
+
 const convertTimeStampToHours = (timeStamp) => {
     const decodedDate = new Date(timeStamp * 1000);
     const hours = decodedDate.getHours();
