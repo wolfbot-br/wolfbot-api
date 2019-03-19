@@ -1,12 +1,9 @@
 const dictionary = require("../dictionaries/accountDictionary");
+const dateFunctions = require("./dates");
 
 const convertTimeStampToHours = (timeStamp) => {
-    const decodedDate = new Date(timeStamp * 1000);
-    const hours = decodedDate.getHours();
-    const minutes = decodedDate.getMinutes();
-    const seconds = `0${decodedDate.getSeconds()}`;
-    const formatedHour = hours + ":" + minutes.toString().substr(-2) + ":" + seconds.substr(-2);
-    return formatedHour;
+    const date = dateFunctions.createMomentDate(timeStamp);
+    return date;
 };
 
 const constructionErrorMessage = (res, error) => {
@@ -23,6 +20,31 @@ const constructionErrorMessage = (res, error) => {
         case "auth/email-is-active": {
             return res.status(400).json({
                 errors: [dictionary.account.emailIsActive],
+            });
+        }
+        case "auth/email-is-not-active": {
+            return res.status(400).json({
+                errors: [dictionary.account.emailIsNotActive],
+            });
+        }
+        case "auth/wrong-password": {
+            return res.status(400).json({
+                errors: [dictionary.account.loginFailed],
+            });
+        }
+        case "auth/user-not-found": {
+            return res.status(400).json({
+                errors: [dictionary.account.userIsEmpty],
+            });
+        }
+        case "auth/invalid-email": {
+            return res.status(400).json({
+                errors: [dictionary.account.emailIsInvalid],
+            });
+        }
+        case "auth/too-many-requests": {
+            return res.status(400).json({
+                errors: [dictionary.account.manyRequestsLogin],
             });
         }
         default:

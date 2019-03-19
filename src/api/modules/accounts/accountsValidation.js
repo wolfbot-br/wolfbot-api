@@ -28,15 +28,10 @@ const validSignup = (user) => {
 const validLogin = (email, password) => {
     const errors = [];
 
-    if (!email) {
-        errors.push(Object.assign({}, { ...dictionary.account.emailIsEmpty }));
-    } else if (!email.match(emailRegex)) {
-        errors.push(Object.assign({}, { ...dictionary.account.emailIsInvalid }));
-    }
+    if (!email) errors.push(dictionary.account.emailIsEmpty);
+    else if (!email.match(emailRegex)) errors.push(dictionary.account.emailIsInvalid);
 
-    if (!password) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
-    }
+    if (!password) errors.push(dictionary.account.passwordIsEmpty);
 
     return errors;
 };

@@ -2,7 +2,6 @@ const _ = require("lodash");
 const admin = require("firebase-admin");
 const firebase = require("firebase");
 
-const dictionary = require("../../utils/dictionaries/accountDictionary");
 const User = require("../../models/userModel");
 const AccountLog = require("../../models/accountsLogModel");
 const applicationFunctions = require("../../utils/functions/application");
@@ -91,6 +90,37 @@ const activeAccount = async (res, code) => {
     }
 };
 
+const login = async (res, email, password) => {
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+
+        const currentUser = firebase.auth().currentUser.toJSON();
+
+        authenticatedUser = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            emailVerified: currentUser.emailVerified,
+            isAnonymous: currentUser.isAnonymous,
+            refreshToken: currentUser.stsTokenManager.refreshToken,
+            accessToken: currentUser.stsTokenManager.accessToken,
+            expirationTime: applicationFunctions.convertTimeStampToHours(
+                currentUser.stsTokenManager.expirationTime
+            ),
+            lastLoginAt: dateFunctions.createMomentDate(),
+        };
+
+        if (!authenticatedUser.emailVerified) {
+            return applicationFunctions.constructionErrorMessage(res, {
+                code: "auth/email-is-not-active",
+            });
+        }
+
+        return res.status(200).json(authenticatedUser);
+    } catch (error) {
+        return applicationFunctions.constructionErrorMessage(res, error);
+    }
+};
+
 // Cria um token para o usuário
 const createToken = (email, password, res) => {
     firebase
@@ -165,76 +195,6 @@ const getUserByEmail = (email, res) => {
             return res.status(400).json({
                 error: error,
             });
-        });
-};
-
-// Login por email e senha de um usuário
-const login = (res, email, password) => {
-    firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(function() {
-            if (firebase.auth().currentUser.emailVerified) {
-                const usuario = firebase.auth().currentUser.toJSON();
-                return res.status(200).json({
-                    id: usuario.uid,
-                    email: usuario.email,
-                    emailVerificado: usuario.emailVerified,
-                    anonimo: usuario.isAnonymous,
-                    MetodoLogin: usuario.providerData[0].providerId,
-                    refreshToken: usuario.stsTokenManager.refreshToken,
-                    Token: usuario.stsTokenManager.accessToken,
-                    expiration: usuario.stsTokenManager.expirationTime,
-                    ultimoLogin: usuario.lastLoginAt,
-                    criado: usuario.createdAt,
-                });
-            } else {
-                return res.status(400).json({
-                    errors: [
-                        {
-                            ...dictionary.account.emailIsNotActive,
-                        },
-                    ],
-                });
-            }
-        })
-        .catch(function(error) {
-            switch (error.code) {
-                case "auth/wrong-password":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                ...dictionary.account.loginFailed,
-                            },
-                        ],
-                    });
-                case "auth/user-not-found":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                ...dictionary.account.userIsEmpty,
-                            },
-                        ],
-                    });
-                case "auth/invalid-email":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                ...dictionary.account.emailIsInvalid,
-                            },
-                        ],
-                    });
-                case "auth/too-many-requests":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                ...dictionary.account.manyRequestsLogin,
-                            },
-                        ],
-                    });
-                default:
-                    return res.status(400).json(error);
-            }
         });
 };
 

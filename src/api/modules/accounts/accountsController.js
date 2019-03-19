@@ -23,6 +23,12 @@ const activeAccount = async (req, res) => {
     await service.activeAccount(res, code);
 };
 
+const login = (req, res) => {
+    const { email, password } = req.body;
+    const errors = validator.validLogin(email, password);
+    return errors.length ? res.status(406).json({ errors }) : service.login(res, email, password);
+};
+
 const passwordRecovery = (req, res, next) => {
     const email = req.body.email;
     service.passwordRecovery(res, next, email);
@@ -72,17 +78,6 @@ const createToken = (req, res) => {
         res.status(406).json({ errors });
     } else {
         service.createToken(email, password, res);
-    }
-};
-
-// Login por email e senha de um usuário
-const login = (req, res) => {
-    const { email, password } = req.body;
-    const errors = validator.validLogin(email, password);
-    if (errors.length) {
-        res.status(406).json({ errors });
-    } else {
-        service.login(res, email, password);
     }
 };
 
