@@ -40,7 +40,7 @@
         "jsonwebtoken": "^7.3.0",
         "lodash": "^4.17.5",
         "moment": "^2.22.2",
-        "mongoose": "^4.8.5",
+        "mongoose": "^5.2.8",
         "set-interval": "^2.0.3",
         "tulind": "^0.8.12"
     },
