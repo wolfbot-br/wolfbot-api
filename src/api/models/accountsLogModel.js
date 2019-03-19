@@ -8,6 +8,7 @@ const accountLogSchema = new mongoose.Schema(
         verificationDate: { type: Date, fromd: true },
         logType: { type: String, default: true },
         pending: { type: Boolean, default: true },
+        uid: { type: String, required: true },
     },
     {
         timestamps: true,

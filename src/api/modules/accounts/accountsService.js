@@ -15,15 +15,21 @@ const signup = async (res, user) => {
     try {
         const userCreated = await firebase.auth().createUserWithEmailAndPassword(email, password);
 
-        const userMongo = await new User({ name, email, password }).save();
+        const userMongo = await new User({
+            name,
+            email,
+            password,
+            uid: userCreated.user.uid,
+        }).save();
 
         const log = new AccountLog({
             user: userMongo._id,
             verifiedEmail: false,
             expirationDate: dateFunctions.createMomentDate().add(1, "days"),
-            verificationDate: dateFunctions.createMomentDate(),
+            verificationDate: null,
             logType: enumerator.accountLogTypes.emailActivation,
             pending: true,
+            uid: userCreated.user.uid,
         });
 
         await Promise.all([userCreated.user.sendEmailVerification(), log.save()]);
@@ -44,13 +50,12 @@ const activeAccount = async (res, code) => {
 
             const firebaseUser = await admin.auth().getUserByEmail(email);
             const log = await AccountLog.findOne({
-                user: firebaseUser._id,
+                uid: firebaseUser.uid,
                 logType: enumerator.accountLogTypes.emailActivation,
                 pending: true,
+                expirationDate: { $gt: dateFunctions.createMomentDate() },
             })
-                .sort({
-                    createdAt: -1,
-                })
+                .sort({ createdAt: -1 })
                 .lean();
 
             if (firebaseUser.emailVerified)
@@ -58,10 +63,24 @@ const activeAccount = async (res, code) => {
                     code: "auth/email-is-active",
                 });
 
-            if (!log.length) {
-                // validar se o log está expirado e então não ativar a conta
+            if (
+                !Object.keys(log || {}).length ||
+                dateFunctions.createMomentDate() > log.expirationDate
+            ) {
+                return applicationFunctions.constructionErrorMessage(res, {
+                    code: "auth/invalid-action-code",
+                });
             }
+
             await admin.auth().updateUser(firebaseUser.uid, { emailVerified: true });
+            await AccountLog.updateOne(
+                { _id: log._id },
+                {
+                    verifiedEmail: true,
+                    verificationDate: dateFunctions.createMomentDate(),
+                    pending: false,
+                }
+            );
 
             return res.status(200).json({});
         } else {
