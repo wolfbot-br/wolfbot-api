@@ -33,5 +33,14 @@ module.exports = {
         emailIsActive: {
             message: "Email já foi verificado pelo usuário",
         },
+        tokenIsEmpty: {
+            message: "Token não enviado na requisição",
+        },
+        tokenExpired: {
+            message: "Token expirado",
+        },
+        tokenIsInvalid: {
+            message: "Token inválido",
+        },
     },
 };

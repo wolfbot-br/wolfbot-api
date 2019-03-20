@@ -1,39 +1,31 @@
 const admin = require("firebase-admin");
 const firebase = require("firebase");
+const response = require("../modules/accounts/services/accountsResponse");
+const dates = require("../utils/functions/dates");
 
-module.exports = (req, res, next) => {
-    // caso seja um método "OPTIONS" segue o fluxo normal da requisição
-    if (req.method === "OPTIONS") {
-        next();
-    } else {
-        const token = req.headers.authorization;
+module.exports = async (req, res, next) => {
+    if (req.method === "OPTIONS") next();
+    else {
+        const { authorization } = req.headers;
 
-        // caso o token não seja passado
-        if (!token) {
-            return res.status(403).send({ errors: ["Token não enviado na requisição"] });
-        }
-
-        // realiza a verificação do Token
-        admin
-            .auth()
-            .verifyIdToken(token)
-            .then(function(decodedToken) {
-                req.user = decodedToken;
-                next();
-            })
-            .catch(function(error) {
-                switch (error.code) {
-                    case "auth/argument-error":
-                        return res.status(401).json({
-                            errors: [
-                                {
-                                    message: "Token Inválido",
-                                },
-                            ],
-                        });
-                    default:
-                        return res.status(401).json({ errors: ["Não Autorizado"] });
-                }
+        if (!authorization)
+            return response.constructionErrorMessage(res, {
+                code: "auth/token_is_empty",
             });
+
+        try {
+            const firebaseUserInfo = await admin.auth().verifyIdToken(authorization);
+
+            req.user = {
+                ...firebaseUserInfo,
+                exp: dates.convertTimeStampToHours(firebaseUserInfo.exp),
+                iat: dates.convertTimeStampToHours(firebaseUserInfo.iat),
+                auth_time: dates.convertTimeStampToHours(firebaseUserInfo.auth_time),
+            };
+
+            next();
+        } catch (error) {
+            return response.constructionErrorMessage(res, error);
+        }
     }
 };

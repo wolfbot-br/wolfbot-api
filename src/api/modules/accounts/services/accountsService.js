@@ -2,11 +2,11 @@ const _ = require("lodash");
 const admin = require("firebase-admin");
 const firebase = require("firebase");
 
-const User = require("../../models/userModel");
-const AccountLog = require("../../models/accountsLogModel");
-const applicationFunctions = require("../../utils/functions/application");
-const dateFunctions = require("../../utils/functions/dates");
-const enumerator = require("../../utils/enumerators/accounts");
+const User = require("../../../models/userModel");
+const AccountLog = require("../../../models/accountsLogModel");
+const response = require("./accountsResponse");
+const dateFunctions = require("../../../utils/functions/dates");
+const enumerator = require("../../../utils/enumerators/accounts");
 
 const signup = async (res, user) => {
     const { name, email, password } = user;
@@ -36,7 +36,7 @@ const signup = async (res, user) => {
         return res.status(201).json();
     } catch (error) {
         console.error(error);
-        applicationFunctions.constructionErrorMessage(res, error);
+        response.constructionErrorMessage(res, error);
     }
 };
 
@@ -58,7 +58,7 @@ const activeAccount = async (res, code) => {
                 .lean();
 
             if (firebaseUser.emailVerified)
-                return applicationFunctions.constructionErrorMessage(res, {
+                return response.constructionErrorMessage(res, {
                     code: "auth/email-is-active",
                 });
 
@@ -66,7 +66,7 @@ const activeAccount = async (res, code) => {
                 !Object.keys(log || {}).length ||
                 dateFunctions.createMomentDate() > log.expirationDate
             ) {
-                return applicationFunctions.constructionErrorMessage(res, {
+                return response.constructionErrorMessage(res, {
                     code: "auth/invalid-action-code",
                 });
             }
@@ -86,7 +86,7 @@ const activeAccount = async (res, code) => {
             return res.status(400).json({});
         }
     } catch (error) {
-        return applicationFunctions.constructionErrorMessage(res, error);
+        return response.constructionErrorMessage(res, error);
     }
 };
 
@@ -103,25 +103,29 @@ const login = async (res, email, password) => {
             isAnonymous: currentUser.isAnonymous,
             refreshToken: currentUser.stsTokenManager.refreshToken,
             accessToken: currentUser.stsTokenManager.accessToken,
-            expirationTime: applicationFunctions.convertTimeStampToHours(
+            expirationTime: dateFunctions.convertTimeStampToHours(
                 currentUser.stsTokenManager.expirationTime
             ),
             lastLoginAt: dateFunctions.createMomentDate(),
         };
 
         if (!authenticatedUser.emailVerified) {
-            return applicationFunctions.constructionErrorMessage(res, {
+            return response.constructionErrorMessage(res, {
                 code: "auth/email-is-not-active",
             });
         }
 
         return res.status(200).json(authenticatedUser);
     } catch (error) {
-        return applicationFunctions.constructionErrorMessage(res, error);
+        return response.constructionErrorMessage(res, error);
     }
 };
 
-// Cria um token para o usuário
+const userInfo = async (req, res) => {
+    const { user } = req;
+    return res.status(400).json(user);
+};
+
 const createToken = (email, password, res) => {
     firebase
         .auth()
@@ -183,7 +187,6 @@ const createToken = (email, password, res) => {
         });
 };
 
-// Informações do usuário logado com base no email (Uso interno)
 const getUserByEmail = (email, res) => {
     admin
         .auth()
@@ -196,37 +199,6 @@ const getUserByEmail = (email, res) => {
                 error: error,
             });
         });
-};
-
-// Informações do Usuário Logado (Aqui faz a verificação do Token)
-const me = (res, token) => {
-    admin
-        .auth()
-        .verifyIdToken(token)
-        .then(function(decodedToken) {
-            return res.status(200).json(decodedToken);
-        })
-        .catch(function(error) {
-            switch (error.code) {
-                case "auth/argument-error":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message: "Token Inválido",
-                            },
-                        ],
-                    });
-                default:
-                    return res.status(400).json(error);
-            }
-        });
-};
-
-// Devolve uma resposta para erros do banco de dados
-const sendErrorsFromDB = (res, dbErrors) => {
-    const errors = [];
-    _.forIn(dbErrors.errors, (error) => errors.push(error.message));
-    return res.status(400).json({ errors });
 };
 
 const sendEmailPasswordRecovery = (usuario, res) => {};
@@ -249,7 +221,7 @@ module.exports = {
     updatePassword,
     signup,
     login,
-    me,
+    userInfo,
     createToken,
     changePassword,
     activeAccount,

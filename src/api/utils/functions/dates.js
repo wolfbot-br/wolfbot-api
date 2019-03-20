@@ -9,6 +9,11 @@ const getDaysInCurrentMonth = () => moment().daysInMonth();
 
 const createMomentDate = (date) => moment(date);
 
+const convertTimeStampToHours = (timeStamp) => {
+    const date = moment.unix(timeStamp).format();
+    return date;
+};
+
 const getDateDifference = (differenceType, dateA, dateB) => {
     switch (differenceType) {
         case differences.milliseconds:
@@ -34,4 +39,5 @@ module.exports = {
     getDaysInCurrentMonth,
     createMomentDate,
     getDateDifference,
+    convertTimeStampToHours,
 };
