@@ -44,7 +44,7 @@ const activeAccount = async (res, code) => {
     try {
         const resultActiveAccount = await firebase.auth().checkActionCode(code);
 
-        if (resultActiveAccount.operation === "VERIFY_EMAIL") {
+        if (resultActiveAccount.operation == "VERIFY_EMAIL") {
             const { email } = resultActiveAccount.data;
 
             const firebaseUser = await admin.auth().getUserByEmail(email);
@@ -90,35 +90,46 @@ const activeAccount = async (res, code) => {
     }
 };
 
-const login = async (res, email, password) => {
+const authenticate = async (email, password) => {
     try {
         await firebase.auth().signInWithEmailAndPassword(email, password);
 
         const currentUser = firebase.auth().currentUser.toJSON();
 
-        authenticatedUser = {
-            uid: currentUser.uid,
-            email: currentUser.email,
-            emailVerified: currentUser.emailVerified,
-            isAnonymous: currentUser.isAnonymous,
-            refreshToken: currentUser.stsTokenManager.refreshToken,
-            accessToken: currentUser.stsTokenManager.accessToken,
-            expirationTime: dateFunctions.convertTimeStampToHours(
-                currentUser.stsTokenManager.expirationTime
-            ),
-            lastLoginAt: dateFunctions.createMomentDate(),
+        return {
+            sucess: true,
+            authenticatedUser: {
+                uid: currentUser.uid,
+                email: currentUser.email,
+                emailVerified: currentUser.emailVerified,
+                isAnonymous: currentUser.isAnonymous,
+                refreshToken: currentUser.stsTokenManager.refreshToken,
+                accessToken: currentUser.stsTokenManager.accessToken,
+                expirationTime: dateFunctions.convertTimeStampToHours(
+                    currentUser.stsTokenManager.expirationTime
+                ),
+                createdAt: dateFunctions.convertTimeStampToHours(Number(currentUser.createdAt)),
+                lastLoginAt: dateFunctions.convertTimeStampToHours(Number(currentUser.lastLoginAt)),
+            },
         };
-
-        if (!authenticatedUser.emailVerified) {
-            return response.constructionErrorMessage(res, {
-                code: "auth/email-is-not-active",
-            });
-        }
-
-        return res.status(200).json(authenticatedUser);
     } catch (error) {
-        return response.constructionErrorMessage(res, error);
+        return {
+            sucess: false,
+            error,
+        };
     }
+};
+
+const login = async (res, email, password) => {
+    const authResult = await authenticate(email, password);
+
+    if (!authResult.sucess) return response.constructionErrorMessage(res, authResult.error);
+
+    if (!authResult.authenticatedUser.emailVerified)
+        return response.constructionErrorMessage(res, {
+            code: "auth/email-is-not-active",
+        });
+    return res.status(200).json(authResult);
 };
 
 const userInfo = async (req, res) => {
@@ -126,78 +137,14 @@ const userInfo = async (req, res) => {
     return res.status(400).json(user);
 };
 
-const createToken = (email, password, res) => {
-    firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(function(currentUser) {
-            if (firebase.auth().currentUser.emailVerified) {
-                const usuario = firebase.auth().currentUser.toJSON();
-                return res.status(200).json({
-                    id: usuario.uid,
-                    email: usuario.email,
-                    emailVerificado: usuario.emailVerified,
-                    anonimo: usuario.isAnonymous,
-                    MetodoLogin: usuario.providerData[0].providerId,
-                    refreshToken: usuario.stsTokenManager.refreshToken,
-                    Token: usuario.stsTokenManager.accessToken,
-                    expiration: usuario.stsTokenManager.expirationTime,
-                    ultimoLogin: usuario.lastLoginAt,
-                    criado: usuario.createdAt,
-                });
-            } else {
-                return res.status(400).json({
-                    errors: [
-                        {
-                            message: "Email não verificado pelo usuário",
-                        },
-                    ],
-                });
-            }
-        })
-        .catch(function(error) {
-            switch (error.code) {
-                case "auth/wrong-password":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message: "Senha do usuário está Inválida",
-                            },
-                        ],
-                    });
-                case "auth/user-not-found":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message: "Não existe usuário com esse endereço de email",
-                            },
-                        ],
-                    });
-                case "auth/invalid-email":
-                    return res.status(400).json({
-                        errors: [
-                            {
-                                message: "O email informado está inválido",
-                            },
-                        ],
-                    });
-                default:
-                    return res.status(400).json(error);
-            }
-        });
-};
+const createToken = async (res, email, password) => {
+    const authResult = await authenticate(email, password);
 
-const getUserByEmail = (email, res) => {
-    admin
-        .auth()
-        .getUserByEmail(email)
-        .then(function(userRecord) {
-            return res.status(200).json(userRecord);
-        })
-        .catch(function(error) {
-            return res.status(400).json({
-                error: error,
-            });
+    if (!authResult.sucess) return response.constructionErrorMessage(res, authResult.error);
+
+    if (!authResult.authenticatedUser.emailVerified)
+        return response.constructionErrorMessage(res, {
+            code: "auth/email-is-not-active",
         });
 };
 
@@ -225,5 +172,4 @@ module.exports = {
     createToken,
     changePassword,
     activeAccount,
-    getUserByEmail,
 };

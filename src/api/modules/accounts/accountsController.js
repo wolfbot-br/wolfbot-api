@@ -1,5 +1,3 @@
-const _ = require("lodash");
-
 const validator = require("./accountsValidation");
 const service = require("./services/accountsService");
 
@@ -26,10 +24,18 @@ const activeAccount = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
     const errors = validator.validLogin(email, password);
-    return errors.length ? res.status(406).json({ errors }) : service.login(res, email, password);
+    return errors.length ? res.status(400).json({ errors }) : service.login(res, email, password);
 };
 
 const userInfo = async (req, res) => await service.userInfo(req, res);
+
+const createToken = (req, res) => {
+    const { email, password } = req.body;
+    const errors = validator.validLogin(email, password);
+    return errors.length
+        ? res.status(400).json({ errors })
+        : service.createToken(res, email, password);
+};
 
 const passwordRecovery = (req, res, next) => {
     const email = req.body.email;
@@ -59,24 +65,6 @@ const changePassword = (req, res, next) => {
     service.changePassword(res, next, changePasswordHash, password);
 };
 
-// Busca as informações do usuário pelo email
-const getUserByEmail = (req, res) => {
-    const email = req.headers.email;
-    service.getUserByEmail(email, res);
-};
-
-// Cria um novo token para um usuário
-const createToken = (req, res) => {
-    const email = req.body.email || "";
-    const password = req.body.password || "";
-    const errors = validator.validLogin(email, password);
-    if (errors.length > 0) {
-        res.status(406).json({ errors });
-    } else {
-        service.createToken(email, password, res);
-    }
-};
-
 module.exports = {
     login,
     createToken,
@@ -86,5 +74,4 @@ module.exports = {
     changePasswordPermition,
     changePassword,
     activeAccount,
-    getUserByEmail,
 };

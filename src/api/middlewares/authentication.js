@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 const firebase = require("firebase");
 const response = require("../modules/accounts/services/accountsResponse");
 const dates = require("../utils/functions/dates");
+const moment = require("moment");
 
 module.exports = async (req, res, next) => {
     if (req.method === "OPTIONS") next();
@@ -18,9 +19,9 @@ module.exports = async (req, res, next) => {
 
             req.user = {
                 ...firebaseUserInfo,
-                exp: dates.convertTimeStampToHours(firebaseUserInfo.exp),
-                iat: dates.convertTimeStampToHours(firebaseUserInfo.iat),
-                auth_time: dates.convertTimeStampToHours(firebaseUserInfo.auth_time),
+                exp: moment.unix(firebaseUserInfo.exp).format(),
+                iat: moment.unix(firebaseUserInfo.iat).format(),
+                auth_time: moment.unix(firebaseUserInfo.auth_time).format(),
             };
 
             next();

@@ -1,7 +1,7 @@
 module.exports = {
     account: {
-        emailIsEmpty: { message: "O email é obrigatório.", code: "emailIsEmpty" },
-        emailIsInvalid: { message: "O email informado está inválido.", code: "emailIsInvalid" },
+        emailIsEmpty: { message: "O email é obrigatório." },
+        emailIsInvalid: { message: "O email informado está inválido." },
         passwordIsInvalid: {
             message:
                 "Ops! A senha deve conter de 6 a 20 caracteres, com letra maiuscula e caracteres especiais.",

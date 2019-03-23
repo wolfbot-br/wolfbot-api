@@ -14,13 +14,11 @@ module.exports = function(server) {
     openRoutes.post("/signup", controller.signup);
     openRoutes.get("/active", controller.activeAccount);
     openRoutes.post("/login", controller.login);
+    openRoutes.post("/createtoken", controller.createToken);
 
     protectedRoutes.get("/userinfo", controller.userInfo);
 
     openRoutes.post("/passwordRecovery", controller.passwordRecovery);
     openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
     openRoutes.post("/changepassword", controller.changePassword);
-    openRoutes.post("/createtoken", controller.createToken);
-    openRoutes.get("/getuserbyemail", controller.getUserByEmail);
-    openRoutes.post("/login", controller.login);
 };

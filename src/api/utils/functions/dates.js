@@ -10,7 +10,7 @@ const getDaysInCurrentMonth = () => moment().daysInMonth();
 const createMomentDate = (date) => moment(date);
 
 const convertTimeStampToHours = (timeStamp) => {
-    const date = moment.unix(timeStamp).format();
+    const date = moment(timeStamp).format();
     return date;
 };
 
