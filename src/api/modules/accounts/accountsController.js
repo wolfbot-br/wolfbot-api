@@ -7,7 +7,7 @@ const signup = async (req, res) => {
     const errors = await validator.validSignup({ name, email, password, passwordConfirm });
 
     return errors.length
-        ? res.status(400).json({ errors })
+        ? res.status(400).json({ success: false, errors })
         : service.signup(res, { name, email, password });
 };
 
@@ -24,7 +24,9 @@ const activeAccount = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
     const errors = validator.validLogin(email, password);
-    return errors.length ? res.status(400).json({ errors }) : service.login(res, email, password);
+    return errors.length
+        ? res.status(400).json({ sucess: false, errors })
+        : service.login(res, email, password);
 };
 
 const userInfo = async (req, res) => await service.userInfo(req, res);

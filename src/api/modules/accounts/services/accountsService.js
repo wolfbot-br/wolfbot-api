@@ -134,7 +134,7 @@ const login = async (res, email, password) => {
 
 const userInfo = async (req, res) => {
     const { user } = req;
-    return res.status(400).json(user);
+    return res.status(200).json(user);
 };
 
 const createToken = async (res, email, password) => {
