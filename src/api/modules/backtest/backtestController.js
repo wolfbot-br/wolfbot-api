@@ -1,4 +1,4 @@
-const backtest = require("../backtest/services/backtestService");
+const backtest = require("../backtest/services/backtestHeart");
 
 const testarConfiguracao = async (req, res, next) => {
     try {
@@ -14,7 +14,7 @@ const testarConfiguracao = async (req, res, next) => {
             date: req.body.date,
         };
 
-        backtest.carregarDados(params).then(function(resp) {
+        backtest.carregarDados(params).then(function (resp) {
             res.status(200).json({
                 data: resp,
                 status: "200",

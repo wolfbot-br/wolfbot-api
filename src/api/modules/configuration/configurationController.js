@@ -40,7 +40,7 @@ const post = (req, res, next) => {
 
     const nova_configuracao = new Configuration({
         exchange: config.exchange,
-        api_key: config.apiKey,
+        api_key: config.api_key,
         secret: config.secret,
         user: config.user,
         status: config.status,

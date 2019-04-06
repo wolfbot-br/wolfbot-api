@@ -8,7 +8,7 @@ const service = require("../../utils/functions/exchanges");
 // Método que retorna todas as exchanges que bot trabalha
 const loadExchanges = (req, res, next) => {
     const exchanges = ccxt.exchanges;
-    const dataExchanges = exchanges.map(function(e) {
+    const dataExchanges = exchanges.map(function (e) {
         return { value: e, label: e };
     });
 
@@ -227,8 +227,7 @@ const fetchTicker = async (req, res, next) => {
 const fetchBalance = async (req, res, next) => {
     try {
         params = {
-            id_usuario: req.query.id_usuario,
-            exchange: req.query.exchange, //LEMBRETE...HACK PARA FUNCIONAR VIDEO DO DIA 21/08
+            id_usuario: req.query.user_id,
         };
 
         if (params.id_usuario) {
