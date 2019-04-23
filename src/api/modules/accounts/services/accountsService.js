@@ -33,7 +33,9 @@ const signup = async (res, user) => {
 
         await Promise.all([userCreated.user.sendEmailVerification(), log.save()]);
 
-        return res.status(201).json();
+        return res.status(201).json({
+            success: true,
+        });
     } catch (error) {
         console.error(error);
         response.constructionErrorMessage(res, error);
