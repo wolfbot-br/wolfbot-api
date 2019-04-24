@@ -10,7 +10,7 @@ module.exports = {
             message: "A senha e a senha de confirmação não conferem.",
         },
         nameIsEmpty: { message: "O nome é obrigatório." },
-        passwordIsEmpty: { message: "A senha é obrigatória." },
+        passwordIsEmpty: { message: "A senha é obrigatório." },
         passwordConfirmIsEmpty: {
             message: "A senha de confirmação é obrigatória.",
         },

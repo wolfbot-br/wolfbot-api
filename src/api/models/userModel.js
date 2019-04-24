@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema(
         email: { type: String, unique: true, require: true, lowercase: true },
         phone: { type: Number, require: false },
         uid: { type: String, required: true },
+        lastname: { type: String, required: false },
+        address: { type: String, required: false },
+        city: { type: String, required: false },
+        country: { type: String, required: false },
+        about: { type: String, required: false },
     },
     {
         timestamps: true,
