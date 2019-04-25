@@ -36,8 +36,24 @@ const changePassword = async (req, res) => {
     await service.changePassword(res, { uid, password, new_password });
 };
 
+const deleteAccount = async (req, res) => {
+    const {
+        user: { uid },
+        body: { password },
+    } = req;
+
+    if (!password)
+        return res.status(400).json({
+            success: false,
+            errors: [{ message: "A senha não foi informada!" }],
+        });
+
+    await service.deleteAccount(res, uid, password);
+};
+
 module.exports = {
     savePerfilUser,
     getPerfiUser,
     changePassword,
+    deleteAccount,
 };

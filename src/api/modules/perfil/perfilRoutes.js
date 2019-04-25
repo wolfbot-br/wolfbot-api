@@ -14,4 +14,5 @@ module.exports = function(server) {
     protectedRoutes.get("/profile/user", controller.getPerfiUser);
     protectedRoutes.post("/profile/save", controller.savePerfilUser);
     protectedRoutes.post("/profile/changepassword", controller.changePassword);
+    protectedRoutes.post("/profile/deleteAccount", controller.deleteAccount);
 };
