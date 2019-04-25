@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "nodenv -e nodemon -- --exec",
         "pm2": "pm2 start src/server.js",
-        "start": "nodenv ./src/api/server.js"
+        "start": "nodenv ./src/api/server.js",
+        "start:io": "nodenv ./src/io/server.js"
     },
     "nodemonConfig": {
         "exec": "node ./src/api/server.js"
@@ -42,6 +43,8 @@
         "moment": "^2.22.2",
         "mongoose": "^5.2.8",
         "set-interval": "^2.0.3",
+        "socket.io": "^2.2.0",
+        "socket.io-client": "^2.2.0",
         "tulind": "^0.8.12"
     },
     "devDependencies": {

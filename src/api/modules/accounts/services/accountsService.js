@@ -19,6 +19,7 @@ const signup = async (res, user) => {
             email,
             password,
             uid: userCreated.user.uid,
+            sockets: [],
         }).save();
 
         const log = new AccountLog({
@@ -84,9 +85,8 @@ const activeAccount = async (res, code) => {
             );
 
             return res.status(200).json({});
-        } else {
-            return res.status(400).json({});
         }
+        return res.status(400).json({});
     } catch (error) {
         return response.constructionErrorMessage(res, error);
     }

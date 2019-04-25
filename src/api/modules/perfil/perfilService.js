@@ -1,5 +1,4 @@
 const admin = require("firebase-admin");
-const firebase = require("firebase");
 const User = require("../../models/userModel");
 
 const savePerfilUser = async (res, user) => {
@@ -11,6 +10,7 @@ const savePerfilUser = async (res, user) => {
 
 const getPerfilUser = async (res, uid) => {
     const user = await User.find({ uid }).lean();
+
     return res.status(200).json({
         success: true,
         data: user,
