@@ -1,6 +1,8 @@
 const _ = require("lodash");
 const admin = require("firebase-admin");
 const firebase = require("firebase");
+const os = require("os");
+const moment = require("moment");
 
 const User = require("../../../models/userModel");
 const AccountLog = require("../../../models/accountsLogModel");
@@ -126,6 +128,31 @@ const login = async (res, email, password) => {
     const authResult = await authenticate(email, password);
 
     if (!authResult.success) return response.constructionErrorMessage(res, authResult.error);
+
+    const arrDate = moment()
+        .format("L")
+        .split("/");
+
+    const systemInfo = {
+        date: `${arrDate[1]}/${arrDate[0]}/${arrDate[2]} - ${moment().format("LTS")}`,
+    };
+
+    // OS Platform
+    switch (os.platform()) {
+        case "win32":
+        case "win64":
+            systemInfo.osPlatform = `Windows ${os.release()}`;
+            break;
+        case "linux":
+            systemInfo.osPlatform = `Linux ${os.release()}`;
+            break;
+        case "android":
+            systemInfo.osPlatform = `Android ${os.release()}`;
+            break;
+        default:
+            systemInfo.osPlatform = "Não identificado";
+            break;
+    }
 
     if (!authResult.authenticatedUser.emailVerified)
         return response.constructionErrorMessage(res, {
