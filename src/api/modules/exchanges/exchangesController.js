@@ -224,28 +224,22 @@ const fetchTicker = async (req, res, next) => {
 
 // # PRIVATE METHODS /
 
-const fetchBalance = async (req, res, next) => {
+const fetchBalance = async (req, res) => {
     try {
-        params = {
-            id_usuario: req.query.user_id,
-        };
+        const { uid } = req.user;
+        const config = await Configuracao.findOne({ user_uid: uid });
+        const nomeExchange = config.exchange.toLowerCase();
+        const exchangeCCXT = new ccxt[nomeExchange]();
+        exchangeCCXT.apiKey = config.api_key;
+        exchangeCCXT.secret = config.secret;
 
-        if (params.id_usuario) {
-            const config = await Configuracao.findOne({ "user.user_id": params.id_usuario });
-            let nome_exchange = config.exchange.toLowerCase();
-            const exchangeCCXT = new ccxt[nome_exchange]();
-            exchangeCCXT.apiKey = config.api_key;
-            exchangeCCXT.secret = config.secret;
-
-            let saldo = await exchangeCCXT.fetchBalance();
-            res.status(200).json({
-                data: saldo,
-            });
-        }
-    } catch (e) {
+        const saldo = await exchangeCCXT.fetchBalance();
+        res.status(200).json({
+            saldo,
+        });
+    } catch (error) {
         res.status(400).json({
-            message: e.message,
-            status: "400",
+            message: error.message,
         });
     }
 };

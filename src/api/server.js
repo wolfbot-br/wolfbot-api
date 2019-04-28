@@ -5,11 +5,11 @@ const helmet = require("helmet");
 const chalk = require("chalk");
 const firebase = require("firebase");
 const admin = require("firebase-admin");
+const cors = require("cors");
 
 const adminFirebaseAccount = require("./certificates/firebase-admin-production.json");
 const mongoose = require("./database/mongo");
 const config = require("./config");
-const allowCors = require("./middlewares/cors");
 
 const app = express();
 mongoose.createConnection();
@@ -24,7 +24,7 @@ admin.initializeApp({
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(allowCors);
+app.use(cors());
 app.use(helmet());
 
 consign()

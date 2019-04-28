@@ -12,10 +12,10 @@ const configuracao = new mongoose.Schema({
     sellForIndicator: { type: Boolean },
     maxOrdersOpen: { type: Number },
     candle_size: { type: String },
-    user: {
-        user_name: { type: String, require: true },
-        user_id: { type: String, require: true },
-    },
+    exchangeState: { type: Boolean },
+    estrategyState: { type: Boolean },
+    indicatorState: { type: Boolean },
+    user_uid: { type: String, require: true },
     status: {
         status_bot: { type: Boolean },
         status_buy: { type: Boolean },

@@ -10,58 +10,41 @@ const sendErrorsFromDB = (res, dbErrors) => {
 };
 
 // Método que retorna uma configuração salva no banco
-const get = (req, res, next) => {
-    const user_id = req.query.user_id;
-
-    Configuration.findOne({ "user.user_id": user_id }, (err, configuracao) => {
+const get = (req, res) => {
+    const { uid } = req.user;
+    Configuration.findOne({ user_uid: uid }, (err, configuracao) => {
         if (err) {
             return sendErrorsFromDB(res, err);
         }
         if (configuracao == null) {
-            res.status(200).json({
+            res.status(404).json({
                 configuracao: {},
                 message: "Configuração não cadastrada!",
-                status: "406",
-            });
-        } else {
-            res.status(200).json({
-                configuracao,
-                message: "Configuração recuperada com sucesso!",
-                status: "200",
             });
         }
+        return res.status(200).json({
+            configuracao,
+            message: "Configuração recuperada com sucesso!",
+        });
     });
 };
 
 // Método que salva uma configuração no banco de dados
-const post = (req, res, next) => {
-    const json = JSON.stringify(req.body);
-    const config = JSON.parse(json);
-
-    const nova_configuracao = new Configuration({
-        exchange: config.exchange,
-        api_key: config.api_key,
-        secret: config.secret,
-        user: config.user,
-        status: config.status,
-        base_currency: config.base_currency,
-        target_currency: config.target_currency,
-        candle_size: config.candle_size,
-        strategy: config.strategy,
-    });
-
-    nova_configuracao.save((err) => {
+const post = (req, res) => {
+    const { uid } = req.user;
+    const values = req.body;
+    const query = { user_uid: uid };
+    const options = { upsert: true, new: true };
+    Configuration.findOneAndUpdate(query, values, options, (err, configuracao) => {
         if (err) {
-            res.status(500).json({
-                message: "Não foi possível cadastrar uma nova configuração!",
-                status: "500",
-            });
-        } else {
-            res.status(201).json({
-                message: "Configuração cadastrada com sucesso!",
-                status: "201",
+            return res.status(400).json({
+                erro: err.message,
             });
         }
+        return res.status(200).json({
+            configuracao,
+            message: "Configuração gravada com sucesso!",
+        });
     });
 };
 
