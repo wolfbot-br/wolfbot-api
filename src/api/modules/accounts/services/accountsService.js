@@ -1,12 +1,15 @@
 const _ = require("lodash");
 const admin = require("firebase-admin");
 const firebase = require("firebase");
+const os = require("os");
+const moment = require("moment");
 
 const User = require("../../../models/userModel");
 const AccountLog = require("../../../models/accountsLogModel");
 const response = require("./accountsResponse");
 const dateFunctions = require("../../../utils/functions/dates");
 const enumerator = require("../../../utils/enumerators/accounts");
+const Activity = require("../../../models/activitiesModel");
 
 const signup = async (res, user) => {
     const { name, email, password } = user;
@@ -122,10 +125,43 @@ const authenticate = async (email, password) => {
     }
 };
 
-const login = async (res, email, password) => {
+// eslint-disable-next-line max-params
+const login = async (res, email, password, browser, ip) => {
     const authResult = await authenticate(email, password);
 
     if (!authResult.success) return response.constructionErrorMessage(res, authResult.error);
+
+    const arrDate = moment()
+        .format("L")
+        .split("/");
+
+    const systemInfo = {
+        date: `${arrDate[1]}/${arrDate[0]}/${arrDate[2]} - ${moment().format("LTS")}`,
+        browser,
+        ip,
+        userEmail: email,
+    };
+
+    // OS Platform
+    switch (os.platform()) {
+        case "win32":
+        case "win64":
+            systemInfo.osPlatform = `Windows ${os.release()}`;
+            break;
+        case "linux":
+            systemInfo.osPlatform = `Linux ${os.release()}`;
+            break;
+        case "android":
+            systemInfo.osPlatform = `Android ${os.release()}`;
+            break;
+        default:
+            systemInfo.osPlatform = "Não identificado";
+            break;
+    }
+
+    const activity = new Activity({ ...systemInfo });
+
+    await activity.save();
 
     if (!authResult.authenticatedUser.emailVerified)
         return response.constructionErrorMessage(res, {

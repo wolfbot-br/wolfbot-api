@@ -39,6 +39,7 @@
         "firebase": "^5.8.6",
         "firebase-admin": "^7.0.0",
         "helmet": "^3.13.0",
+        "ipware": "^2.0.0",
         "jsonwebtoken": "^7.3.0",
         "lodash": "^4.17.5",
         "moment": "^2.22.2",

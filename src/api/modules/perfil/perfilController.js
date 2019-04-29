@@ -51,9 +51,14 @@ const deleteAccount = async (req, res) => {
     await service.deleteAccount(res, uid, password);
 };
 
+const getActivities = async (req, res) => {
+    await service.getActivities(res, req.user.email);
+};
+
 module.exports = {
     savePerfilUser,
     getPerfiUser,
     changePassword,
     deleteAccount,
+    getActivities,
 };
