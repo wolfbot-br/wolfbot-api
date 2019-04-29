@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 
 const User = require("../../models/userModel");
 const UserLogs = require("../../models/accountsLogModel");
+const Activities = require("../../models/activitiesModel");
 
 const savePerfilUser = async (res, user) => {
     await User.findOneAndUpdate({ uid: user.uid }, user);
@@ -70,9 +71,18 @@ const deleteAccount = async (res, uid, password) => {
     });
 };
 
+const getActivities = async (res, userEmail) => {
+    const activities = await Activities.find({ userEmail }).lean();
+    return res.status(200).json({
+        success: true,
+        data: activities,
+    });
+};
+
 module.exports = {
     savePerfilUser,
     getPerfilUser,
     changePassword,
     deleteAccount,
+    getActivities,
 };

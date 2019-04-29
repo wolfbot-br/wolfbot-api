@@ -2,7 +2,12 @@ const mongoose = require("mongoose");
 
 const activitiesSchema = new mongoose.Schema(
     {
-        user: { type: String, require: true },
+        ip: { type: String },
+        location: { type: String },
+        osPlatform: { type: String },
+        browser: { type: String },
+        date: { type: String },
+        userEmail: { type: String },
     },
     {
         timestamps: true,
