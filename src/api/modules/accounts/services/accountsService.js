@@ -99,7 +99,7 @@ const authenticate = async (email, password) => {
         const currentUser = firebase.auth().currentUser.toJSON();
 
         return {
-            sucess: true,
+            success: true,
             authenticatedUser: {
                 uid: currentUser.uid,
                 email: currentUser.email,
@@ -116,7 +116,7 @@ const authenticate = async (email, password) => {
         };
     } catch (error) {
         return {
-            sucess: false,
+            success: false,
             error,
         };
     }
@@ -125,7 +125,7 @@ const authenticate = async (email, password) => {
 const login = async (res, email, password) => {
     const authResult = await authenticate(email, password);
 
-    if (!authResult.sucess) return response.constructionErrorMessage(res, authResult.error);
+    if (!authResult.success) return response.constructionErrorMessage(res, authResult.error);
 
     if (!authResult.authenticatedUser.emailVerified)
         return response.constructionErrorMessage(res, {
