@@ -48,21 +48,7 @@ const post = (req, res) => {
     });
 };
 
-/* Método que retorna altera uma informação da exchange
-    @params : nome, id
-*/
-const put = (req, res, next) => {
-    res.send({ message: "Não implementado ainda" });
-};
-
-/* Método que exclui uma exchange */
-const exclusao = (req, res, next) => {
-    res.send({ message: "Não implementado ainda" });
-};
-
 module.exports = {
     get,
     post,
-    put,
-    exclusao,
 };

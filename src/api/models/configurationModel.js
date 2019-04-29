@@ -13,7 +13,7 @@ const configuracao = new mongoose.Schema({
     maxOrdersOpen: { type: Number },
     candle_size: { type: String },
     exchangeState: { type: Boolean },
-    estrategyState: { type: Boolean },
+    strategyState: { type: Boolean },
     indicatorState: { type: Boolean },
     user_uid: { type: String, require: true },
     status: {

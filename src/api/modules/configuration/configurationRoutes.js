@@ -7,6 +7,4 @@ module.exports = (server) => {
 
     protectedRoutes.get("/buscar", controller.get);
     protectedRoutes.post("/salvar", controller.post);
-    protectedRoutes.put("/alterar", controller.put);
-    protectedRoutes.delete("/deletar", controller.exclusao);
 };
