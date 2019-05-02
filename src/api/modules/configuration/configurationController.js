@@ -17,7 +17,7 @@ const get = (req, res) => {
             return sendErrorsFromDB(res, err);
         }
         if (configuracao == null) {
-            res.status(404).json({
+            return res.status(404).json({
                 configuracao: {},
                 message: "Configuração não cadastrada!",
             });
