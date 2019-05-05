@@ -4,7 +4,7 @@ const configuracao = new mongoose.Schema({
     exchange: { type: String },
     api_key: { type: String },
     secret: { type: String },
-    target_currency: [{ currency: { type: String } }],
+    target_currency: [{ type: String }],
     base_currency: { type: String },
     purchase_quantity: { type: Number },
     profit: { type: Number },
