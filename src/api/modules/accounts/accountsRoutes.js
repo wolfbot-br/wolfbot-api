@@ -2,7 +2,7 @@ const express = require("express");
 const auth = require("../../middlewares/authentication");
 const controller = require("../accounts/accountsController");
 
-module.exports = function(server) {
+const routes = (server) => {
     const protectedRoutes = express.Router();
     const openRoutes = express.Router();
 
@@ -15,10 +15,12 @@ module.exports = function(server) {
     openRoutes.get("/active", controller.activeAccount);
     openRoutes.post("/login", controller.login);
     openRoutes.post("/createtoken", controller.createToken);
+    openRoutes.post("/passwordRecovery", controller.passwordRecovery);
 
     protectedRoutes.get("/userinfo", controller.userInfo);
 
-    openRoutes.post("/passwordRecovery", controller.passwordRecovery);
     openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
     openRoutes.post("/changepassword", controller.changePassword);
 };
+
+module.exports = routes;
