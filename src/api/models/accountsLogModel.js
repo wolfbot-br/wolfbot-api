@@ -9,6 +9,7 @@ const accountLogSchema = new mongoose.Schema(
         logType: { type: String, default: true },
         pending: { type: Boolean, default: true },
         uid: { type: String, required: true },
+        code: { type: String },
     },
     {
         timestamps: true,

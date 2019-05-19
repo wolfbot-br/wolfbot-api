@@ -36,30 +36,20 @@ const validLogin = (email, password) => {
     return errors;
 };
 
-const changePasswordValidation = (password, passwordConfirm, changePasswordHash) => {
+const changePasswordValidation = (password, passwordConfirm, code) => {
     const errors = [];
-    if (
-        changePasswordHash === "" ||
-        changePasswordHash == null ||
-        changePasswordHash === undefined
-    ) {
-        errors.push(Object.assign({}, { message: "Solicitação Inválida." }));
+    if (!code) {
+        errors.push({ message: "Solicitação Inválida." });
         return errors;
     }
-    if (password === "" || password === undefined) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
-    }
-    if (passwordConfirm === "" || passwordConfirm === undefined) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordConfirmIsEmpty }));
-        return errors;
-    }
-    if (password !== passwordConfirm) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordDiferentIsConfirm }));
-        return errors;
-    }
-    if (!password.match(passwordRegex)) {
-        errors.push(Object.assign({}, { ...dictionary.account.passwordIsEmpty }));
-    }
+    if (!password) errors.push(dictionary.account.passwordIsEmpty);
+    else if (!password.match(passwordRegex)) errors.push(dictionary.account.passwordIsInvalid);
+
+    if (!passwordConfirm) errors.push(dictionary.account.passwordConfirmIsEmpty);
+
+    if (password && passwordConfirm && password !== passwordConfirm)
+        errors.push(dictionary.account.passwordDiferentIsConfirm);
+
     return errors;
 };
 

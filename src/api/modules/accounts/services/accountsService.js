@@ -114,6 +114,7 @@ const activeAccount = async (res, code) => {
                 {
                     verificationDate: dateFunctions.createMomentDate(),
                     pending: false,
+                    code,
                 }
             );
 
@@ -250,22 +251,32 @@ const passwordRecovery = async (res, next, email) => {
     });
 };
 
-const sendEmailPasswordRecovery = (usuario, res) => {};
+const changePassword = async (res, next, password, code) => {
+    const user = await AccountLog.findOne({
+        code,
+        pending: false,
+    }).lean();
 
-const changePasswordPermition = (res, next, hash) => {};
+    await Promise.all([
+        admin.auth().updateUser(user.uid, {
+            password,
+        }),
+        User.update(
+            {
+                _id: user._id,
+                email: user.email,
+            },
+            { password }
+        ),
+    ]);
 
-const findLogChangePassword = (ChangePasswordHash, res) => {};
-
-const updatePassword = (log, password, res) => {};
-
-const changePassword = (res, next, changePasswordHash, password) => {};
+    return res.status(200).json({
+        success: true,
+    });
+};
 
 module.exports = {
-    changePasswordPermition,
     passwordRecovery,
-    sendEmailPasswordRecovery,
-    findLogChangePassword,
-    updatePassword,
     signup,
     login,
     userInfo,

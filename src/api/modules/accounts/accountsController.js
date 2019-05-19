@@ -46,27 +46,16 @@ const passwordRecovery = async (req, res, next) => {
     await service.passwordRecovery(res, next, email);
 };
 
-const changePasswordPermition = (req, res, next) => {
-    const hash = req.body.changepasswordhash;
-    service.changePasswordPermition(res, next, hash);
-};
-
-const changePassword = (req, res, next) => {
-    const password = req.body.password;
-    const passwordConfirm = req.body.passwordConfirm;
-    const changePasswordHash = req.body.changePasswordHash;
-    const errors = validator.changePasswordValidation(
-        password,
-        passwordConfirm,
-        changePasswordHash
-    );
+const changePassword = async (req, res, next) => {
+    const { password, passwordConfirm, code } = req.body;
+    const errors = validator.changePasswordValidation(password, passwordConfirm, code);
     if (errors.length > 0) {
         return res.status(400).json({
             success: false,
             errors,
         });
     }
-    service.changePassword(res, next, changePasswordHash, password);
+    return await service.changePassword(res, next, password, code);
 };
 
 module.exports = {
@@ -75,7 +64,6 @@ module.exports = {
     signup,
     userInfo,
     passwordRecovery,
-    changePasswordPermition,
     changePassword,
     activeAccount,
 };

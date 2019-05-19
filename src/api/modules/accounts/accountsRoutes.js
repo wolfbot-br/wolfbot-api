@@ -16,11 +16,9 @@ const routes = (server) => {
     openRoutes.post("/login", controller.login);
     openRoutes.post("/createtoken", controller.createToken);
     openRoutes.post("/passwordRecovery", controller.passwordRecovery);
+    openRoutes.post("/changepassword", controller.changePassword);
 
     protectedRoutes.get("/userinfo", controller.userInfo);
-
-    openRoutes.post("/changepasswordpermition", controller.changePasswordPermition);
-    openRoutes.post("/changepassword", controller.changePassword);
 };
 
 module.exports = routes;
