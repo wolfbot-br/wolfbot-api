@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const accountLogSchema = new mongoose.Schema(
     {
-        user: { type: String, require: true },
+        user: { type: String, require: false },
         verifiedEmail: { type: Boolean, require: true },
         expirationDate: { type: Date, default: null },
         verificationDate: { type: Date, fromd: true },

@@ -39,6 +39,7 @@ const signup = async (res, user) => {
 
         return res.status(201).json({
             success: true,
+            logType: enumerator.accountLogTypes.emailActivation,
         });
     } catch (error) {
         console.error(error);
@@ -49,8 +50,7 @@ const signup = async (res, user) => {
 const activeAccount = async (res, code) => {
     try {
         const resultActiveAccount = await firebase.auth().checkActionCode(code);
-
-        if (resultActiveAccount.operation == "VERIFY_EMAIL") {
+        if (resultActiveAccount.operation === "VERIFY_EMAIL") {
             const { email } = resultActiveAccount.data;
 
             const firebaseUser = await admin.auth().getUserByEmail(email);
@@ -87,7 +87,39 @@ const activeAccount = async (res, code) => {
                 }
             );
 
-            return res.status(200).json({});
+            return res.status(200).json({
+                mode: enumerator.accountLogTypes.emailActivation,
+            });
+        }
+
+        if (resultActiveAccount.operation === "PASSWORD_RESET") {
+            const log = await AccountLog.findOne({
+                logType: enumerator.accountLogTypes.passwordReset,
+                pending: true,
+                expirationDate: { $gt: dateFunctions.createMomentDate() },
+            })
+                .sort({ createdAt: -1 })
+                .lean();
+            if (
+                !Object.keys(log || {}).length ||
+                dateFunctions.createMomentDate() > log.expirationDate
+            ) {
+                return response.constructionErrorMessage(res, {
+                    code: "auth/invalid-action-code",
+                });
+            }
+
+            await AccountLog.updateOne(
+                { _id: log._id },
+                {
+                    verificationDate: dateFunctions.createMomentDate(),
+                    pending: false,
+                }
+            );
+
+            return res.status(200).json({
+                mode: enumerator.accountLogTypes.passwordReset,
+            });
         }
         return res.status(400).json({});
     } catch (error) {
@@ -199,10 +231,22 @@ const passwordRecovery = async (res, next, email) => {
             ],
         });
 
-    await firebase.auth().sendPasswordResetEmail(email);
+    const firebaseUser = await admin.auth().getUserByEmail(email);
 
-    return res.status(200).json({
+    const log = new AccountLog({
+        uid: firebaseUser.uid,
+        user: mongoUser._id,
+        expirationDate: dateFunctions.createMomentDate().add(1, "days"),
+        verificationDate: null,
+        logType: enumerator.accountLogTypes.passwordReset,
+        pending: true,
+    });
+
+    await Promise.all([firebase.auth().sendPasswordResetEmail(email), log.save()]);
+
+    return res.status(201).json({
         success: true,
+        mode: enumerator.accountLogTypes.passwordReset,
     });
 };
 
