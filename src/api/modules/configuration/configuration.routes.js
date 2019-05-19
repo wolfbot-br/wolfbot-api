@@ -1,5 +1,5 @@
 const express = require("express");
-const controller = require("./configurationController");
+const controller = require("./configuration.controller");
 
 module.exports = (server) => {
     const protectedRoutes = express.Router();

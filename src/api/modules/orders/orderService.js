@@ -6,13 +6,13 @@ const order = require("../../models/orderModel");
 
 const getOrdersOpenByCurrency = async (params, res) => {
     try {
-        let orders = await order.find({
+        const orders = await order.find({
             user: params.user_id,
             currency: params.currency,
             status: "open",
         });
 
-        if (params.action != "Automatic") {
+        if (params.action !== "Automatic") {
             res.status(200).json({
                 data: orders,
                 status: "200",
@@ -21,7 +21,7 @@ const getOrdersOpenByCurrency = async (params, res) => {
             return orders;
         }
     } catch (e) {
-        if (params.action != "Automatic") {
+        if (params.action !== "Automatic") {
             res.status(400).json({
                 message: e.message,
                 status: "400",
@@ -32,12 +32,12 @@ const getOrdersOpenByCurrency = async (params, res) => {
 
 const getOrdersOpenByUser = async (params, res) => {
     try {
-        let orders = await order.find({
+        const orders = await order.find({
             user: params.user_id,
             status: "open",
         });
 
-        if (params.action != "Automatic") {
+        if (params.action !== "Automatic") {
             res.status(200).json({
                 data: orders,
                 status: "200",
@@ -46,7 +46,7 @@ const getOrdersOpenByUser = async (params, res) => {
             return orders;
         }
     } catch (e) {
-        if (params.action != "Automatic") {
+        if (params.action !== "Automatic") {
             res.status(400).json({
                 message: e.message,
                 status: "400",
@@ -87,7 +87,7 @@ const getOrdersClose = async (params, res) => {
     }
 };
 
-const orderBuy = async function(config, params, res) {
+const orderBuy = async function (config, params, res) {
     try {
         const time = moment;
         time.locale("pt-br");
@@ -105,11 +105,11 @@ const orderBuy = async function(config, params, res) {
         let order_buy = {};
 
         if (purchase_value <= balance.free) {
-            order_buy = await exchangeCCXT.createLimitBuyOrder(
+            /* order_buy = await exchangeCCXT.createLimitBuyOrder(
                 pair_currency, // Simbolo do par de moedas a ser comprado
                 Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
                 Number.parseFloat(price[0]) // Preço da moeda que será comprada
-            );
+            ); */
             const orders = new order({
                 date: time().format(),
                 amount: amount.toFixed(8),
@@ -119,11 +119,11 @@ const orderBuy = async function(config, params, res) {
                 type_operation: "buy",
                 action: params.action,
                 user: config.user.user_id,
-                identifier: order_buy.id,
+                identifier: Date.now().toString, //order_buy.id,
                 status: "open",
             });
 
-            orders.save(function(err) {
+            orders.save(function (err) {
                 if (err) {
                     throw new Error("Erro!" + err.message);
                 }
@@ -151,7 +151,7 @@ const orderBuy = async function(config, params, res) {
     }
 };
 
-const orderSell = async function(config, params, order_buy, res) {
+const orderSell = async function (config, params, order_buy, res) {
     try {
         const time = moment;
         time.locale("pt-br");
@@ -168,11 +168,11 @@ const orderSell = async function(config, params, order_buy, res) {
         let order_sell = {};
 
         if (amount <= balance.free) {
-            order_sell = await exchangeCCXT.createLimitSellOrder(
+            /* order_sell = await exchangeCCXT.createLimitSellOrder(
                 pair_currency, // Simbolo do par de moedas a ser vendido
                 amount, // Montante a ser vendido
                 Number.parseFloat(price[0]) // Preço da moeda que será vendida
-            );
+            ); */
             const orders = new order({
                 date: time().format(),
                 amount: amount,
@@ -182,11 +182,11 @@ const orderSell = async function(config, params, order_buy, res) {
                 type_operation: "sell",
                 action: params.action,
                 user: config.user.user_id,
-                identifier: order_sell.id,
+                identifier: Date.now().toString,//order_sell.id,
                 status: "close",
             });
 
-            orders.save(function(err) {
+            orders.save(function (err) {
                 if (err) {
                     throw new Error("Erro!" + err.message);
                 }
@@ -210,7 +210,7 @@ const orderSell = async function(config, params, order_buy, res) {
     }
 };
 
-const orderCancel = async function(params, res) {
+const orderCancel = async function (params, res) {
     try {
         const config = configuracao.findOne({ "user.user_id": params.user_id });
         let nome_exchange = config.exchange.toLowerCase();
@@ -235,7 +235,7 @@ const orderCancel = async function(params, res) {
     }
 };
 
-const orderUpdateStatus = function(params, order_buy, res) {
+const orderUpdateStatus = function (params, order_buy, res) {
     try {
         order.update({ _id: order_buy._id }, { status: "close" }, (error) => {
             if (error) {
