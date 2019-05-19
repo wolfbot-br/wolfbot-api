@@ -72,7 +72,9 @@ const deleteAccount = async (res, uid, password) => {
 };
 
 const getActivities = async (res, userEmail) => {
-    const activities = await Activities.find({ userEmail }).lean();
+    const activities = await Activities.find({ userEmail })
+        .sort({ createdAt: -1 })
+        .lean();
     return res.status(200).json({
         success: true,
         data: activities,

@@ -16,7 +16,7 @@ const activeAccount = async (req, res) => {
     const { code } = req.headers;
     if (!code) {
         return res.status(400).json({
-            errors: [{ message: '"code" na requisição é obrigatório' }],
+            errors: [{ message: "'code' na requisição é obrigatório" }],
         });
     }
     await service.activeAccount(res, code);
@@ -41,9 +41,9 @@ const createToken = (req, res) => {
         : service.createToken(res, email, password);
 };
 
-const passwordRecovery = (req, res, next) => {
-    const email = req.body.email;
-    service.passwordRecovery(res, next, email);
+const passwordRecovery = async (req, res, next) => {
+    const { email } = req.body;
+    await service.passwordRecovery(res, next, email);
 };
 
 const changePasswordPermition = (req, res, next) => {

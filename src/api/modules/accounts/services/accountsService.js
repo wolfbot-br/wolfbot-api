@@ -186,9 +186,27 @@ const createToken = async (res, email, password) => {
         });
 };
 
-const sendEmailPasswordRecovery = (usuario, res) => {};
+const passwordRecovery = async (res, next, email) => {
+    const mongoUser = await User.findOne({ email }).lean();
 
-const passwordRecovery = (res, next, email) => {};
+    if (!mongoUser)
+        return res.status(400).json({
+            success: false,
+            errors: [
+                {
+                    message: "Não existe usuário cadastrado com esse endereço de email!",
+                },
+            ],
+        });
+
+    await firebase.auth().sendPasswordResetEmail(email);
+
+    return res.status(200).json({
+        success: true,
+    });
+};
+
+const sendEmailPasswordRecovery = (usuario, res) => {};
 
 const changePasswordPermition = (res, next, hash) => {};
 
