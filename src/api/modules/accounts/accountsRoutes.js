@@ -2,7 +2,7 @@ const express = require("express");
 const auth = require("../../middlewares/authentication");
 const controller = require("../accounts/accountsController");
 
-module.exports = function(server) {
+module.exports = (server) => {
     const protectedRoutes = express.Router();
     const openRoutes = express.Router();
 

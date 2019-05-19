@@ -1,14 +1,70 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-await-in-loop */
 const ccxt = require("ccxt");
-const _ = require("lodash");
 const moment = require("moment");
 const robo = require("set-interval");
 const strategy = require("./botStrategies");
-const configuracao = require("../../../models/configurationModel");
+const configuracao = require("../../configuration/configuration.service");
 const order = require("../../orders/orderService");
 
-async function roboLigado(params) {
-    const config = await configuracao.findOne({ "user.user_id": params.user_id });
+const acionarMonitoramento = (config, params) => {
+    try {
+        const nomeExchange = config.exchange.toLowerCase();
+        const exchangeCCXT = new ccxt[nomeExchange]();
+        exchangeCCXT.enableRateLimit = true;
+        let periodo = "";
+        const paramsOrder = { action: "Automatic", user_id: config.user_uid };
+        const unidadeTempo = config.candle_size.substr(-1);
+        const unidadeTamanho = Number.parseInt(config.candle_size.substr(0), 10);
+        const tamanhoCandle = config.candle_size;
+        const arrayCurrencies = config.target_currency;
 
+        if (unidadeTempo === "m") {
+            periodo = "minutes";
+        } else if (unidadeTempo === "h") {
+            periodo = "hours";
+        } else {
+            periodo = "days";
+        }
+        const tempo = moment().subtract(100 * unidadeTamanho, periodo);
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        robo.start(
+            async function load() {
+                for (let i = 0; i <= arrayCurrencies.length - 1; i++) {
+                    const parMoedas = `${arrayCurrencies[i]}/${config.base_currency}`;
+                    const since = tempo.format("x");
+                    const limit = 1000;
+                    await sleep(exchangeCCXT.rateLimit); // milliseconds
+                    const candle = await exchangeCCXT.fetchOHLCV(
+                        parMoedas,
+                        tamanhoCandle,
+                        since,
+                        limit
+                    );
+                    paramsOrder.currency = arrayCurrencies[i];
+                    const ordersOpen = await order.getOrdersOpenByCurrency(paramsOrder);
+                    await strategy.loadStrategy(
+                        config,
+                        params,
+                        arrayCurrencies[i],
+                        candle,
+                        ordersOpen
+                    );
+                }
+                console.log(
+                    "-----------------------------------------------------------------------------"
+                );
+            },
+            config.status.interval_check,
+            config.status.key
+        );
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+async function roboLigado(params) {
+    const config = await configuracao.getConfiguration(params.user_uid);
     console.log("########## Robo Ligado ##########");
     acionarMonitoramento(config, params);
 }
@@ -16,56 +72,6 @@ async function roboLigado(params) {
 function roboDesligado(params) {
     console.log("########## Robo Desligado ##########");
     robo.clear(params.key);
-}
-
-async function acionarMonitoramento(config) {
-    let nome_exchange = config.exchange.toLowerCase();
-    exchangeCCXT = new ccxt[nome_exchange]();
-    exchangeCCXT.enableRateLimit = true;
-    let periodo = "";
-    let params_order = { action: "Automatic", user_id: config.user.user_id };
-    const unidadeTempo = config.candle_size.substr(-1);
-    const unidadeTamanho = Number.parseInt(config.candle_size.substr(0));
-    const tamanhoCandle = config.candle_size;
-    const arrayCurrencies = config.target_currency;
-
-    if (unidadeTempo === "m") {
-        periodo = "minutes";
-    } else if (unidadeTempo === "h") {
-        periodo = "hours";
-    } else {
-        periodo = "days";
-    }
-    const tempo = moment().subtract(100 * unidadeTamanho, periodo);
-    let sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    robo.start(
-        async function load() {
-            for (let i = 0; i <= arrayCurrencies.length - 1; i++) {
-                await sleep(exchangeCCXT.rateLimit); // milliseconds
-                let parMoedas = `${arrayCurrencies[i].currency}/${config.base_currency}`;
-                let candle = await exchangeCCXT.fetchOHLCV(
-                    parMoedas,
-                    tamanhoCandle,
-                    (since = tempo.format("x")),
-                    (limit = 1000)
-                );
-                params_order.currency = arrayCurrencies[i].currency;
-                let ordersOpen = await order.getOrdersOpenByCurrency(params_order);
-                await strategy.loadStrategy(
-                    config,
-                    params,
-                    arrayCurrencies[i].currency,
-                    candle,
-                    ordersOpen
-                );
-            }
-            console.log(
-                "-----------------------------------------------------------------------------"
-            );
-        },
-        config.status.interval_check,
-        config.status.key
-    );
 }
 
 module.exports = { roboLigado, roboDesligado };

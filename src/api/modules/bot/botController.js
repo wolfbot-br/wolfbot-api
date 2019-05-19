@@ -1,15 +1,28 @@
 const bot = require("./services/botHeart");
+const config = require("../configuration/configuration.service");
 
 // requisição que aciona ou desliga o robo
 const acionarRobo = async (req, res, next) => {
     try {
-        params = {
-            user_id: req.body.user_id,
-            status_bot: req.body.status.status_bot,
-            status_buy: req.body.status.status_buy,
-            status_sell: req.body.status.status_sell,
-            key: req.body.status.key,
+        const params = {
+            user_uid: req.user.uid,
+            status_bot: req.body.status_bot,
+            status_buy: req.body.status_buy,
+            status_sell: req.body.status_sell,
+            key: req.user.uid,
         };
+        const values = {
+            status: {
+                status_bot: req.body.status_bot,
+                status_buy: req.body.status_buy,
+                status_sell: req.body.status_sell,
+                interval_check: 30000,
+                key: req.user.uid,
+            },
+        };
+        const query = { user_uid: params.user_uid };
+        const options = { upsert: true, new: true };
+        await config.postConfiguration(query, values, options);
 
         if (params.status_bot) {
             bot.roboLigado(params);
