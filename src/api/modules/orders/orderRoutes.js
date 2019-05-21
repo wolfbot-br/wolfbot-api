@@ -1,10 +1,8 @@
 const express = require("express");
 const controller = require("./orderController");
 
-module.exports = function(server) {
+module.exports = (server) => {
     const protectedRoutes = express.Router();
-
-    // protectedRoutes.use(auth)
     server.use("/api/order", protectedRoutes);
 
     protectedRoutes.get("/open", controller.open);

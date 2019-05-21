@@ -1,5 +1,6 @@
 const validation = require("./orderValidation");
 const service = require("./orderService");
+const Order = require("../../models/orderModel");
 
 const open = (req, res, next) => {
     try {
@@ -33,48 +34,56 @@ const close = (req, res, next) => {
     }
 };
 
-const buy = (req, res, next) => {
+const buy = async (req, res) => {
     try {
-        params = {
-            user_id: req.body.user_id,
-            symbol: req.body.symbol,
+        const { uid } = req.user;
+        const order = {
+            date: Date.now(),
             amount: req.body.amount,
             price: req.body.price,
-            type_operation: req.body.type_operation,
-            symbol: req.body.symbol,
-            type: req.body.type,
+            cost: req.body.cost,
+            currency: req.body.currency,
+            type_operation: "buy",
             action: req.body.action,
+            user: uid,
+            identifier: Date.now().toString(), // order_buy.id,
+            status: "open",
         };
 
-        validation.dados(params);
-        service.comprar(params, res);
+        const orderResult = await Order.create(order);
+        res.status(200).json({
+            orderResult,
+        });
     } catch (e) {
         res.status(400).json({
-            message: e.message,
-            status: "400",
+            message: e,
         });
     }
 };
 
-const sell = (req, res, next) => {
+const sell = async (req, res) => {
     try {
-        params = {
-            user_id: req.body.user_id,
-            symbol: req.body.symbol,
+        const { uid } = req.user;
+        const order = {
+            date: Date.now(),
             amount: req.body.amount,
             price: req.body.price,
-            type_operation: req.body.type_operation,
-            symbol: req.body.symbol,
-            type: req.body.type,
+            cost: req.body.cost,
+            currency: req.body.currency,
+            type_operation: "sell",
             action: req.body.action,
+            user: uid,
+            identifier: Date.now().toString(), // order_buy.id,
+            status: "close",
         };
 
-        validation.dados(params);
-        service.vender(params, res);
+        const orderResult = await Order.create(order);
+        res.status(200).json({
+            orderResult,
+        });
     } catch (e) {
         res.status(400).json({
-            message: e.message,
-            status: "400",
+            message: e,
         });
     }
 };
