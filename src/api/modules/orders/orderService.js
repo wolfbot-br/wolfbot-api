@@ -55,6 +55,30 @@ const getOrdersOpenByUser = async (params, res) => {
     }
 };
 
+const getOrdersOpenByUserMongo = async (uid) => {
+    try {
+        const orders = await order.find({
+            user: uid,
+            status: "open",
+        });
+        return orders;
+    } catch (error) {
+        return error;
+    }
+};
+
+const getOrdersCloseByUserMongo = async (uid) => {
+    try {
+        const orders = await order.find({
+            user: uid,
+            status: "close",
+        });
+        return orders;
+    } catch (error) {
+        return error;
+    }
+};
+
 const getOrdersClose = async (params, res) => {
     try {
         const config = await configuracao.findOne({ "user.user_id": params.user_id });
@@ -268,4 +292,6 @@ module.exports = {
     orderCancel,
     orderUpdateStatus,
     getOrdersOpenByUser,
+    getOrdersOpenByUserMongo,
+    getOrdersCloseByUserMongo,
 };
