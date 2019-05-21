@@ -14,4 +14,5 @@ module.exports = {
         storageBucket: env.FIREBASE_STORAGE_BUCKET,
         messagingSenderId: env.MESSAGING_SENDER_ID,
     },
+    ioConnection: env.IO_CONNECTION,
 };
