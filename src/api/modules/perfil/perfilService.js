@@ -3,6 +3,7 @@ const admin = require("firebase-admin");
 const User = require("../../models/userModel");
 const UserLogs = require("../../models/accountsLogModel");
 const Activities = require("../../models/activitiesModel");
+const emitMessage = require("../../utils/functions/emitMessage");
 
 const savePerfilUser = async (res, user) => {
     await User.findOneAndUpdate({ uid: user.uid }, user);
@@ -14,6 +15,7 @@ const savePerfilUser = async (res, user) => {
 const getPerfilUser = async (res, uid) => {
     const user = await User.find({ uid }).lean();
 
+    emitMessage({ dayResult: 1 }, uid);
     return res.status(200).json({
         success: true,
         data: user,

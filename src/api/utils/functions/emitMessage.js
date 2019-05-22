@@ -1,16 +1,24 @@
-import io from "socket.io-client";
-import config from "../../config";
+const io = require("socket.io-client");
+const config = require("../../config");
+const User = require("../../models/userModel");
 
-const ioConnection = config.ioConnection;
+const { ioConnection } = config;
 
-const emitMessageToSocket = (message, uuid) => {
+const emitMessageToSocket = async (message, uid) => {
+    const { sockets } = await User.findOne({ uid }).lean();
     const socket = io(ioConnection, {
         query: {
-            user: uuid,
+            user: uid,
         },
     });
 
-    socket.emit("updates", message);
+    socket.on("connect", () => {
+        sockets.forEach((socketId) => {
+            setTimeout(() => {
+                socket.emit("updates", { ...message, socketId });
+            }, 2000);
+        });
+    });
 };
 
-export default emitMessageToSocket;
+module.exports = emitMessageToSocket;

@@ -36,7 +36,7 @@ io.on("connection", async function(socket) {
     }
 
     socket.on("updates", async function(input) {
-        await io.to(input.socketId).emit("updates", { payload: input.payload });
+        await io.to(input.socketId).emit("updates", { ...input });
     });
 
     socket.on("disconnect", async function() {
