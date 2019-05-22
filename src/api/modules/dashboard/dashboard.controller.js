@@ -6,7 +6,7 @@ const dataDashboard = async (req, res) => {
         const dayResult = await dashboard.dayResult();
         const openOrdersTableResult = await dashboard.openOrdersTable();
         const operationsSummaryResult = await dashboard.operationsSummary();
-        const overallResult = await dashboard.overallResult();
+        const overallResult = await dashboard.overallResult(uid);
         const totalizerResult = await dashboard.totalizerOpenOrdersAndClosedOrders(uid);
         res.status(200).json({
             data: {

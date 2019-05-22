@@ -63,7 +63,7 @@ const getOrdersOpenByUserMongo = async (uid) => {
         });
         return orders;
     } catch (error) {
-        return error;
+        throw new Error(`Erro: ${error}`);
     }
 };
 
@@ -75,7 +75,7 @@ const getOrdersCloseByUserMongo = async (uid) => {
         });
         return orders;
     } catch (error) {
-        return error;
+        throw new Error(`Erro: ${error}`);
     }
 };
 
