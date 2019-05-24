@@ -2,7 +2,7 @@ const bot = require("./services/botHeart");
 const config = require("../configuration/configuration.service");
 
 // requisição que aciona ou desliga o robo
-const acionarRobo = async (req, res, next) => {
+const acionarRobo = async (req, res) => {
     try {
         const params = {
             user_uid: req.user.uid,

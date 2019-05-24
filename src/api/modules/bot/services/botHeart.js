@@ -13,7 +13,7 @@ const acionarMonitoramento = (config, params) => {
         const exchangeCCXT = new ccxt[nomeExchange]();
         exchangeCCXT.enableRateLimit = true;
         let periodo = "";
-        const paramsOrder = { action: "Automatic", user_id: config.user_uid };
+        const paramsOrder = { action: "Automatic", user_uid: config.user_uid };
         const unidadeTempo = config.candle_size.substr(-1);
         const unidadeTamanho = Number.parseInt(config.candle_size.substr(0), 10);
         const tamanhoCandle = config.candle_size;

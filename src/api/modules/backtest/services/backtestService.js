@@ -10,9 +10,9 @@ const sendErrorsFromDB = (res, dbErrors) => {
 
 // Método que retorna uma configuração salva no banco
 const get = (req, res, next) => {
-    const user_id = req.query.user_id;
+    const user_uid = req.query.user_uid;
 
-    backtestConfiguration.findOne({ "user.user_id": user_id }, (err, configuracao) => {
+    backtestConfiguration.findOne({ "user_uid": user_uid }, (err, configuracao) => {
         if (err) {
             return sendErrorsFromDB(res, err);
         } else {
@@ -39,10 +39,7 @@ const post = (req, res, next) => {
         exchange: req.body.exchange || "",
         apiKey: req.body.api_key || "",
         secret: req.body.secret || "",
-        user: {
-            user_name: req.body.user.user_name || "",
-            user_id: req.body.user.user_id || "",
-        },
+        user_uid: req.body.user.user_uid || "",
         status: {
             status_bot: req.body.status.status_bot || false,
             status_buy: req.body.status.status_buy || false,

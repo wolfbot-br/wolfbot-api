@@ -1,64 +1,27 @@
+/* eslint-disable no-underscore-dangle */
 const ccxt = require("ccxt");
 const moment = require("moment");
 const _ = require("lodash");
-const configuracao = require("../../models/configurationModel");
-const order = require("../../models/orderModel");
+const Order = require("../../models/orderModel");
 
-const getOrdersOpenByCurrency = async (params, res) => {
+// ###################### FUNÇÕES UTILIZADAS PELO BOT ##########################
+const getOrdersOpenByCurrency = async (params) => {
     try {
-        const orders = await order.find({
-            user: params.user_id,
+        const orders = await Order.find({
+            user: params.user_uid,
             currency: params.currency,
             status: "open",
         });
-
-        if (params.action !== "Automatic") {
-            res.status(200).json({
-                data: orders,
-                status: "200",
-            });
-        } else {
-            return orders;
-        }
-    } catch (e) {
-        if (params.action !== "Automatic") {
-            res.status(400).json({
-                message: e.message,
-                status: "400",
-            });
-        }
+        return orders;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
     }
 };
 
-const getOrdersOpenByUser = async (params, res) => {
+const getOrdersOpenByUser = async (params) => {
     try {
-        const orders = await order.find({
-            user: params.user_id,
-            status: "open",
-        });
-
-        if (params.action !== "Automatic") {
-            res.status(200).json({
-                data: orders,
-                status: "200",
-            });
-        } else {
-            return orders;
-        }
-    } catch (e) {
-        if (params.action !== "Automatic") {
-            res.status(400).json({
-                message: e.message,
-                status: "400",
-            });
-        }
-    }
-};
-
-const getOrdersOpenByUserMongo = async (uid) => {
-    try {
-        const orders = await order.find({
-            user: uid,
+        const orders = await Order.find({
+            user: params.user_uid,
             status: "open",
         });
         return orders;
@@ -67,74 +30,30 @@ const getOrdersOpenByUserMongo = async (uid) => {
     }
 };
 
-const getOrdersCloseByUserMongo = async (uid) => {
-    try {
-        const orders = await order.find({
-            user: uid,
-            status: "close",
-        });
-        return orders;
-    } catch (error) {
-        throw new Error(`Erro: ${error}`);
-    }
-};
-
-const getOrdersClose = async (params, res) => {
-    try {
-        const config = await configuracao.findOne({ "user.user_id": params.user_id });
-        const parMoedas = `${config.target_currency}/${config.base_currency}`;
-
-        let nome_exchange = config.exchange.toLowerCase();
-
-        exchangeCCXT = new ccxt[nome_exchange]();
-        exchangeCCXT.apiKey = config.api_key;
-        exchangeCCXT.secret = config.secret;
-
-        const tempo = moment().subtract(365, "days");
-
-        ordens = await exchangeCCXT.fetchClosedOrders(
-            (symbol = parMoedas),
-            (since = tempo.valueOf()),
-            (limit = 1),
-            (params = {})
-        );
-
-        res.status(200).json({
-            data: ordens,
-            status: "200",
-        });
-    } catch (e) {
-        res.status(400).json({
-            message: e.message,
-            status: "400",
-        });
-    }
-};
-
-const orderBuy = async function (config, params, res) {
+const orderBuy = async (config, params) => {
     try {
         const time = moment;
         time.locale("pt-br");
-        let nome_exchange = config.exchange.toLowerCase();
-        exchangeCCXT = new ccxt[nome_exchange]();
+        const nomeExchange = config.exchange.toLowerCase();
+        const exchangeCCXT = new ccxt[nomeExchange]();
         exchangeCCXT.apiKey = config.api_key;
         exchangeCCXT.secret = config.secret;
-        pair_currency = `${params.target_currency}/${config.base_currency}`;
-        const bids = await exchangeCCXT.fetchOrderBook(pair_currency); //busco orderbook de preços
-        const price = _.first(bids.asks); //pego o melhor preço de compra
-        const amount = config.purchase_quantity / price[0]; //acho a quantidade que vou comprar
-        const total_balance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda base
-        const balance = total_balance[config.base_currency]; // filtro saldo da moeda base
-        const purchase_value = config.purchase_quantity + (Number.parseFloat(price) * 0.25) / 100;
-        let order_buy = {};
+        const pairCurrency = `${params.target_currency}/${config.base_currency}`;
+        const bids = await exchangeCCXT.fetchOrderBook(pairCurrency); // busco orderbook de preços
+        const price = _.first(bids.asks); // pego o melhor preço de compra
+        const amount = config.purchase_quantity / price[0]; // acho a quantidade que vou comprar
+        const totalBalance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda base
+        const balance = totalBalance[config.base_currency]; // filtro saldo da moeda base
+        const purchaseValue = config.purchase_quantity + (Number.parseFloat(price) * 0.25) / 100;
+        let openOrderBuyExchange = {};
 
-        if (purchase_value <= balance.free) {
-            /* order_buy = await exchangeCCXT.createLimitBuyOrder(
-                pair_currency, // Simbolo do par de moedas a ser comprado
+        if (purchaseValue <= balance.free) {
+            openOrderBuyExchange = await exchangeCCXT.createLimitBuyOrder(
+                pairCurrency, // Simbolo do par de moedas a ser comprado
                 Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
                 Number.parseFloat(price[0]) // Preço da moeda que será comprada
-            ); */
-            const orders = new order({
+            );
+            const orderMongo = {
                 date: time().format(),
                 amount: amount.toFixed(8),
                 price: price[0],
@@ -142,156 +61,94 @@ const orderBuy = async function (config, params, res) {
                 currency: params.target_currency,
                 type_operation: "buy",
                 action: params.action,
-                user: config.user.user_id,
-                identifier: Date.now().toString, //order_buy.id,
+                user: config.user_uid,
+                identifier: openOrderBuyExchange.id,
                 status: "open",
-            });
-
-            orders.save(function (err) {
-                if (err) {
-                    throw new Error("Erro!" + err.message);
-                }
-            });
+            };
+            const resultOrderBuy = await Order.create(orderMongo);
+            return resultOrderBuy;
         }
-
-        if (params.action !== "Automatic") {
-            res.status(200).json({
-                data: ordens,
-                message: "Order de compra criada com sucesso.",
-                status: "200",
-            });
-        } else {
-            return order_buy;
-        }
-    } catch (e) {
-        if (params.action !== "Automatic") {
-            res.status(400).json({
-                message: e.message,
-                status: "400",
-            });
-        } else {
-            return e;
-        }
+        return 0;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
     }
 };
 
-const orderSell = async function (config, params, order_buy, res) {
+const orderSell = async (config, params, orderBuyMongo) => {
     try {
         const time = moment;
         time.locale("pt-br");
-        let nome_exchange = config.exchange.toLowerCase();
-        exchangeCCXT = new ccxt[nome_exchange]();
+        const nomeExchange = config.exchange.toLowerCase();
+        const exchangeCCXT = new ccxt[nomeExchange]();
         exchangeCCXT.apiKey = config.api_key;
         exchangeCCXT.secret = config.secret;
-        pair_currency = `${params.target_currency}/${config.base_currency}`;
-        const bids = await exchangeCCXT.fetchOrderBook(pair_currency); //busco orderbook de preços
-        const price = _.first(bids.bids); //pego o melhor preço de venda
-        const amount = Number.parseFloat(order_buy.amount); //acho a quantidade que vou vender
-        const total_balance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda alvo
-        const balance = total_balance[params.target_currency]; // filtro saldo da moeda alvo
-        let order_sell = {};
+        const pairCurrency = `${params.target_currency}/${config.base_currency}`;
+        const bids = await exchangeCCXT.fetchOrderBook(pairCurrency); // busco orderbook de preços
+        const price = _.first(bids.bids); // pego o melhor preço de venda
+        const amount = Number.parseFloat(orderBuyMongo.amount); // acho a quantidade que vou vender
+        const totalBalance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda alvo
+        const balance = totalBalance[params.target_currency]; // filtro saldo da moeda alvo
+        let openOrderSellExchange = {};
 
         if (amount <= balance.free) {
-            /* order_sell = await exchangeCCXT.createLimitSellOrder(
-                pair_currency, // Simbolo do par de moedas a ser vendido
+            openOrderSellExchange = await exchangeCCXT.createLimitSellOrder(
+                pairCurrency, // Simbolo do par de moedas a ser vendido
                 amount, // Montante a ser vendido
                 Number.parseFloat(price[0]) // Preço da moeda que será vendida
-            ); */
-            const orders = new order({
+            );
+            const orderMongo = {
                 date: time().format(),
-                amount: amount,
+                amount: amount.toFixed(8),
                 price: price[0],
                 cost: Number.parseFloat(price[0]) * amount,
                 currency: params.target_currency,
                 type_operation: "sell",
                 action: params.action,
-                user: config.user.user_id,
-                identifier: Date.now().toString,//order_sell.id,
+                user: config.user_uid,
+                identifier: openOrderSellExchange.id,
                 status: "close",
-            });
-
-            orders.save(function (err) {
-                if (err) {
-                    throw new Error("Erro!" + err.message);
-                }
-            });
+            };
+            const resultOrderSell = await Order.create(orderMongo);
+            await Order.update({ _id: orderBuyMongo._id }, { status: "close" });
+            return resultOrderSell;
         }
-
-        if (params.action !== "Automatic") {
-            res.status(200).json({
-                data: order_sell,
-                message: "Order de venda criada com sucesso.",
-                status: "200",
-            });
-        }
-    } catch (e) {
-        if (params.action !== "Automatic") {
-            res.status(400).json({
-                message: e.message,
-                status: "400",
-            });
-        }
+        return 0;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
     }
 };
 
-const orderCancel = async function (params, res) {
+// ###################### FUNÇÕES UTILIZADAS MANUALMENTE ##########################
+const getOrdersOpenByUserManual = async (uid) => {
     try {
-        const config = configuracao.findOne({ "user.user_id": params.user_id });
-        let nome_exchange = config.exchange.toLowerCase();
-
-        const orders = order.findOne({ identifier: params.identifier });
-
-        exchangeCCXT = new ccxt[nome_exchange]();
-        exchangeCCXT.apiKey = config.api_key;
-        exchangeCCXT.secret = config.secret;
-
-        await exchangeCCXT.cancelOrder(orders.identifier);
-
-        res.status(200).json({
-            message: "Order cancelada com sucesso.",
-            status: "200",
+        const orders = await Order.find({
+            user: uid,
+            status: "open",
         });
-    } catch (e) {
-        res.status(400).json({
-            message: e.message,
-            status: "400",
-        });
+        return orders;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
     }
 };
 
-const orderUpdateStatus = function (params, order_buy, res) {
+const getOrdersSellCloseByUserManual = async (uid) => {
     try {
-        order.update({ _id: order_buy._id }, { status: "close" }, (error) => {
-            if (error) {
-                return error;
-            }
+        const orders = await Order.find({
+            user: uid,
+            status: "close",
+            type_operation: "sell",
         });
-
-        if (params.action != "Automatic") {
-            res.status(200).json({
-                data: order_sell,
-                message: "Order de venda criada com sucesso.",
-                status: "200",
-            });
-        }
-    } catch (e) {
-        if (params.action != "Automatic") {
-            res.status(400).json({
-                message: e.message,
-                status: "400",
-            });
-        }
+        return orders;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
     }
 };
 
 module.exports = {
     getOrdersOpenByCurrency,
-    getOrdersClose,
     orderBuy,
     orderSell,
-    orderCancel,
-    orderUpdateStatus,
     getOrdersOpenByUser,
-    getOrdersOpenByUserMongo,
-    getOrdersCloseByUserMongo,
+    getOrdersOpenByUserManual,
+    getOrdersSellCloseByUserManual,
 };

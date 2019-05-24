@@ -3,29 +3,13 @@ const Order = require("../orders/orderService");
 
 const dayResult = async (uid) => {
     try {
-        const closeResult = await Order.getOrdersCloseByUserMongo(uid);
+        const time = moment;
+        time.locale("pt-br");
+        const today = time().format("YYYY-MM-DD");
         let total = 0;
-        const closeOrders = closeResult.filter((item) => {
-            const resultday = moment(item.date).isSame(Date.now(), "day");
-            console.log(resultday)
-            if (item.type_operation === "sell" && resultday) {
-                return item;
-            }
-            return 0;
-        });
-        console.log(closeOrders);
-        return total;
-    } catch (error) {
-        return error;
-    }
-};
-
-const overallResult = async (uid) => {
-    try {
-        const closeResult = await Order.getOrdersCloseByUserMongo(uid);
-        let total = 0;
-        closeResult.filter((item) => {
-            if (item.type_operation === "sell") {
+        const closeOrders = await Order.getOrdersSellCloseByUserManual(uid);
+        closeOrders.filter((item) => {
+            if (time(item.date).isSame(today, "day")) {
                 total += item.cost;
             }
             return 0;
@@ -36,16 +20,24 @@ const overallResult = async (uid) => {
     }
 };
 
-const totalizerOpenOrdersAndClosedOrders = async (uid) => {
+const overallResult = async (uid) => {
     try {
-        const openOrders = await Order.getOrdersOpenByUserMongo(uid);
-        const closeResult = await Order.getOrdersCloseByUserMongo(uid);
-        const closeOrders = closeResult.filter((item) => {
-            if (item.type_operation === "sell") {
-                return item;
-            }
+        const closeOrders = await Order.getOrdersSellCloseByUserManual(uid);
+        let total = 0;
+        closeOrders.map((item) => {
+            total += item.cost;
             return 0;
         });
+        return total;
+    } catch (error) {
+        return error;
+    }
+};
+
+const totalizerOpenOrdersAndClosedOrders = async (uid) => {
+    try {
+        const openOrders = await Order.getOrdersOpenByUserManual(uid);
+        const closeOrders = await Order.getOrdersSellCloseByUserManual(uid);
         return {
             openOrders: openOrders.length,
             closeOrders: closeOrders.length,

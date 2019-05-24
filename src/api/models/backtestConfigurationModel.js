@@ -5,10 +5,7 @@ const backtestConfiguracao = new mongoose.Schema({
     exchange: { type: String },
     api_key: { type: String },
     secret: { type: String },
-    user: {
-        user_name: { type: String, require: true },
-        user_id: { type: String, require: true },
-    },
+    user_uid: { type: String, require: true },
     base_currency: { type: String },
     target_currency: { type: String },
     candle_size: { type: String },

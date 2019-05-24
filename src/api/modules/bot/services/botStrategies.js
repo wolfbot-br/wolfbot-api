@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-undef */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
@@ -10,7 +11,7 @@ const _ = require("lodash");
 const chalk = require("chalk");
 const tulind = require("tulind");
 const moment = require("moment");
-const order = require("../../orders/orderService");
+const Order = require("../../orders/orderService");
 
 const loadStrategy = async (config, params, target_currency, candle, ordersOpen) => {
     const digits = 4;
@@ -449,14 +450,13 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
         }
         if (contIndicators === contSignals) {
             if (ordersOpen.length <= maxOrdersOpen) {
+                await Order.orderBuy(config, params_order);
                 console.log(chalk.green("ORDEM DE COMPRA CRIADA"));
-                order.orderBuy(config, params_order);
             }
         }
     }
 
     // CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE VENDA
-
     if (status_SELL === true) {
         if (sellForIndicator === true) {
             const contIndicators = signal.length;
@@ -470,8 +470,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                 if (ordersOpen !== null) {
                     for (let i = 0; i <= ordersOpen.length - 1; i++) {
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                        order.orderSell(config, params_order, ordersOpen[i]);
-                        order.orderUpdateStatus(params_order, ordersOpen[i]);
+                        await Order.orderSell(config, params_order, ordersOpen[i]);
                     }
                 }
             }
@@ -479,12 +478,10 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
             for (let i = 0; i <= ordersOpen.length - 1; i++) {
                 if (price >= ordersOpen[i].price + ordersOpen[i].price * profit) {
                     console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                    order.orderSell(config, params_order, ordersOpen[i]);
-                    order.orderUpdateStatus(params_order, ordersOpen[i]);
+                    await Order.orderSell(config, params_order, ordersOpen[i]);
                 } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
                     console.log(chalk.green("VENDA COM PERDA, NO STOP"));
-                    order.orderSell(config, params_order, ordersOpen[i]);
-                    order.orderUpdateStatus(params_order, ordersOpen[i]);
+                    await Order.orderSell(config, params_order, ordersOpen[i]);
                 }
             }
         }
