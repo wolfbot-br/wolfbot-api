@@ -15,7 +15,21 @@ const savePerfilUser = async (res, user) => {
 const getPerfilUser = async (res, uid) => {
     const user = await User.find({ uid }).lean();
 
-    emitMessage({ dayResult: 1 }, uid);
+    emitMessage(
+        {
+            logs: {
+                logAction: "Neutro",
+                logEvent: "Resultado MACD",
+                logMoeda: "BTC",
+                logPrice: 9999,
+                previousPrice: 9999,
+                logInfoOne: "Linha MACD = TESTE",
+                logInfoTwo: "Linha Sinal = TESTE",
+                logInfoThree: "Histograma = TESTE",
+            },
+        },
+        uid
+    );
     return res.status(200).json({
         success: true,
         data: user,

@@ -30,6 +30,7 @@
     },
     "homepage": "https://github.com/tcc-bot/wofbot-backend#readme",
     "dependencies": {
+        ",": "^2.2.0",
         "body-parser": "^1.18.2",
         "ccxt": "^1.18.361",
         "chalk": "^2.4.1",

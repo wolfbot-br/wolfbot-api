@@ -13,8 +13,9 @@ const chalk = require("chalk");
 const tulind = require("tulind");
 const moment = require("moment");
 const Order = require("../../orders/orderService");
+const emitMessage = require("../../../utils/functions/emitMessage");
 
-const loadStrategy = async (config, params, target_currency, candle, ordersOpen) => {
+const loadStrategy = async (config, params, target_currency, candle, ordersOpen, user) => {
     const digits = 4;
     const { sellForIndicator, profit, stop, maxOrdersOpen } = config;
     const timestamp = [];
@@ -100,6 +101,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
         if (short_ema > long_ema) {
             if (short_ema < trend_UP && price >= previousPrice) {
                 console.log(chalk.red("SINAL DE COMPRA!"));
+                await emitMessage(
+                    {
+                        logs: {
+                            logAction: "Sinal de Compra",
+                            logEvent: "Resultado EMA",
+                            logMoeda: target_currency,
+                            logPrice: price.toFixed(8),
+                            previousPrice: previousPrice.toFixed(8),
+                            logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                            logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                        },
+                    },
+                    user
+                );
                 signal.push({
                     indicator: "EMA",
                     buy: true,
@@ -107,6 +122,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                 });
             } else {
                 console.log(chalk.yellow("NEUTRO"));
+                await emitMessage(
+                    {
+                        logs: {
+                            logAction: "Neutro",
+                            logEvent: "Resultado EMA",
+                            logMoeda: target_currency,
+                            logPrice: price.toFixed(8),
+                            previousPrice: previousPrice.toFixed(8),
+                            logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                            logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                        },
+                    },
+                    user
+                );
                 signal.push({
                     indicator: "EMA",
                     buy: false,
@@ -117,6 +146,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
             if (short_ema < long_ema) {
                 if (short_ema > trend_DOWN && price <= previousPrice) {
                     console.log(chalk.green("SINAL DE VENDA"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Sinal de Venda",
+                                logEvent: "Resultado EMA",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                                logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "EMA",
                         buy: false,
@@ -124,6 +167,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     });
                 } else {
                     console.log(chalk.yellow("NEUTRO"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Neutro",
+                                logEvent: "Resultado EMA",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                                logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "EMA",
                         buy: false,
@@ -133,6 +190,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
             }
         } else {
             console.log(chalk.yellow("NEUTRO"));
+            await emitMessage(
+                {
+                    logs: {
+                        logAction: "Neutro",
+                        logEvent: "Resultado EMA",
+                        logMoeda: target_currency,
+                        logPrice: price.toFixed(8),
+                        previousPrice: previousPrice.toFixed(8),
+                        logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                        logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                    },
+                },
+                user
+            );
             signal.push({
                 indicator: "EMA",
                 buy: false,
@@ -150,7 +221,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
         tulind.indicators.macd.indicator(
             [close],
             [shortPeriod, longPeriod, signalPeriod],
-            (err, result) => {
+            async (err, result) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -183,6 +254,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                             price >= previousPrice
                         ) {
                             console.log(chalk.red("SINAL DE COMPRA!"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Sinal de Compra",
+                                        logEvent: "Resultado MACD",
+                                        logMoeda: target_currency,
+                                        logPrice: price.toFixed(8),
+                                        previousPrice: previousPrice.toFixed(8),
+                                        logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                        logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                        logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                    },
+                                },
+                                user
+                            );
                             signal.push({
                                 indicator: "MACD",
                                 buy: true,
@@ -190,6 +276,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                             });
                         } else {
                             console.log(chalk.yellow("NEUTRO"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Neutro",
+                                        logEvent: "Resultado MACD",
+                                        logMoeda: target_currency,
+                                        logPrice: price.toFixed(8),
+                                        previousPrice: previousPrice.toFixed(8),
+                                        logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                        logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                        logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                    },
+                                },
+                                user
+                            );
                             signal.push({
                                 indicator: "MACD",
                                 buy: false,
@@ -204,6 +305,25 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                                 price <= previousPrice
                             ) {
                                 console.log(chalk.green("SINAL DE VENDA"));
+                                await emitMessage(
+                                    {
+                                        logs: {
+                                            logAction: "Sinal de Venda",
+                                            logEvent: "Resultado MACD",
+                                            logMoeda: target_currency,
+                                            logPrice: price.toFixed(8),
+                                            previousPrice: previousPrice.toFixed(8),
+                                            logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                            logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(
+                                                digits
+                                            )}`,
+                                            logInfoThree: `Histograma = ${histogram.toFixed(
+                                                digits
+                                            )}`,
+                                        },
+                                    },
+                                    user
+                                );
                                 signal.push({
                                     indicator: "MACD",
                                     buy: false,
@@ -211,6 +331,25 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                                 });
                             } else {
                                 console.log(chalk.yellow("NEUTRO"));
+                                await emitMessage(
+                                    {
+                                        logs: {
+                                            logAction: "Neutro",
+                                            logEvent: "Resultado MACD",
+                                            logMoeda: target_currency,
+                                            logPrice: price.toFixed(8),
+                                            previousPrice: previousPrice.toFixed(8),
+                                            logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                            logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(
+                                                digits
+                                            )}`,
+                                            logInfoThree: `Histograma = ${histogram.toFixed(
+                                                digits
+                                            )}`,
+                                        },
+                                    },
+                                    user
+                                );
                                 signal.push({
                                     indicator: "MACD",
                                     buy: false,
@@ -220,6 +359,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         }
                     } else {
                         console.log(chalk.yellow("NEUTRO"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado MACD",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                    logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                    logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "MACD",
                             buy: false,
@@ -237,7 +391,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
         tulind.indicators.stoch.indicator(
             [high, low, close],
             [k_period, k_slow_period, d_period],
-            (err, result) => {
+            async (err, result) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -264,6 +418,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     if (k > 20) {
                         if (k > d && k < trend.up + 20 && price >= previousPrice) {
                             console.log(chalk.red("SINAL DE COMPRA!"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Sinal de Compra",
+                                        logEvent: "Resultado STOCH",
+                                        logMoeda: target_currency,
+                                        logPrice: price.toFixed(8),
+                                        previousPrice: previousPrice.toFixed(8),
+                                        logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                        logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                    },
+                                },
+                                user
+                            );
                             signal.push({
                                 indicator: "STOCH",
                                 buy: true,
@@ -271,6 +439,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                             });
                         } else {
                             console.log(chalk.yellow("NEUTRO"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Neutro",
+                                        logEvent: "Resultado STOCH",
+                                        logMoeda: target_currency,
+                                        logPrice: price.toFixed(8),
+                                        previousPrice: previousPrice.toFixed(8),
+                                        logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                        logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                    },
+                                },
+                                user
+                            );
                             signal.push({
                                 indicator: "STOCH",
                                 buy: false,
@@ -281,6 +463,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         if (k < 80) {
                             if (k < d && k > 80 - trend.down && price <= previousPrice) {
                                 console.log(chalk.green("SINAL DE VENDA"));
+                                await emitMessage(
+                                    {
+                                        logs: {
+                                            logAction: "Sinal de Venda",
+                                            logEvent: "Resultado STOCH",
+                                            logMoeda: target_currency,
+                                            logPrice: price.toFixed(8),
+                                            previousPrice: previousPrice.toFixed(8),
+                                            logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                            logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                        },
+                                    },
+                                    user
+                                );
                                 signal.push({
                                     indicator: "STOCH",
                                     buy: false,
@@ -288,6 +484,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                                 });
                             } else {
                                 console.log(chalk.yellow("NEUTRO"));
+                                await emitMessage(
+                                    {
+                                        logs: {
+                                            logAction: "Neutro",
+                                            logEvent: "Resultado STOCH",
+                                            logMoeda: target_currency,
+                                            logPrice: price.toFixed(8),
+                                            previousPrice: previousPrice.toFixed(8),
+                                            logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                            logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                        },
+                                    },
+                                    user
+                                );
                                 signal.push({
                                     indicator: "STOCH",
                                     buy: false,
@@ -297,6 +507,20 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         }
                     } else {
                         console.log(chalk.yellow("NEUTRO"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado STOCH",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                    logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "STOCH",
                             buy: false,
@@ -311,7 +535,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
     // ############################### INDICADOR CCI ################################
     if (config.strategy.indicators.cci.status) {
         const { period } = config.strategy.indicators.cci;
-        tulind.indicators.cci.indicator([high, low, close], [period], (err, result) => {
+        tulind.indicators.cci.indicator([high, low, close], [period], async (err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -339,6 +563,19 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     price >= previousPrice
                 ) {
                     console.log(chalk.red("SINAL DE COMPRA!"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Sinal de Compra",
+                                logEvent: "Resultado CCI",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "CCI",
                         buy: true,
@@ -351,6 +588,19 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         price <= previousPrice
                     ) {
                         console.log(chalk.green("SINAL DE VENDA"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Sinal de Venda",
+                                    logEvent: "Resultado CCI",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "CCI",
                             buy: false,
@@ -358,6 +608,19 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         });
                     } else {
                         console.log(chalk.yellow("NEUTRO"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado CCI",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "CCI",
                             buy: false,
@@ -366,6 +629,19 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     }
                 } else {
                     console.log(chalk.yellow("NEUTRO"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Neutro",
+                                logEvent: "Resultado CCI",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "CCI",
                         buy: false,
@@ -379,7 +655,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
     // ############################### INDICADOR BBANDS ################################
     if (config.strategy.indicators.bbands.status) {
         const { period, stddev } = config.strategy.indicators.bbands;
-        tulind.indicators.bbands.indicator([close], [period, stddev], (err, result) => {
+        tulind.indicators.bbands.indicator([close], [period, stddev], async (err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -407,6 +683,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                 // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
                 if (price <= lower && price > lower - trend.down && price >= previousPrice) {
                     console.log(chalk.red("SINAL DE COMPRA!"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Sinal de Compra",
+                                logEvent: "Resultado BBANDS",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                                logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                                logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "BBANDS",
                         buy: true,
@@ -415,6 +706,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                 } else if (sellForIndicator === true) {
                     if (price >= upper && price < upper + trend.up && price <= previousPrice) {
                         console.log(chalk.green("SINAL DE VENDA"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Sinal de Venda",
+                                    logEvent: "Resultado BBANDS",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                                    logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                                    logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "BBANDS",
                             buy: false,
@@ -422,6 +728,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         });
                     } else {
                         console.log(chalk.yellow("NEUTRO"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado BBANDS",
+                                    logMoeda: target_currency,
+                                    logPrice: price.toFixed(8),
+                                    previousPrice: previousPrice.toFixed(8),
+                                    logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                                    logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                                    logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                },
+                            },
+                            user
+                        );
                         signal.push({
                             indicator: "BBANDS",
                             buy: false,
@@ -430,6 +751,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     }
                 } else {
                     console.log(chalk.yellow("NEUTRO"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Neutro",
+                                logEvent: "Resultado BBANDS",
+                                logMoeda: target_currency,
+                                logPrice: price.toFixed(8),
+                                previousPrice: previousPrice.toFixed(8),
+                                logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                                logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                                logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                            },
+                        },
+                        user
+                    );
                     signal.push({
                         indicator: "BBANDS",
                         buy: false,
@@ -454,8 +790,24 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                 const resultOrder = await Order.orderBuy(config, params_order);
                 if (resultOrder === 0) {
                     console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Saldo insuficiente para a transação",
+                            },
+                        },
+                        user
+                    );
                 } else {
                     console.log(chalk.green("ORDEM DE COMPRA CRIADA"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Ordem de compra criada",
+                            },
+                        },
+                        user
+                    );
                 }
             }
         }
@@ -481,8 +833,24 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                         );
                         if (resultOrder === 0) {
                             console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Saldo insuficiente para a transação",
+                                    },
+                                },
+                                user
+                            );
                         } else {
                             console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                            await emitMessage(
+                                {
+                                    logs: {
+                                        logAction: "Ordem de venda criada",
+                                    },
+                                },
+                                user
+                            );
                         }
                     }
                 }
@@ -493,15 +861,47 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
                     const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
                     if (resultOrder === 0) {
                         console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Saldo insuficiente para a transação",
+                                },
+                            },
+                            user
+                        );
                     } else {
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Ordem de venda comprada",
+                                },
+                            },
+                            user
+                        );
                     }
                 } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
                     const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
                     if (resultOrder === 0) {
                         console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Saldo insuficiente para a transação",
+                                },
+                            },
+                            user
+                        );
                     } else {
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                        await emitMessage(
+                            {
+                                logs: {
+                                    logAction: "Ordem de venda criada",
+                                },
+                            },
+                            user
+                        );
                     }
                 }
             }

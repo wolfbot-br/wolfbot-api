@@ -7,7 +7,7 @@ const strategy = require("./botStrategies");
 const configuracao = require("../../configuration/configuration.service");
 const order = require("../../orders/orderService");
 
-const acionarMonitoramento = (config, params) => {
+const acionarMonitoramento = (config, params, user) => {
     try {
         const nomeExchange = config.exchange.toLowerCase();
         const exchangeCCXT = new ccxt[nomeExchange]();
@@ -48,7 +48,8 @@ const acionarMonitoramento = (config, params) => {
                         params,
                         arrayCurrencies[i],
                         candle,
-                        ordersOpen
+                        ordersOpen,
+                        user
                     );
                 }
                 console.log(
@@ -63,13 +64,13 @@ const acionarMonitoramento = (config, params) => {
     }
 };
 
-async function roboLigado(params) {
+async function roboLigado(params, user) {
     const config = await configuracao.getConfiguration(params.user_uid);
     console.log("########## Robo Ligado ##########");
-    acionarMonitoramento(config, params);
+    acionarMonitoramento(config, params, user);
 }
 
-function roboDesligado(params) {
+function roboDesligado(params, user) {
     console.log("########## Robo Desligado ##########");
     robo.clear(params.key);
 }
