@@ -3,8 +3,8 @@ const controller = require("./exchange.controller");
 
 module.exports = (server) => {
     const protectedRoutes = express.Router();
-    server.use("/api/exchanges", protectedRoutes);
+    server.use("/api/exchange", protectedRoutes);
 
     // PRIVATE METHODS
-    protectedRoutes.get("/saldo", controller.fetchBalance);
+    protectedRoutes.get("/balance", controller.fetchBalance);
 };
