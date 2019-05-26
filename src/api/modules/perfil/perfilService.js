@@ -1,9 +1,11 @@
 const admin = require("firebase-admin");
+const moment = require("moment");
 
 const User = require("../../models/userModel");
 const UserLogs = require("../../models/accountsLogModel");
 const Activities = require("../../models/activitiesModel");
 const emitMessage = require("../../utils/functions/emitMessage");
+const LogModel = require("../../models/logModel");
 
 const savePerfilUser = async (res, user) => {
     await User.findOneAndUpdate({ uid: user.uid }, user);
@@ -15,7 +17,7 @@ const savePerfilUser = async (res, user) => {
 const getPerfilUser = async (res, uid) => {
     const user = await User.find({ uid }).lean();
 
-    emitMessage(
+    await emitMessage(
         {
             logs: {
                 logAction: "Neutro",
@@ -26,10 +28,23 @@ const getPerfilUser = async (res, uid) => {
                 logInfoOne: "Linha MACD = TESTE",
                 logInfoTwo: "Linha Sinal = TESTE",
                 logInfoThree: "Histograma = TESTE",
+                date: moment().format("YYYY-MM-DD HH:mm:ss"),
             },
         },
         uid
     );
+    await new LogModel({
+        logAction: "Neutro",
+        logEvent: "Resultado MACD",
+        logMoeda: "BTC",
+        logPrice: 9999,
+        previousPrice: 9999,
+        logInfoOne: "Linha MACD = TESTE",
+        logInfoTwo: "Linha Sinal = TESTE",
+        logInfoThree: "Histograma = TESTE",
+        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+        user: uid,
+    }).save();
     return res.status(200).json({
         success: true,
         data: user,

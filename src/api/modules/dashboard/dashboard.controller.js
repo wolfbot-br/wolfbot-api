@@ -1,4 +1,5 @@
 const Dashboard = require("./dashboard.service");
+const LogsModel = require("../../models/logModel");
 
 const dataDashboard = async (req, res) => {
     try {
@@ -9,7 +10,8 @@ const dataDashboard = async (req, res) => {
         const overallResult = await Dashboard.overallResult(uid);
         const totalizerResult = await Dashboard.totalizerOpenOrdersAndClosedOrders(uid);
         const totalAssets = await Dashboard.totalAssets(uid);
-        res.status(200).json({
+        const logs = await LogsModel.find({ user: uid }).lean();
+        return res.status(200).json({
             data: {
                 dayResult,
                 openOrdersTableResult,
@@ -17,6 +19,7 @@ const dataDashboard = async (req, res) => {
                 overallResult,
                 totalizerResult,
                 totalAssets,
+                logs,
             },
         });
     } catch (error) {

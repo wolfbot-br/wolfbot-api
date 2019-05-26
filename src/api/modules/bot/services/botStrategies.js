@@ -14,6 +14,7 @@ const tulind = require("tulind");
 const moment = require("moment");
 const Order = require("../../orders/orderService");
 const emitMessage = require("../../../utils/functions/emitMessage");
+const LogModel = require("../../../models/logModel");
 
 const loadStrategy = async (config, params, target_currency, candle, ordersOpen, user) => {
     const digits = 4;
@@ -111,10 +112,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             previousPrice: previousPrice.toFixed(8),
                             logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                             logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                         },
                     },
                     user
                 );
+                await new LogModel({
+                    logAction: "Sinal de Compra",
+                    logEvent: "Resultado EMA",
+                    logMoeda: `${target_currency}`,
+                    logPrice: `${price.toFixed(8)}`,
+                    previousPrice: `${previousPrice.toFixed(8)}`,
+                    logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                    logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    user,
+                }).save();
                 signal.push({
                     indicator: "EMA",
                     buy: true,
@@ -132,10 +145,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             previousPrice: previousPrice.toFixed(8),
                             logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                             logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                         },
                     },
                     user
                 );
+                await new LogModel({
+                    logAction: "Neutro",
+                    logEvent: "Resultado EMA",
+                    logMoeda: `${target_currency}`,
+                    logPrice: `${price.toFixed(8)}`,
+                    previousPrice: `${previousPrice.toFixed(8)}`,
+                    logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                    logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    user,
+                }).save();
                 signal.push({
                     indicator: "EMA",
                     buy: false,
@@ -156,10 +181,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                                 logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Sinal de Venda",
+                        logEvent: "Resultado EMA",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                        logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "EMA",
                         buy: false,
@@ -177,10 +214,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                                 logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Neutro",
+                        logEvent: "Resultado EMA",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                        logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "EMA",
                         buy: false,
@@ -200,10 +249,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         previousPrice: previousPrice.toFixed(8),
                         logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                         logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                     },
                 },
                 user
             );
+            await new LogModel({
+                logAction: "Neutro",
+                logEvent: "Resultado EMA",
+                logMoeda: `${target_currency}`,
+                logPrice: `${price.toFixed(8)}`,
+                previousPrice: `${previousPrice.toFixed(8)}`,
+                logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
+                logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
+                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                user,
+            }).save();
             signal.push({
                 indicator: "EMA",
                 buy: false,
@@ -265,10 +326,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                         logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                         logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Sinal de Compra",
+                                logEvent: "Resultado MACD",
+                                logMoeda: `${target_currency}`,
+                                logPrice: `${price.toFixed(8)}`,
+                                previousPrice: `${previousPrice.toFixed(8)}`,
+                                logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                             signal.push({
                                 indicator: "MACD",
                                 buy: true,
@@ -287,10 +361,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                         logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                         logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Neutro",
+                                logEvent: "Resultado MACD",
+                                logMoeda: `${target_currency}`,
+                                logPrice: `${price.toFixed(8)}`,
+                                previousPrice: `${previousPrice.toFixed(8)}`,
+                                logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                             signal.push({
                                 indicator: "MACD",
                                 buy: false,
@@ -320,10 +407,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             logInfoThree: `Histograma = ${histogram.toFixed(
                                                 digits
                                             )}`,
+                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                         },
                                     },
                                     user
                                 );
+                                await new LogModel({
+                                    logAction: "Sinal de Venda",
+                                    logEvent: "Resultado MACD",
+                                    logMoeda: `${target_currency}`,
+                                    logPrice: `${price.toFixed(8)}`,
+                                    previousPrice: `${previousPrice.toFixed(8)}`,
+                                    logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                    logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                    logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    user,
+                                }).save();
                                 signal.push({
                                     indicator: "MACD",
                                     buy: false,
@@ -346,10 +446,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             logInfoThree: `Histograma = ${histogram.toFixed(
                                                 digits
                                             )}`,
+                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                         },
                                     },
                                     user
                                 );
+                                await new LogModel({
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado MACD",
+                                    logMoeda: `${target_currency}`,
+                                    logPrice: `${price.toFixed(8)}`,
+                                    previousPrice: `${previousPrice.toFixed(8)}`,
+                                    logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                                    logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                                    logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    user,
+                                }).save();
                                 signal.push({
                                     indicator: "MACD",
                                     buy: false,
@@ -370,10 +483,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                     logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                     logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Neutro",
+                            logEvent: "Resultado MACD",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
+                            logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
+                            logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "MACD",
                             buy: false,
@@ -428,10 +554,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         previousPrice: previousPrice.toFixed(8),
                                         logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                         logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Sinal de Compra",
+                                logEvent: "Resultado STOCH",
+                                logMoeda: `${target_currency}`,
+                                logPrice: `${price.toFixed(8)}`,
+                                previousPrice: `${previousPrice.toFixed(8)}`,
+                                logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                             signal.push({
                                 indicator: "STOCH",
                                 buy: true,
@@ -449,10 +587,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         previousPrice: previousPrice.toFixed(8),
                                         logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                         logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Neutro",
+                                logEvent: "Resultado STOCH",
+                                logMoeda: `${target_currency}`,
+                                logPrice: `${price.toFixed(8)}`,
+                                previousPrice: `${previousPrice.toFixed(8)}`,
+                                logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                             signal.push({
                                 indicator: "STOCH",
                                 buy: false,
@@ -473,10 +623,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             previousPrice: previousPrice.toFixed(8),
                                             logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                             logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                         },
                                     },
                                     user
                                 );
+                                await new LogModel({
+                                    logAction: "Sinal de Venda",
+                                    logEvent: "Resultado STOCH",
+                                    logMoeda: `${target_currency}`,
+                                    logPrice: `${price.toFixed(8)}`,
+                                    previousPrice: `${previousPrice.toFixed(8)}`,
+                                    logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                    logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    user,
+                                }).save();
                                 signal.push({
                                     indicator: "STOCH",
                                     buy: false,
@@ -494,10 +656,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             previousPrice: previousPrice.toFixed(8),
                                             logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                             logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                         },
                                     },
                                     user
                                 );
+                                await new LogModel({
+                                    logAction: "Neutro",
+                                    logEvent: "Resultado STOCH",
+                                    logMoeda: `${target_currency}`,
+                                    logPrice: `${price.toFixed(8)}`,
+                                    previousPrice: `${previousPrice.toFixed(8)}`,
+                                    logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                                    logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    user,
+                                }).save();
                                 signal.push({
                                     indicator: "STOCH",
                                     buy: false,
@@ -517,10 +691,22 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                     logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Neutro",
+                            logEvent: "Resultado STOCH",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha K = ${k.toFixed(digits)}`,
+                            logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "STOCH",
                             buy: false,
@@ -572,10 +758,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logPrice: price.toFixed(8),
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Sinal de Compra",
+                        logEvent: "Resultado CCI",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "CCI",
                         buy: true,
@@ -597,10 +794,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logPrice: price.toFixed(8),
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Sinal de Venda",
+                            logEvent: "Resultado CCI",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "CCI",
                             buy: false,
@@ -617,10 +825,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logPrice: price.toFixed(8),
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Neutro",
+                            logEvent: "Resultado CCI",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "CCI",
                             buy: false,
@@ -638,10 +857,21 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logPrice: price.toFixed(8),
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Neutro",
+                        logEvent: "Resultado CCI",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "CCI",
                         buy: false,
@@ -694,10 +924,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                 logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                 logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Sinal de Compra",
+                        logEvent: "Resultado BBANDS",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                        logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                        logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "BBANDS",
                         buy: true,
@@ -717,10 +960,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                     logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                     logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Sinal de Venda",
+                            logEvent: "Resultado BBANDS",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                            logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                            logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "BBANDS",
                             buy: false,
@@ -739,10 +995,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                     logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                     logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Neutro",
+                            logEvent: "Resultado BBANDS",
+                            logMoeda: `${target_currency}`,
+                            logPrice: `${price.toFixed(8)}`,
+                            previousPrice: `${previousPrice.toFixed(8)}`,
+                            logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                            logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                            logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                         signal.push({
                             indicator: "BBANDS",
                             buy: false,
@@ -762,10 +1031,23 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                 logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                 logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Neutro",
+                        logEvent: "Resultado BBANDS",
+                        logMoeda: `${target_currency}`,
+                        logPrice: `${price.toFixed(8)}`,
+                        previousPrice: `${previousPrice.toFixed(8)}`,
+                        logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
+                        logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
+                        logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                     signal.push({
                         indicator: "BBANDS",
                         buy: false,
@@ -794,20 +1076,32 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         {
                             logs: {
                                 logAction: "Saldo insuficiente para a transação",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Saldo insuficiente para a transação",
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                 } else {
                     console.log(chalk.green("ORDEM DE COMPRA CRIADA"));
                     await emitMessage(
                         {
                             logs: {
                                 logAction: "Ordem de compra criada",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
                             },
                         },
                         user
                     );
+                    await new LogModel({
+                        logAction: "Ordem de compra criada",
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                 }
             }
         }
@@ -837,20 +1131,32 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 {
                                     logs: {
                                         logAction: "Saldo insuficiente para a transação",
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Saldo insuficiente para a transação",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                         } else {
                             console.log(chalk.green("ORDEM DE VENDA CRIADA"));
                             await emitMessage(
                                 {
                                     logs: {
                                         logAction: "Ordem de venda criada",
+                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                     },
                                 },
                                 user
                             );
+                            await new LogModel({
+                                logAction: "Ordem de venda criada",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                user,
+                            }).save();
                         }
                     }
                 }
@@ -865,20 +1171,32 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             {
                                 logs: {
                                     logAction: "Saldo insuficiente para a transação",
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Saldo insuficiente para a transação",
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                     } else {
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
                         await emitMessage(
                             {
                                 logs: {
                                     logAction: "Ordem de venda comprada",
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Ordem de venda criada",
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                     }
                 } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
                     const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
@@ -888,20 +1206,32 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             {
                                 logs: {
                                     logAction: "Saldo insuficiente para a transação",
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Saldo insuciente para a transação",
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                     } else {
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
                         await emitMessage(
                             {
                                 logs: {
                                     logAction: "Ordem de venda criada",
+                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
                                 },
                             },
                             user
                         );
+                        await new LogModel({
+                            logAction: "Ordem de venda criada",
+                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            user,
+                        }).save();
                     }
                 }
             }
