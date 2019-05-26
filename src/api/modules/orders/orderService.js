@@ -130,6 +130,17 @@ const getOrdersOpenByUserManual = async (uid) => {
         return error;
     }
 };
+const getOrdersCloseByUserManual = async (uid) => {
+    try {
+        const orders = await Order.find({
+            user: uid,
+            status: "close",
+        });
+        return orders;
+    } catch (error) {
+        return error;
+    }
+};
 const getOrdersBuyCloseByUserManual = async (uid) => {
     try {
         const orders = await Order.find({
@@ -164,4 +175,5 @@ module.exports = {
     getOrdersOpenByUserManual,
     getOrdersSellCloseByUserManual,
     getOrdersBuyCloseByUserManual,
+    getOrdersCloseByUserManual,
 };

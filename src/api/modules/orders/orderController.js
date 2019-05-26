@@ -39,8 +39,22 @@ const sell = (req, res) => {
         });
     }
 };
+const getOrdersCloseByUserManual = async (req, res) => {
+    try {
+        const { uid } = req.user;
+        const ordersResult = await orderService.getOrdersCloseByUserManual(uid);
+        res.status(200).json({
+            ordersResult,
+        });
+    } catch (error) {
+        res.status(400).json({
+            error,
+        });
+    }
+};
 
 module.exports = {
     buy,
     sell,
+    getOrdersCloseByUserManual,
 };

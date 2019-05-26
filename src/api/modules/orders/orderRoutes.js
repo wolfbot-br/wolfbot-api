@@ -7,4 +7,5 @@ module.exports = (server) => {
 
     protectedRoutes.post("/buy", controller.buy);
     protectedRoutes.post("/sell", controller.sell);
+    protectedRoutes.get("/historic", controller.getOrdersCloseByUserManual);
 };
