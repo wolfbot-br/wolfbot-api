@@ -77,8 +77,26 @@ const operationsSummary = async (uid) => {
     }
 };
 
-const openOrdersTable = () => {
-    return "tabela com ordens abertas!";
+const openOrdersTable = async (uid) => {
+    try {
+        const openOrders = await Order.getOrdersOpenByUserManual(uid);
+
+        const arrayOpenOrders = openOrders.map((item) => {
+            const dateOpen = moment(item.date);
+            const timeActual = moment();
+            return {
+                currency: item.currency,
+                amount: item.amount,
+                cost: item.cost,
+                timeOpen: timeActual.diff(dateOpen, "days"),
+            };
+        });
+        return {
+            arrayOpenOrders,
+        };
+    } catch (error) {
+        return error;
+    }
 };
 const totalAssets = async (uid) => {
     try {

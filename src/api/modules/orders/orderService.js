@@ -14,7 +14,7 @@ const getOrdersOpenByCurrency = async (params) => {
         });
         return orders;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
@@ -26,7 +26,7 @@ const getOrdersOpenByUser = async (params) => {
         });
         return orders;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
@@ -70,7 +70,7 @@ const orderBuy = async (config, params) => {
         }
         return 0;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
@@ -114,7 +114,7 @@ const orderSell = async (config, params, orderBuyMongo) => {
         }
         return 0;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
@@ -127,7 +127,7 @@ const getOrdersOpenByUserManual = async (uid) => {
         });
         return orders;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 const getOrdersBuyCloseByUserManual = async (uid) => {
@@ -139,7 +139,7 @@ const getOrdersBuyCloseByUserManual = async (uid) => {
         });
         return orders;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
@@ -152,7 +152,7 @@ const getOrdersSellCloseByUserManual = async (uid) => {
         });
         return orders;
     } catch (error) {
-        throw new Error(`Erro: ${error}`);
+        return error;
     }
 };
 
