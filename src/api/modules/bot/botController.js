@@ -25,13 +25,13 @@ const acionarRobo = async (req, res) => {
         await config.postConfiguration(query, values, options);
 
         if (params.status_bot) {
-            bot.roboLigado(params);
+            bot.roboLigado(params, req.user.uid);
             res.status(200).json({
                 message: "Robo Ligado",
                 status: "200",
             });
         } else {
-            bot.roboDesligado(params);
+            bot.roboDesligado(params, req.user.uid);
             res.status(200).json({
                 message: "Robo Desligado",
                 status: "200",
