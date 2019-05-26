@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-undef */
 /* eslint-disable no-restricted-syntax */
@@ -450,8 +451,12 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
         }
         if (contIndicators === contSignals) {
             if (ordersOpen.length <= maxOrdersOpen) {
-                await Order.orderBuy(config, params_order);
-                console.log(chalk.green("ORDEM DE COMPRA CRIADA"));
+                const resultOrder = await Order.orderBuy(config, params_order);
+                if (resultOrder === 0) {
+                    console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                } else {
+                    console.log(chalk.green("ORDEM DE COMPRA CRIADA"));
+                }
             }
         }
     }
@@ -469,19 +474,35 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen)
             if (contIndicators === contSignals) {
                 if (ordersOpen !== null) {
                     for (let i = 0; i <= ordersOpen.length - 1; i++) {
-                        console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                        await Order.orderSell(config, params_order, ordersOpen[i]);
+                        const resultOrder = await Order.orderSell(
+                            config,
+                            params_order,
+                            ordersOpen[i]
+                        );
+                        if (resultOrder === 0) {
+                            console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                        } else {
+                            console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                        }
                     }
                 }
             }
         } else if (ordersOpen !== null) {
             for (let i = 0; i <= ordersOpen.length - 1; i++) {
                 if (price >= ordersOpen[i].price + ordersOpen[i].price * profit) {
-                    console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                    await Order.orderSell(config, params_order, ordersOpen[i]);
+                    const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
+                    if (resultOrder === 0) {
+                        console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                    } else {
+                        console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                    }
                 } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
-                    console.log(chalk.green("VENDA COM PERDA, NO STOP"));
-                    await Order.orderSell(config, params_order, ordersOpen[i]);
+                    const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
+                    if (resultOrder === 0) {
+                        console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
+                    } else {
+                        console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                    }
                 }
             }
         }

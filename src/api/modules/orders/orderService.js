@@ -48,11 +48,11 @@ const orderBuy = async (config, params) => {
         let openOrderBuyExchange = {};
 
         if (purchaseValue <= balance.free) {
-            openOrderBuyExchange = await exchangeCCXT.createLimitBuyOrder(
+            /* openOrderBuyExchange = await exchangeCCXT.createLimitBuyOrder(
                 pairCurrency, // Simbolo do par de moedas a ser comprado
                 Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
                 Number.parseFloat(price[0]) // Preço da moeda que será comprada
-            );
+            ); */
             const orderMongo = {
                 date: time().format(),
                 amount: amount.toFixed(8),
@@ -62,7 +62,7 @@ const orderBuy = async (config, params) => {
                 type_operation: "buy",
                 action: params.action,
                 user: config.user_uid,
-                identifier: openOrderBuyExchange.id,
+                identifier: Date.now().toString(), // openOrderBuyExchange.id,
                 status: "open",
             };
             const resultOrderBuy = await Order.create(orderMongo);
@@ -91,11 +91,11 @@ const orderSell = async (config, params, orderBuyMongo) => {
         let openOrderSellExchange = {};
 
         if (amount <= balance.free) {
-            openOrderSellExchange = await exchangeCCXT.createLimitSellOrder(
+            /* openOrderSellExchange = await exchangeCCXT.createLimitSellOrder(
                 pairCurrency, // Simbolo do par de moedas a ser vendido
                 amount, // Montante a ser vendido
                 Number.parseFloat(price[0]) // Preço da moeda que será vendida
-            );
+            ); */
             const orderMongo = {
                 date: time().format(),
                 amount: amount.toFixed(8),
@@ -105,7 +105,7 @@ const orderSell = async (config, params, orderBuyMongo) => {
                 type_operation: "sell",
                 action: params.action,
                 user: config.user_uid,
-                identifier: openOrderSellExchange.id,
+                identifier: Date.now().toString(), // openOrderSellExchange.id,
                 status: "close",
             };
             const resultOrderSell = await Order.create(orderMongo);
@@ -124,6 +124,18 @@ const getOrdersOpenByUserManual = async (uid) => {
         const orders = await Order.find({
             user: uid,
             status: "open",
+        });
+        return orders;
+    } catch (error) {
+        throw new Error(`Erro: ${error}`);
+    }
+};
+const getOrdersBuyCloseByUserManual = async (uid) => {
+    try {
+        const orders = await Order.find({
+            user: uid,
+            status: "close",
+            type_operation: "buy",
         });
         return orders;
     } catch (error) {
@@ -151,4 +163,5 @@ module.exports = {
     getOrdersOpenByUser,
     getOrdersOpenByUserManual,
     getOrdersSellCloseByUserManual,
+    getOrdersBuyCloseByUserManual,
 };
