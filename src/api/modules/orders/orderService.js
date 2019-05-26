@@ -43,7 +43,7 @@ const orderBuy = async (config, params) => {
         const price = _.first(bids.asks); // pego o melhor preço de compra
         const amount = config.purchase_quantity / price[0]; // acho a quantidade que vou comprar
         const totalBalance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda base
-        const balance = totalBalance[config.base_currency]; // filtro saldo da moeda base
+        const balance = 1000; // totalBalance[config.base_currency]; filtro saldo da moeda base
         const purchaseValue = config.purchase_quantity + (Number.parseFloat(price) * 0.25) / 100;
         let openOrderBuyExchange = {};
 

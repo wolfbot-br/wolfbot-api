@@ -17,7 +17,7 @@ const dayResult = async (uid) => {
             }
             return 0;
         });
-        return total;
+        return total.toFixed(2);
     } catch (error) {
         return error;
     }
@@ -31,7 +31,7 @@ const overallResult = async (uid) => {
             total += item.cost;
             return 0;
         });
-        return total;
+        return total.toFixed(2);
     } catch (error) {
         return error;
     }
@@ -91,9 +91,7 @@ const openOrdersTable = async (uid) => {
                 timeOpen: timeActual.diff(dateOpen, "days"),
             };
         });
-        return {
-            arrayOpenOrders,
-        };
+        return arrayOpenOrders;
     } catch (error) {
         return error;
     }
@@ -117,7 +115,7 @@ const totalAssets = async (uid) => {
                 totalUSD += balanceItem;
             }
         });
-        return totalUSD;
+        return totalUSD.toFixed(2);
     } catch (error) {
         return error;
     }
