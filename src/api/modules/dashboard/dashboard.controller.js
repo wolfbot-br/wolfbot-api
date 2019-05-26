@@ -1,13 +1,14 @@
-const dashboard = require("./dashboard.service");
+const Dashboard = require("./dashboard.service");
 
 const dataDashboard = async (req, res) => {
     try {
         const { uid } = req.user;
-        const dayResult = await dashboard.dayResult(uid);
-        const openOrdersTableResult = await dashboard.openOrdersTable(uid);
-        const operationsSummaryResult = await dashboard.operationsSummary(uid);
-        const overallResult = await dashboard.overallResult(uid);
-        const totalizerResult = await dashboard.totalizerOpenOrdersAndClosedOrders(uid);
+        const dayResult = await Dashboard.dayResult(uid);
+        const openOrdersTableResult = await Dashboard.openOrdersTable(uid);
+        const operationsSummaryResult = await Dashboard.operationsSummary(uid);
+        const overallResult = await Dashboard.overallResult(uid);
+        const totalizerResult = await Dashboard.totalizerOpenOrdersAndClosedOrders(uid);
+        const totalAssets = await Dashboard.totalAssets(uid);
         res.status(200).json({
             data: {
                 dayResult,
@@ -15,6 +16,7 @@ const dataDashboard = async (req, res) => {
                 operationsSummaryResult,
                 overallResult,
                 totalizerResult,
+                totalAssets,
             },
         });
     } catch (error) {
