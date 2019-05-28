@@ -1,8 +1,8 @@
-const backtest = require("../backtest/services/backtestHeart");
+const backtestService = require("./services/backtest.heart");
 
-const testarConfiguracao = async (req, res, next) => {
+const testSetup = async (req, res) => {
     try {
-        params = {
+        const params = {
             exchange: req.body.exchange,
             indicator: req.body.indicator,
             profit: req.body.profit,
@@ -14,18 +14,17 @@ const testarConfiguracao = async (req, res, next) => {
             date: req.body.date,
         };
 
-        backtest.carregarDados(params).then(function (resp) {
-            res.status(200).json({
-                data: resp,
-                status: "200",
-            });
+        const backtestResult = await backtestService.loadTest(params);
+        res.status(200).json({
+            backtestResult,
         });
-    } catch (e) {
+    } catch (error) {
         res.status(400).json({
-            message: e.message,
-            status: "400",
+            error,
         });
     }
 };
 
-module.exports = { testarConfiguracao };
+module.exports = {
+    testSetup,
+};
