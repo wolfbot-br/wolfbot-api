@@ -1060,7 +1060,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
 
     // CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE COMPRA
     if (status_BUY === true) {
-        const contIndicators = signal.length;
+        const contIndicators = signal.length === 0 ? 1 : signal.length;
         let contSignals = 0;
         for (i in signal) {
             if (signal[i].buy === true) {
@@ -1110,7 +1110,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
     // CÓDIGO QUE CHAMA FUNÇÃO RESPONSÁVEL POR INSERIR UMA ORDEM DE VENDA
     if (status_SELL === true) {
         if (sellForIndicator === true) {
-            const contIndicators = signal.length;
+            const contIndicators = signal.length === 0 ? 1 : signal.length;
             let contSignals = 0;
             for (i in signal) {
                 if (signal[i].sell === true) {
@@ -1120,103 +1120,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
             if (contIndicators === contSignals) {
                 if (ordersOpen !== null) {
                     for (let i = 0; i <= ordersOpen.length - 1; i++) {
-                        const resultOrder = await Order.orderSell(
-                            config,
-                            params_order,
-                            ordersOpen[i]
-                        );
-                        if (resultOrder === 0) {
-                            console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
-                            await emitMessage(
-                                {
-                                    logs: {
-                                        logAction: "Saldo insuficiente para a transação",
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                    },
-                                },
-                                user
-                            );
-                            await new LogModel({
-                                logAction: "Saldo insuficiente para a transação",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                user,
-                            }).save();
-                        } else {
-                            console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                            await emitMessage(
-                                {
-                                    logs: {
-                                        logAction: "Ordem de venda criada",
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                    },
-                                },
-                                user
-                            );
-                            await new LogModel({
-                                logAction: "Ordem de venda criada",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                user,
-                            }).save();
-                        }
-                    }
-                }
-            }
-        } else if (ordersOpen !== null) {
-            for (let i = 0; i <= ordersOpen.length - 1; i++) {
-                if (price >= ordersOpen[i].price + ordersOpen[i].price * profit) {
-                    const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
-                    if (resultOrder === 0) {
-                        console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
-                        await emitMessage(
-                            {
-                                logs: {
-                                    logAction: "Saldo insuficiente para a transação",
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                },
-                            },
-                            user
-                        );
-                        await new LogModel({
-                            logAction: "Saldo insuficiente para a transação",
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                            user,
-                        }).save();
-                    } else {
-                        console.log(chalk.green("ORDEM DE VENDA CRIADA"));
-                        await emitMessage(
-                            {
-                                logs: {
-                                    logAction: "Ordem de venda comprada",
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                },
-                            },
-                            user
-                        );
-                        await new LogModel({
-                            logAction: "Ordem de venda criada",
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                            user,
-                        }).save();
-                    }
-                } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
-                    const resultOrder = await Order.orderSell(config, params_order, ordersOpen[i]);
-                    if (resultOrder === 0) {
-                        console.log(chalk.green("SALDO INSUFICIENTE PARA A TRANSAÇÃO!"));
-                        await emitMessage(
-                            {
-                                logs: {
-                                    logAction: "Saldo insuficiente para a transação",
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                                },
-                            },
-                            user
-                        );
-                        await new LogModel({
-                            logAction: "Saldo insuciente para a transação",
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
-                            user,
-                        }).save();
-                    } else {
+                        await Order.orderSell(config, params_order, ordersOpen[i]);
                         console.log(chalk.green("ORDEM DE VENDA CRIADA"));
                         await emitMessage(
                             {
@@ -1233,6 +1137,44 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             user,
                         }).save();
                     }
+                }
+            }
+        } else if (ordersOpen !== null) {
+            for (let i = 0; i <= ordersOpen.length - 1; i++) {
+                if (price >= ordersOpen[i].price + ordersOpen[i].price * profit) {
+                    await Order.orderSell(config, params_order, ordersOpen[i]);
+                    console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Ordem de venda comprada",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            },
+                        },
+                        user
+                    );
+                    await new LogModel({
+                        logAction: "Ordem de venda criada",
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
+                } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
+                    await Order.orderSell(config, params_order, ordersOpen[i]);
+                    console.log(chalk.green("ORDEM DE VENDA CRIADA"));
+                    await emitMessage(
+                        {
+                            logs: {
+                                logAction: "Ordem de venda criada",
+                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            },
+                        },
+                        user
+                    );
+                    await new LogModel({
+                        logAction: "Ordem de venda criada",
+                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        user,
+                    }).save();
                 }
             }
         }
