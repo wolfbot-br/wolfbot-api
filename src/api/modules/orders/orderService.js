@@ -43,11 +43,12 @@ const orderBuy = async (config, params) => {
         const price = _.first(bids.asks); // pego o melhor preço de compra
         const amount = config.purchase_quantity / price[0]; // acho a quantidade que vou comprar
         const totalBalance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda base
-        const balance = 1000.0; // totalBalance[config.base_currency]; filtro saldo da moeda base
-        const purchaseValue = config.purchase_quantity + (Number.parseFloat(price) * 0.25) / 100;
+        const balance = 1000; // totalBalance[config.base_currency]; // filtro saldo da moeda base
+        const purchaseValue = config.purchase_quantity + config.purchase_quantity * (0.25 / 100);
         let openOrderBuyExchange = {};
 
-        if (purchaseValue <= balance.free) {
+        // amount <= balance.free
+        if (purchaseValue <= balance) {
             /* openOrderBuyExchange = await exchangeCCXT.createLimitBuyOrder(
                 pairCurrency, // Simbolo do par de moedas a ser comprado
                 Number.parseFloat(amount.toFixed(8)), // Montante a ser comprado
@@ -57,7 +58,7 @@ const orderBuy = async (config, params) => {
                 date: time().format(),
                 amount: amount.toFixed(8),
                 price: price[0],
-                cost: config.purchase_quantity,
+                cost: purchaseValue,
                 currency: params.target_currency,
                 type_operation: "buy",
                 action: params.action,
@@ -87,10 +88,12 @@ const orderSell = async (config, params, orderBuyMongo) => {
         const price = _.first(bids.bids); // pego o melhor preço de venda
         const amount = Number.parseFloat(orderBuyMongo.amount); // acho a quantidade que vou vender
         const totalBalance = await exchangeCCXT.fetchBalance(); // vejo se tenho saldo na moeda alvo
-        const balance = totalBalance[params.target_currency]; // filtro saldo da moeda alvo
+        const balance = orderBuyMongo.amount; // totalBalance[params.target_currency]; // filtro saldo da moeda alvo
+        const cost = Number.parseFloat(price[0]) * amount;
         let openOrderSellExchange = {};
 
-        if (amount <= balance.free) {
+        // amount <= balance.free
+        if (amount <= balance && orderBuyMongo.status !== "close") {
             /* openOrderSellExchange = await exchangeCCXT.createLimitSellOrder(
                 pairCurrency, // Simbolo do par de moedas a ser vendido
                 amount, // Montante a ser vendido
@@ -100,7 +103,7 @@ const orderSell = async (config, params, orderBuyMongo) => {
                 date: time().format(),
                 amount: amount.toFixed(8),
                 price: price[0],
-                cost: Number.parseFloat(price[0]) * amount,
+                cost: cost - cost * (0.25 / 100), // aplico a taxa da exchange na venda
                 currency: params.target_currency,
                 type_operation: "sell",
                 action: params.action,

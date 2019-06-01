@@ -34,7 +34,7 @@ const acionarMonitoramento = (config, params, user) => {
                     const parMoedas = `${arrayCurrencies[i]}/${config.base_currency}`;
                     const since = tempo.format("x");
                     const limit = 1000;
-                    await sleep(exchangeCCXT.rateLimit); // milliseconds
+                    await sleep(10000); // milliseconds
                     const candle = await exchangeCCXT.fetchOHLCV(
                         parMoedas,
                         tamanhoCandle,
