@@ -23,7 +23,7 @@ io.on("connection", async function(socket) {
     console.log(
         `User connect to socket - socket id: ${socket.id}, Connections: ${
             io.engine.clientsCount
-        }, User: ${socket.handshake.query.user}`
+        }, User: ${socket.handshake.query.user}, Service: ${socket.handshake.query.service}`
     );
 
     if (socket.handshake.query.user) {
@@ -36,6 +36,7 @@ io.on("connection", async function(socket) {
     }
 
     socket.on("updates", async function(input) {
+        console.log("message receive");
         await io.to(input.socketId).emit("updates", { ...input });
     });
 

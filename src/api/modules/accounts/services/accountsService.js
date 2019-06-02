@@ -200,6 +200,9 @@ const login = async (res, email, password, browser, ip) => {
         return response.constructionErrorMessage(res, {
             code: "auth/email-is-not-active",
         });
+
+    await User.update({ email }, { sockets: [] });
+
     return res.status(200).json(authResult);
 };
 
@@ -275,6 +278,11 @@ const changePassword = async (res, next, password, code) => {
     });
 };
 
+const manageSocket = async (res, next, body) => {
+ 
+    return res.status(200).json({ body });
+};
+
 module.exports = {
     passwordRecovery,
     signup,
@@ -283,4 +291,5 @@ module.exports = {
     createToken,
     changePassword,
     activeAccount,
+    manageSocket,
 };

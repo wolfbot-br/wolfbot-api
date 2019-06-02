@@ -17,6 +17,7 @@ const routes = (server) => {
     openRoutes.post("/createtoken", controller.createToken);
     openRoutes.post("/passwordRecovery", controller.passwordRecovery);
     openRoutes.post("/changepassword", controller.changePassword);
+    openRoutes.post("/managesocket", controller.manageSocket);
 
     protectedRoutes.get("/userinfo", controller.userInfo);
 };

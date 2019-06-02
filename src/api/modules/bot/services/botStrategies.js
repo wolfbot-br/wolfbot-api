@@ -89,7 +89,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
         console.log(chalk.cyan("########## Resultado EMA ##########"));
         console.log(chalk.cyan(`moeda: ${target_currency}`));
         console.log(
-            chalk.magenta(`Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm")}`)
+            chalk.magenta(`Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm:ss")}`)
         );
         console.log(chalk.magenta(`Preço Anterior = ${previousPrice.toFixed(8)}`));
         console.log(chalk.magenta(`linha SHORT EMA = ${short_ema.toFixed(digits)}`));
@@ -112,7 +112,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             previousPrice: previousPrice.toFixed(8),
                             logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                             logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                         },
                     },
                     user
@@ -125,7 +125,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                     previousPrice: `${previousPrice.toFixed(8)}`,
                     logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                     logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                     user,
                 }).save();
                 signal.push({
@@ -145,7 +145,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             previousPrice: previousPrice.toFixed(8),
                             logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                             logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                         },
                     },
                     user
@@ -158,7 +158,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                     previousPrice: `${previousPrice.toFixed(8)}`,
                     logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                     logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                     user,
                 }).save();
                 signal.push({
@@ -181,7 +181,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                                 logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -194,7 +194,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         previousPrice: `${previousPrice.toFixed(8)}`,
                         logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                         logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -214,7 +214,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                                 logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -227,7 +227,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         previousPrice: `${previousPrice.toFixed(8)}`,
                         logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                         logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -249,7 +249,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         previousPrice: previousPrice.toFixed(8),
                         logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                         logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                     },
                 },
                 user
@@ -262,7 +262,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                 previousPrice: `${previousPrice.toFixed(8)}`,
                 logInfoOne: `Linha SHORT EMA = ${short_ema.toFixed(digits)}`,
                 logInfoTwo: `Linha LONG EMA = ${long_ema.toFixed(digits)}`,
-                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                date: time.format("DD-MM-YYYY HH:mm:ss"),
                 user,
             }).save();
             signal.push({
@@ -299,7 +299,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                     console.log(chalk.cyan(`moeda: ${target_currency}`));
                     console.log(
                         chalk.magenta(
-                            `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm")}`
+                            `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm:ss")}`
                         )
                     );
                     console.log(chalk.magenta(`Preço Anterior = ${previousPrice.toFixed(8)}`));
@@ -326,7 +326,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                         logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                         logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     },
                                 },
                                 user
@@ -340,7 +340,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                 logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                 logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 user,
                             }).save();
                             signal.push({
@@ -361,7 +361,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                         logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                         logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     },
                                 },
                                 user
@@ -375,7 +375,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                 logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                 logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 user,
                             }).save();
                             signal.push({
@@ -407,7 +407,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             logInfoThree: `Histograma = ${histogram.toFixed(
                                                 digits
                                             )}`,
-                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                                         },
                                     },
                                     user
@@ -421,7 +421,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                     logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                     logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     user,
                                 }).save();
                                 signal.push({
@@ -446,7 +446,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             logInfoThree: `Histograma = ${histogram.toFixed(
                                                 digits
                                             )}`,
-                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                                         },
                                     },
                                     user
@@ -460,7 +460,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                     logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                     logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     user,
                                 }).save();
                                 signal.push({
@@ -483,7 +483,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                                     logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                                     logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -497,7 +497,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             logInfoOne: `Linha MACD = ${macd.toFixed(digits)}`,
                             logInfoTwo: `Linha Sinal = ${signal_macd.toFixed(digits)}`,
                             logInfoThree: `Histograma = ${histogram.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -533,7 +533,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                     console.log(chalk.cyan(`moeda: ${target_currency}`));
                     console.log(
                         chalk.magenta(
-                            `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm")}`
+                            `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm:ss")}`
                         )
                     );
                     console.log(chalk.magenta(`Preço Anterior = ${previousPrice.toFixed(8)}`));
@@ -554,7 +554,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         previousPrice: previousPrice.toFixed(8),
                                         logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                         logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     },
                                 },
                                 user
@@ -567,7 +567,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: `${previousPrice.toFixed(8)}`,
                                 logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                 logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 user,
                             }).save();
                             signal.push({
@@ -587,7 +587,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                         previousPrice: previousPrice.toFixed(8),
                                         logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                         logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     },
                                 },
                                 user
@@ -600,7 +600,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 previousPrice: `${previousPrice.toFixed(8)}`,
                                 logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                 logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 user,
                             }).save();
                             signal.push({
@@ -623,7 +623,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             previousPrice: previousPrice.toFixed(8),
                                             logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                             logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                                         },
                                     },
                                     user
@@ -636,7 +636,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     previousPrice: `${previousPrice.toFixed(8)}`,
                                     logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                     logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     user,
                                 }).save();
                                 signal.push({
@@ -656,7 +656,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                             previousPrice: previousPrice.toFixed(8),
                                             logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                             logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                                         },
                                     },
                                     user
@@ -669,7 +669,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     previousPrice: `${previousPrice.toFixed(8)}`,
                                     logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                     logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                     user,
                                 }).save();
                                 signal.push({
@@ -691,7 +691,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                                     logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -704,7 +704,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             previousPrice: `${previousPrice.toFixed(8)}`,
                             logInfoOne: `Linha K = ${k.toFixed(digits)}`,
                             logInfoTwo: `Linha D = ${d.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -736,7 +736,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                 console.log(chalk.cyan(`moeda: ${target_currency}`));
                 console.log(
                     chalk.magenta(
-                        `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm")}`
+                        `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm:ss")}`
                     )
                 );
                 console.log(chalk.magenta(`Preço Anterior = ${previousPrice.toFixed(8)}`));
@@ -758,7 +758,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logPrice: price.toFixed(8),
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -770,7 +770,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         logPrice: `${price.toFixed(8)}`,
                         previousPrice: `${previousPrice.toFixed(8)}`,
                         logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -794,7 +794,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logPrice: price.toFixed(8),
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -806,7 +806,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             logPrice: `${price.toFixed(8)}`,
                             previousPrice: `${previousPrice.toFixed(8)}`,
                             logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -825,7 +825,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logPrice: price.toFixed(8),
                                     previousPrice: previousPrice.toFixed(8),
                                     logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -837,7 +837,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             logPrice: `${price.toFixed(8)}`,
                             previousPrice: `${previousPrice.toFixed(8)}`,
                             logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -857,7 +857,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logPrice: price.toFixed(8),
                                 previousPrice: previousPrice.toFixed(8),
                                 logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -869,7 +869,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         logPrice: `${price.toFixed(8)}`,
                         previousPrice: `${previousPrice.toFixed(8)}`,
                         logInfoOne: `Linha K = ${cci.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -902,7 +902,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                 console.log(chalk.cyan(`moeda: ${target_currency}`));
                 console.log(
                     chalk.magenta(
-                        `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm")}`
+                        `Preço = ${price.toFixed(8)} - ${time.format("DD-MM-YYYY HH:mm:ss")}`
                     )
                 );
                 console.log(chalk.magenta(`Preço Anterior = ${previousPrice.toFixed(8)}`));
@@ -924,7 +924,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                 logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                 logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -938,7 +938,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                         logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                         logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -960,7 +960,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                     logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                     logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -974,7 +974,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                             logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                             logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -995,7 +995,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                     logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                     logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                     logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
@@ -1009,7 +1009,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                             logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                             logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                         signal.push({
@@ -1031,7 +1031,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                                 logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                                 logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                                 logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
@@ -1045,7 +1045,7 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         logInfoOne: `Linha Lower = ${lower.toFixed(digits)}`,
                         logInfoTwo: `Linha Middle = ${middle.toFixed(digits)}`,
                         logInfoThree: `Linha Upper = ${upper.toFixed(digits)}`,
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                     signal.push({
@@ -1076,14 +1076,14 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         {
                             logs: {
                                 logAction: "Saldo insuficiente para a transação",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
                     );
                     await new LogModel({
                         logAction: "Saldo insuficiente para a transação",
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                 } else {
@@ -1092,14 +1092,14 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         {
                             logs: {
                                 logAction: "Ordem de compra criada",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
                     );
                     await new LogModel({
                         logAction: "Ordem de compra criada",
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                 }
@@ -1126,14 +1126,14 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                             {
                                 logs: {
                                     logAction: "Ordem de venda criada",
-                                    date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                    date: time.format("DD-MM-YYYY HH:mm:ss"),
                                 },
                             },
                             user
                         );
                         await new LogModel({
                             logAction: "Ordem de venda criada",
-                            date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                            date: time.format("DD-MM-YYYY HH:mm:ss"),
                             user,
                         }).save();
                     }
@@ -1148,14 +1148,14 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         {
                             logs: {
                                 logAction: "Ordem de venda comprada",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
                     );
                     await new LogModel({
                         logAction: "Ordem de venda criada",
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                 } else if (price <= ordersOpen[i].price - ordersOpen[i].price * stop) {
@@ -1165,14 +1165,14 @@ const loadStrategy = async (config, params, target_currency, candle, ordersOpen,
                         {
                             logs: {
                                 logAction: "Ordem de venda criada",
-                                date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                                date: time.format("DD-MM-YYYY HH:mm:ss"),
                             },
                         },
                         user
                     );
                     await new LogModel({
                         logAction: "Ordem de venda criada",
-                        date: moment().format("YYYY-MM-DD HH:mm:ss"),
+                        date: time.format("DD-MM-YYYY HH:mm:ss"),
                         user,
                     }).save();
                 }

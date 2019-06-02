@@ -9,6 +9,7 @@ const emitMessageToSocket = async (message, uid) => {
     const socket = io(ioConnection, {
         query: {
             user: uid,
+            service: "API (EMIT EVENT)",
         },
     });
 

@@ -10,7 +10,10 @@ const dataDashboard = async (req, res) => {
         const overallResult = await Dashboard.overallResult(uid);
         const totalizerResult = await Dashboard.totalizerOpenOrdersAndClosedOrders(uid);
         const totalAssets = await Dashboard.totalAssets(uid);
-        const logs = await LogsModel.find({ user: uid }).lean();
+        const logs = await LogsModel.find({ user: uid })
+            .sort({ createdAt: -1 })
+            .lean();
+
         return res.status(200).json({
             data: {
                 dayResult,
