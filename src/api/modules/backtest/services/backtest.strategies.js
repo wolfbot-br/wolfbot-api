@@ -84,11 +84,7 @@ const loadStrategy = async (config, candle, market) => {
                                 });
                             }
                         } else if (close[i] > ema) {
-                            if (
-                                close[i] > tendenciaUP &&
-                                close[i] < tendenciaUP + tendencia.persistence &&
-                                sellForIndicator === true
-                            ) {
+                            if (close[i] > tendenciaUP && sellForIndicator === true) {
                                 signalSELL.push({
                                     candle: i,
                                     indicator: "EMA",
@@ -140,11 +136,7 @@ const loadStrategy = async (config, candle, market) => {
                                     });
                                 }
                             } else if (macd > 0) {
-                                if (
-                                    histograma < tendencia.down &&
-                                    histograma > tendencia.down - tendencia.persistence &&
-                                    sellForIndicator === true
-                                ) {
+                                if (histograma < tendencia.down && sellForIndicator === true) {
                                     signalSELL.push({
                                         candle: i,
                                         indicator: "MACD",
@@ -348,7 +340,10 @@ const loadStrategy = async (config, candle, market) => {
                     if (ordersBuy[x].status === "aberta") {
                         const preco = parseFloat(candle[i][4]);
                         const timeCandle = moment(candle[i][0]);
-                        if (preco >= ordersBuy[x].precoComprado + ordersBuy[x].precoComprado * profit) {
+                        if (
+                            preco >=
+                            ordersBuy[x].precoComprado + ordersBuy[x].precoComprado * profit
+                        ) {
                             ordersBuy[x].status = "fechada";
                             ordersSell.push({
                                 candle: i,
@@ -359,7 +354,9 @@ const loadStrategy = async (config, candle, market) => {
                                 precoVendido: preco,
                                 taxaNegociacao: preco * (2 * parseFloat(fee)),
                                 lucroObtido:
-                                    preco - ordersBuy[x].precoComprado - preco * (2 * parseFloat(fee)),
+                                    preco -
+                                    ordersBuy[x].precoComprado -
+                                    preco * (2 * parseFloat(fee)),
                                 percentualGanho:
                                     (preco -
                                         ordersBuy[x].precoComprado -
@@ -382,7 +379,9 @@ const loadStrategy = async (config, candle, market) => {
                                 precoVendido: preco,
                                 taxaNegociacao: preco * (2 * parseFloat(fee)),
                                 lucroObtido:
-                                    preco - ordersBuy[x].precoComprado - preco * (2 * parseFloat(fee)),
+                                    preco -
+                                    ordersBuy[x].precoComprado -
+                                    preco * (2 * parseFloat(fee)),
                                 percentualGanho:
                                     (preco -
                                         ordersBuy[x].precoComprado -
