@@ -25,7 +25,7 @@ const activeAccount = async (req, res) => {
 const login = async (req, res) => {
     const { email, password, browser } = req.body;
     const errors = validator.validLogin(email, password);
-    console.log(req.user);
+
     return errors.length
         ? res.status(400).json({ sucess: false, errors })
         : service.login(res, email, password, browser, get_ip(req).clientIp);
@@ -58,6 +58,11 @@ const changePassword = async (req, res, next) => {
     return await service.changePassword(res, next, password, code);
 };
 
+const manageSocket = async (req, res, next) => {
+    const { localStorageObject } = req.body;
+    await service.manageSocket(res, next, localStorageObject);
+};
+
 module.exports = {
     login,
     createToken,
@@ -66,4 +71,5 @@ module.exports = {
     passwordRecovery,
     changePassword,
     activeAccount,
+    manageSocket,
 };
