@@ -1,13 +1,15 @@
+/* eslint-disable camelcase */
 /* eslint-disable max-depth */
 /* eslint-disable max-statements */
 const lodash = require("lodash");
 const tulind = require("tulind");
 const moment = require("moment");
+const Backtest = require("../../../models/backtestModel");
 
 const loadStrategy = async (config, candle, market) => {
     const ordersBuy = [];
     const ordersSell = [];
-    const { sellForIndicator, profit, stop } = config;
+    const { sellForIndicator, profit, stop, user, target_currency } = config;
     const fee = market.taker;
     const timestamp = [];
     const open = [];
@@ -20,8 +22,7 @@ const loadStrategy = async (config, candle, market) => {
     const signalSELL = [];
     let numberOrdersBuy = 0;
     let numberOrdersSell = 0;
-    const time = moment;
-    time.locale("pt-br");
+    moment.locale("pt-br");
 
     lodash.flatten(
         candle.map((value) =>
@@ -189,7 +190,12 @@ const loadStrategy = async (config, candle, market) => {
                                 });
                             }
                         } else if (k < 80) {
-                            if (k < d && k > 80 - tendencia.down && close[i] <= close[i - 1] && sellForIndicator === true) {
+                            if (
+                                k < d &&
+                                k > 80 - tendencia.down &&
+                                close[i] <= close[i - 1] &&
+                                sellForIndicator === true
+                            ) {
                                 signalSELL.push({
                                     candle: i,
                                     indicator: "STOCH",
@@ -251,7 +257,6 @@ const loadStrategy = async (config, candle, market) => {
                 console.log(err);
             } else {
                 const arrayBbandsLower = result[0];
-                const arrayBbandsMiddle = result[1];
                 const arrayBbandsUpper = result[2];
                 const tendencia = {
                     up: 5,
@@ -262,7 +267,6 @@ const loadStrategy = async (config, candle, market) => {
                 // LÓGICA PARA ENVIO DE SINAL DE COMPRA E VENDA COM INDICADOR
                 for (let i = period + 1; i <= candle.length - 1; i++) {
                     const lower = parseFloat(arrayBbandsLower[cont2]);
-                    const middle = parseFloat(arrayBbandsMiddle[cont2]);
                     const upper = parseFloat(arrayBbandsUpper[cont2]);
                     cont2++;
 
@@ -301,7 +305,7 @@ const loadStrategy = async (config, candle, market) => {
                     tipoOrdem: "COMPRA",
                     status: "aberta",
                     precoComprado: preco,
-                    horaCompra: timeCandle.format("DD-MM-YYYY HH:mm"),
+                    horaCompra: timeCandle,
                     target: profit,
                     ordemCompraNumero: ++numberOrdersBuy,
                 });
@@ -330,8 +334,8 @@ const loadStrategy = async (config, candle, market) => {
                                     (preco -
                                         ordersBuy[k].precoComprado -
                                         preco * (2 * parseFloat(fee))) /
-                                    preco,
-                                horaVenda: timeCandle.format("DD-MM-YYYY HH:mm"),
+                                    ordersBuy[k].precoComprado,
+                                horaVenda: timeCandle,
                                 ordemVendaNumero: ++numberOrdersSell,
                             });
                         }
@@ -359,8 +363,8 @@ const loadStrategy = async (config, candle, market) => {
                                 (preco -
                                     ordersBuy[x].precoComprado -
                                     preco * (2 * parseFloat(fee))) /
-                                preco,
-                            horaVenda: timeCandle.format("DD-MM-YYYY HH:mm"),
+                                ordersBuy[x].precoComprado,
+                            horaVenda: timeCandle,
                             ordemVendaNumero: ++numberOrdersSell,
                         });
                     } else if (
@@ -382,8 +386,8 @@ const loadStrategy = async (config, candle, market) => {
                                 (preco -
                                     ordersBuy[x].precoComprado -
                                     preco * (2 * parseFloat(fee))) /
-                                preco,
-                            horaVenda: timeCandle.format("DD-MM-YYYY HH:mm"),
+                                ordersBuy[x].precoComprado,
+                            horaVenda: timeCandle,
                             ordemVendaNumero: ++numberOrdersSell,
                         });
                     }
@@ -394,17 +398,35 @@ const loadStrategy = async (config, candle, market) => {
 
     let profitResult = 0;
     let percentageResult = 0;
+    let cost = 0;
     for (let i = 0; i <= ordersSell.length - 1; i++) {
+        cost += ordersBuy[i].precoComprado;
         profitResult += ordersSell[i].lucroObtido;
         percentageResult += ordersSell[i].percentualGanho;
     }
 
-    return {
-        ordersBuy,
-        ordersSell,
-        profit: profitResult,
-        percentage: percentageResult,
-    };
+    console.log(ordersBuy)
+    console.log(ordersSell)
+    try {
+        const backtestResult = await Backtest.create({
+            dateTest: moment(),
+            cost,
+            currency: target_currency,
+            ordersBuy,
+            ordersSell,
+            profit: profitResult,
+            percentage: ordersSell.length > 0 ? (percentageResult * 100) / ordersSell.length : 0,
+            user,
+        });
+        console.log(backtestResult)
+
+        if (backtestResult) {
+            return backtestResult;
+        }
+    } catch (error) {
+        console.log(error)
+        return error;
+    }
 };
 
 module.exports = {

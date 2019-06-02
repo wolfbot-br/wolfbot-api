@@ -1,7 +1,9 @@
-const backtestService = require("./services/backtest.heart");
+const backtestHart = require("./services/backtest.heart");
+const backtestService = require("./services/backtest.service");
 
 const testSetup = async (req, res) => {
     try {
+        const { uid } = req.user;
         const params = {
             exchange: req.body.exchange,
             indicator: req.body.indicator,
@@ -12,9 +14,24 @@ const testSetup = async (req, res) => {
             target_currency: req.body.target_currency,
             candle_size: req.body.candle_size,
             date: req.body.date,
+            user: uid,
         };
 
-        const backtestResult = await backtestService.loadTest(params);
+        const backtestResult = await backtestHart.loadTest(params);
+        res.status(200).json({
+            backtestResult,
+        });
+    } catch (error) {
+        res.status(400).json({
+            error,
+        });
+    }
+};
+
+const getBacktest = async (req, res) => {
+    try {
+        const { uid } = req.user;
+        const backtestResult = await backtestService.getBacktest(uid);
         res.status(200).json({
             backtestResult,
         });
@@ -27,4 +44,5 @@ const testSetup = async (req, res) => {
 
 module.exports = {
     testSetup,
+    getBacktest,
 };

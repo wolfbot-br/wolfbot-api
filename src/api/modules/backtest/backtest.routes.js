@@ -6,4 +6,5 @@ module.exports = (server) => {
     server.use("/api/backtest", protectedRoutes);
 
     protectedRoutes.post("/testConfiguration", controller.testSetup);
+    protectedRoutes.get("/getBacktest", controller.getBacktest);
 };
