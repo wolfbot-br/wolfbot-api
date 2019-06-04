@@ -16,7 +16,7 @@ const acionarRobo = async (req, res) => {
                 status_bot: req.body.status_bot,
                 status_buy: req.body.status_buy,
                 status_sell: req.body.status_sell,
-                interval_check: 300000,
+                interval_check: 30000,
                 key: req.user.uid,
             },
         };
