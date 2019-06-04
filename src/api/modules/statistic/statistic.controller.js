@@ -3,9 +3,8 @@ const statisticService = require("./statistic.service");
 const graphicTotalOrden = async (req, res) => {
     try {
         const result = await statisticService.getTotalOrden();
-
-        let totalOpen = result[0].total;
-        let totalClose = result[1].total;
+        let totalClose = result[0] ? result[0].total : 0;
+        let totalOpen = result[1] ? result[1].total : 0;
 
         return res.status(200).json({
             success: true,
