@@ -6,12 +6,12 @@ const tulind = require("tulind");
 const moment = require("moment");
 const Backtest = require("../../../models/backtestModel");
 
-const loadStrategy = async (config, candle, market) => {
+const loadStrategy = async (config, candle) => {
     try {
         const ordersBuy = [];
         const ordersSell = [];
         const { sellForIndicator, profit, stop, user, target_currency } = config;
-        const fee = market.taker;
+        const quantity = parseInt(config.quantity, 10);
         const timestamp = [];
         const open = [];
         const high = [];
@@ -297,6 +297,8 @@ const loadStrategy = async (config, candle, market) => {
                         candle: i,
                         tipoOrdem: "COMPRA",
                         status: "aberta",
+                        amount: (quantity / preco).toFixed(8),
+                        cost: quantity,
                         precoComprado: preco,
                         horaCompra: timeCandle,
                         target: profit,
@@ -311,23 +313,19 @@ const loadStrategy = async (config, candle, market) => {
                             if (signalSELL[x].candle === i) {
                                 const preco = parseFloat(candle[i][4]);
                                 const timeCandle = moment(candle[i][0]);
+                                const costSell = ordersBuy[k].amount * preco;
+                                const profitSell = costSell - ordersBuy[k].cost;
+                                const percentage = profitSell / ordersBuy[k].cost;
                                 ordersSell.push({
                                     candle: i,
                                     tipoOrdem: "VENDA",
                                     status: "fechada",
+                                    amount: ordersBuy[k].amount,
                                     precoComprado: ordersBuy[k].precoComprado,
                                     horaCompra: ordersBuy[k].horaCompra,
                                     precoVendido: preco,
-                                    taxaNegociacao: preco * (2 * parseFloat(fee)),
-                                    lucroObtido:
-                                        preco -
-                                        ordersBuy[k].precoComprado -
-                                        preco * (2 * parseFloat(fee)),
-                                    percentualGanho:
-                                        (preco -
-                                            ordersBuy[k].precoComprado -
-                                            preco * (2 * parseFloat(fee))) /
-                                        ordersBuy[k].precoComprado,
+                                    lucroObtido: profitSell,
+                                    percentualGanho: percentage,
                                     horaVenda: timeCandle,
                                     ordemVendaNumero: ++numberOrdersSell,
                                 });
@@ -340,6 +338,9 @@ const loadStrategy = async (config, candle, market) => {
                     if (ordersBuy[x].status === "aberta") {
                         const preco = parseFloat(candle[i][4]);
                         const timeCandle = moment(candle[i][0]);
+                        const costSell = ordersBuy[x].amount * preco;
+                        const profitSell = costSell - ordersBuy[x].cost;
+                        const percentage = profitSell / ordersBuy[x].cost;
                         if (
                             preco >=
                             ordersBuy[x].precoComprado + ordersBuy[x].precoComprado * profit
@@ -349,19 +350,12 @@ const loadStrategy = async (config, candle, market) => {
                                 candle: i,
                                 tipoOrdem: "VENDA",
                                 status: "fechada",
+                                amount: ordersBuy[x].amount,
                                 precoComprado: ordersBuy[x].precoComprado,
                                 horaCompra: ordersBuy[x].horaCompra,
                                 precoVendido: preco,
-                                taxaNegociacao: preco * (2 * parseFloat(fee)),
-                                lucroObtido:
-                                    preco -
-                                    ordersBuy[x].precoComprado -
-                                    preco * (2 * parseFloat(fee)),
-                                percentualGanho:
-                                    (preco -
-                                        ordersBuy[x].precoComprado -
-                                        preco * (2 * parseFloat(fee))) /
-                                    ordersBuy[x].precoComprado,
+                                lucroObtido: profitSell,
+                                percentualGanho: percentage,
                                 horaVenda: timeCandle,
                                 ordemVendaNumero: ++numberOrdersSell,
                             });
@@ -374,19 +368,12 @@ const loadStrategy = async (config, candle, market) => {
                                 candle: i,
                                 tipoOrdem: "VENDA",
                                 status: "fechada",
+                                amount: ordersBuy[x].amount,
                                 precoComprado: ordersBuy[x].precoComprado,
                                 horaCompra: ordersBuy[x].horaCompra,
                                 precoVendido: preco,
-                                taxaNegociacao: preco * (2 * parseFloat(fee)),
-                                lucroObtido:
-                                    preco -
-                                    ordersBuy[x].precoComprado -
-                                    preco * (2 * parseFloat(fee)),
-                                percentualGanho:
-                                    (preco -
-                                        ordersBuy[x].precoComprado -
-                                        preco * (2 * parseFloat(fee))) /
-                                    ordersBuy[x].precoComprado,
+                                lucroObtido: profitSell,
+                                percentualGanho: percentage,
                                 horaVenda: timeCandle,
                                 ordemVendaNumero: ++numberOrdersSell,
                             });
@@ -400,7 +387,7 @@ const loadStrategy = async (config, candle, market) => {
         let percentageResult = 0;
         let cost = 0;
         for (let i = 0; i <= ordersSell.length - 1; i++) {
-            cost += ordersBuy[i].precoComprado;
+            cost += ordersBuy[i].cost;
             profitResult += ordersSell[i].lucroObtido;
             percentageResult += ordersSell[i].percentualGanho;
         }
@@ -412,7 +399,7 @@ const loadStrategy = async (config, candle, market) => {
             ordersBuy,
             ordersSell,
             profit: profitResult,
-            percentage: ordersSell.length > 0 ? (percentageResult * 100) / ordersSell.length : 0,
+            percentage: ordersSell.length > 0 ? (percentageResult / ordersSell.length) * 100 : 0,
             user,
         });
 
