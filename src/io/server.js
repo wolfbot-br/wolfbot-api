@@ -36,7 +36,6 @@ io.on("connection", async function(socket) {
     }
 
     socket.on("updates", async function(input) {
-        console.log("message receive");
         await io.to(input.socketId).emit("updates", { ...input });
     });
 
